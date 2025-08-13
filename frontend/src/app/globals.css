@@ -1,0 +1,41 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  body {
+    @apply bg-zinc-950 text-zinc-100;
+  }
+}
+
+@layer utilities {
+  /* Surbate 브랜드 색상 - 형광초록 */
+  .text-surbate {
+    color: #39FF14;
+  }
+  
+  .bg-surbate {
+    background-color: #39FF14;
+  }
+  
+  .border-surbate {
+    border-color: #39FF14;
+  }
+  
+  .ring-surbate {
+    --tw-ring-color: #39FF14;
+  }
+  
+  .logo-text {
+    @apply text-xl font-semibold;
+    color: #39FF14;
+  }
+  
+  .hover-card {
+    @apply hover:bg-zinc-800/30 transition-all duration-200;
+  }
+  
+  .prose-invert {
+    @apply text-zinc-300;
+  }
+}

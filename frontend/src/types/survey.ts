@@ -1,5 +1,6 @@
 export interface Survey {
   id: string;
+  _id?: string;  // MongoDB ID
   title: string;
   description?: string;
   tags?: string[];
@@ -50,6 +51,16 @@ export interface SurveyCreateData {
 
 export interface SurveyResponseData {
   responses: Record<string, any>;
+}
+
+export interface SurveyListResponse {
+  surveys: Survey[];
+  pagination?: {
+    page: number;
+    limit: number;
+    total: number;
+    total_pages: number;
+  };
 }
 
 export interface SurveyStats {
