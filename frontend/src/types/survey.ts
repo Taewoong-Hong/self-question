@@ -3,32 +3,35 @@ export interface Survey {
   title: string;
   description?: string;
   tags?: string[];
-  authorNickname?: string;
+  author_nickname?: string;
   questions: Question[];
   status: 'open' | 'closed';
-  createdAt: string;
-  updatedAt: string;
-  responseCount: number;
-  isAnonymous: boolean;
+  created_at: string;
+  updated_at: string;
+  response_count: number;
 }
+
+export type QuestionType = 'single_choice' | 'multiple_choice' | 'short_text' | 'long_text' | 'rating';
 
 export interface Question {
   id: string;
-  type: 'single' | 'multiple' | 'text' | 'longtext' | 'rating';
+  type: QuestionType;
   question: string;
   required: boolean;
-  options?: string[]; // for single/multiple choice
-  maxLength?: number; // for text/longtext
-  minRating?: number; // for rating
-  maxRating?: number; // for rating
+  options?: string[]; // for single_choice/multiple_choice
+  max_length?: number; // for short_text/long_text
+  min_rating?: number; // for rating
+  max_rating?: number; // for rating
+  order: number;
 }
 
 export interface SurveyResponse {
   id: string;
-  surveyId: string;
-  answers: Answer[];
-  respondentIP: string;
-  createdAt: string;
+  survey_id: string;
+  responses: Record<string, any>;
+  respondent_ip: string;
+  created_at: string;
+  response_code: string;
 }
 
 export interface Answer {
@@ -40,28 +43,22 @@ export interface SurveyCreateData {
   title: string;
   description?: string;
   tags?: string[];
-  authorNickname?: string;
-  password: string;
-  questions: Omit<Question, 'id'>[];
-  isAnonymous?: boolean;
+  author_nickname?: string;
+  admin_password: string;
+  questions: Question[];
 }
 
 export interface SurveyResponseData {
-  surveyId: string;
-  answers: Answer[];
+  responses: Record<string, any>;
 }
 
 export interface SurveyStats {
-  totalResponses: number;
-  completionRate: number;
-  questionStats: QuestionStats[];
-}
-
-export interface QuestionStats {
-  questionId: string;
-  type: Question['type'];
-  responses: number;
-  data: {
-    [key: string]: number | string[];
-  };
+  total_responses: number;
+  completion_rate: number;
+  question_stats: Record<string, {
+    type: QuestionType;
+    response_count: number;
+    options?: Record<string, number>;
+    average?: number;
+  }>;
 }
