@@ -44,8 +44,17 @@ export default function HomePage() {
       
       setDebates(response.debates);
       setTotalPages(response.pagination.total_pages);
-    } catch (error) {
-      toast.error('투표 목록을 불러오는데 실패했습니다');
+    } catch (error: any) {
+      console.error('투표 목록 조회 실패:', error);
+      // 서버 연결 실패시에는 빈 목록으로 표시
+      setDebates([]);
+      setTotalPages(1);
+      
+      if (error.code === 'ERR_NETWORK' || error.code === 'ECONNREFUSED') {
+        toast.error('서버에 연결할 수 없습니다. 백엔드 서버가 실행 중인지 확인해주세요.');
+      } else {
+        toast.error('투표 목록을 불러오는데 실패했습니다');
+      }
     } finally {
       setLoading(false);
     }

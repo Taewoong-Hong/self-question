@@ -1,14 +1,26 @@
-# 투표 게시판 (Self Question)
+# Self Question - 투표 & 설문 플랫폼
 
-Firebase Functions와 Firestore를 사용한 익명 투표 게시판 서비스입니다.
+Firebase Functions와 Firestore를 사용한 회원가입 없는 투표 및 설문 서비스입니다.
 
-## 기능
+## 주요 기능
 
+### 투표 기능
 - 📊 익명/실명 투표 생성 및 참여
 - 💬 투표에 대한 의견 작성
 - 🔒 비밀번호 기반 투표 관리
 - ⏰ 시간 기반 투표 상태 관리 (예정/진행중/종료)
+
+### 설문 기능
+- 📝 회원가입 없이 설문 생성 및 게시
+- 🔐 설문별 비밀번호 기반 관리
+- 🚫 IP당 1회 응답 제한
+- 📊 실시간 결과 통계 및 CSV 다운로드
+- 🏷️ 태그 기반 분류 및 검색
+
+### 공통 기능
 - 📱 반응형 디자인
+- 🔍 검색 및 필터링
+- 📄 메인 게시판에서 통합 관리
 
 ## 기술 스택
 
@@ -131,6 +143,18 @@ selfquestion/
 - `POST /api/debates/:id/opinion` - 의견 작성
 - `PUT /api/debates/:id` - 투표 수정 (관리자)
 - `DELETE /api/debates/:id` - 투표 삭제 (관리자)
+
+### 설문 관련
+- `POST /api/surveys/create` - 설문 생성
+- `GET /api/surveys` - 설문 목록 조회
+- `GET /api/surveys/:id` - 설문 상세 조회
+- `POST /api/surveys/:id/respond` - 설문 응답
+- `GET /api/surveys/:id/results` - 설문 결과 조회
+- `GET /api/surveys/:id/export` - CSV 다운로드
+- `POST /api/surveys/:id/verify` - 관리자 비밀번호 확인
+- `PUT /api/surveys/:id` - 설문 수정 (관리자)
+- `PUT /api/surveys/:id/status` - 설문 열기/닫기 (관리자)
+- `DELETE /api/surveys/:id` - 설문 삭제 (관리자)
 
 ## 주의사항
 
