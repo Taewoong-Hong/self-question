@@ -26,5 +26,29 @@
         "destination": "/index.html"
       }
     ]
+  },
+  "emulators": {
+    "functions": {
+      "port": 5002
+    },
+    "firestore": {
+      "port": 8080
+    },
+    "ui": {
+      "enabled": true,
+      "port": 4002
+    },
+    "hub": {
+      "port": 4402
+    },
+    "logging": {
+      "port": 4502
+    },
+    "eventarc": {
+      "port": 9301
+    },
+    "tasks": {
+      "port": 9501
+    }
   }
 }
