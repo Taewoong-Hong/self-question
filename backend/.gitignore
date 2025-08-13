@@ -1,5 +1,14 @@
 node_modules/
 .env
-serviceAccountKey.json
-*.log
+.env.local
 .DS_Store
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+serviceAccountKey.json

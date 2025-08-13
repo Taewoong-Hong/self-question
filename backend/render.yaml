@@ -1,0 +1,20 @@
+services:
+  - type: web
+    name: selfquestion-backend
+    runtime: node
+    region: singapore  # 한국과 가까운 싱가포르 리전
+    buildCommand: npm install
+    startCommand: npm start
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: PORT
+        value: 5000
+      - key: MONGODB_URI
+        sync: false  # MongoDB Atlas 연결 문자열 (Render 대시보드에서 설정)
+      - key: JWT_SECRET
+        generateValue: true  # 자동으로 안전한 값 생성
+      - key: FRONTEND_URL
+        value: https://selfquestion.vercel.app  # Vercel 배포 후 URL로 변경
+    healthCheckPath: /api/health
+    autoDeploy: true  # GitHub 연결 시 자동 배포

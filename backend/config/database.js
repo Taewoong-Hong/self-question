@@ -3,8 +3,10 @@ const mongoose = require('mongoose');
 const connectDB = async () => {
   try {
     const mongoUri = process.env.MONGODB_URI || 'mongodb://localhost:27017/survey_board';
+    const dbName = 'selfquestion';
     
     await mongoose.connect(mongoUri, {
+      dbName: dbName,
       useNewUrlParser: true,
       useUnifiedTopology: true,
       maxPoolSize: 10,
