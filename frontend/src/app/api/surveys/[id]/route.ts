@@ -82,7 +82,7 @@ export async function PUT(
     const allowedFields = ['title', 'description', 'tags', 'questions', 'settings', 'welcome_screen', 'thankyou_screen'];
     allowedFields.forEach(field => {
       if (body[field] !== undefined) {
-        survey[field] = body[field];
+        (survey as any)[field] = body[field];
       }
     });
     
