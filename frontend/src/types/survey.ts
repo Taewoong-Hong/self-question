@@ -6,38 +6,95 @@ export interface Survey {
   tags?: string[];
   author_nickname?: string;
   questions: Question[];
-  status: 'open' | 'closed';
+  status: 'draft' | 'open' | 'closed';
   created_at: string;
   updated_at: string;
-  response_count: number;
+  stats: {
+    response_count: number;
+    completion_rate: number;
+    avg_completion_time: number;
+    last_response_at?: string;
+    view_count: number;
+  };
+  welcome_screen?: {
+    title?: string;
+    description?: string;
+    button_text?: string;
+    show_button?: boolean;
+  };
+  thankyou_screen?: {
+    title?: string;
+    description?: string;
+    show_response_count?: boolean;
+  };
+  settings?: {
+    show_progress_bar?: boolean;
+    show_question_number?: boolean;
+    allow_back_navigation?: boolean;
+    autosave_progress?: boolean;
+    response_limit?: number;
+    close_at?: string;
+    language?: string;
+  };
+  is_closed?: boolean;
 }
 
 export type QuestionType = 'single_choice' | 'multiple_choice' | 'short_text' | 'long_text' | 'rating';
 
 export interface Question {
   id: string;
+  title: string;  // 백엔드와 일치하도록 수정
   type: QuestionType;
-  question: string;
   required: boolean;
-  options?: string[]; // for single_choice/multiple_choice
-  max_length?: number; // for short_text/long_text
-  min_rating?: number; // for rating
-  max_rating?: number; // for rating
+  properties?: {
+    choices?: {
+      id: string;
+      label: string;
+      attachment?: {
+        type: 'image';
+        href: string;
+      };
+    }[];
+    max_length?: number;
+    min_length?: number;
+    max_selection?: number;
+    min_selection?: number;
+    rating_scale?: 5 | 10;
+    labels?: {
+      left?: string;
+      center?: string;
+      right?: string;
+    };
+  };
+  validations?: {
+    max_characters?: number;
+    min_characters?: number;
+  };
   order: number;
 }
 
 export interface SurveyResponse {
   id: string;
-  survey_id: string;
-  responses: Record<string, any>;
-  respondent_ip: string;
-  created_at: string;
   response_code: string;
+  survey_id: string;
+  answers: Answer[];
+  started_at: string;
+  submitted_at: string;
+  completion_time: number;
+  is_complete: boolean;
+  created_at: string;
 }
 
 export interface Answer {
-  questionId: string;
-  value: string | string[] | number; // string for text, string[] for multiple choice, number for rating
+  question_id: string;
+  question_type: QuestionType;
+  // 답변 값 (타입에 따라 다름)
+  choice_id?: string; // single_choice
+  choice_ids?: string[]; // multiple_choice
+  text?: string; // short_text, long_text
+  rating?: number; // rating
+  answered_at?: string;
+  time_spent?: number;
 }
 
 export interface SurveyCreateData {
@@ -46,11 +103,34 @@ export interface SurveyCreateData {
   tags?: string[];
   author_nickname?: string;
   admin_password: string;
-  questions: Question[];
+  questions: Omit<Question, 'id'>[];
+  welcome_screen?: {
+    title?: string;
+    description?: string;
+    button_text?: string;
+    show_button?: boolean;
+  };
+  thankyou_screen?: {
+    title?: string;
+    description?: string;
+    show_response_count?: boolean;
+  };
+  settings?: {
+    show_progress_bar?: boolean;
+    show_question_number?: boolean;
+    allow_back_navigation?: boolean;
+    autosave_progress?: boolean;
+    response_limit?: number;
+    close_at?: string;
+    language?: string;
+  };
 }
 
 export interface SurveyResponseData {
-  responses: Record<string, any>;
+  answers: {
+    question_id: string;
+    answer: any; // 타입에 따라 다른 값
+  }[];
 }
 
 export interface SurveyListResponse {

@@ -27,15 +27,16 @@ export default function SurveyDetailPage() {
     try {
       setLoading(true);
       const data = await surveyApi.get(surveyId);
-      setSurvey(data);
+      setSurvey(data.survey);
+      setHasResponded(data.has_responded);
       
       // 초기 응답 상태 설정
       const initialResponses: Record<string, any> = {};
-      data.questions.forEach(q => {
+      data.survey.questions.forEach(q => {
         if (q.type === 'multiple_choice') {
-          initialResponses[q._id] = [];
+          initialResponses[q.id] = [];
         } else {
-          initialResponses[q._id] = '';
+          initialResponses[q.id] = '';
         }
       });
       setResponses(initialResponses);
@@ -55,8 +56,8 @@ export default function SurveyDetailPage() {
 
     // 필수 질문 검증
     const missingRequired = survey.questions.find(q => 
-      q.required && (!responses[q._id] || 
-        (Array.isArray(responses[q._id]) && responses[q._id].length === 0))
+      q.required && (!responses[q.id] || 
+        (Array.isArray(responses[q.id]) && responses[q.id].length === 0))
     );
 
     if (missingRequired) {
@@ -68,8 +69,8 @@ export default function SurveyDetailPage() {
       setSubmitting(true);
       const responseData: SurveyResponseData = {
         answers: survey.questions.map(q => ({
-          question_id: q._id,
-          answer: responses[q._id]
+          question_id: q.id,
+          answer: responses[q.id]
         }))
       };
       
@@ -127,7 +128,7 @@ export default function SurveyDetailPage() {
               <p className="text-zinc-400 text-lg">{survey.description}</p>
             )}
             <div className="flex items-center gap-4 mt-4 text-sm text-zinc-500">
-              <span>작성자: {survey.creator_nickname || '익명'}</span>
+              <span>작성자: {survey.author_nickname || '익명'}</span>
               <span>•</span>
               <span>
                 {formatDistanceToNow(new Date(survey.created_at), { 
@@ -146,7 +147,7 @@ export default function SurveyDetailPage() {
                 {survey.status === 'open' ? '진행중' : survey.status === 'closed' ? '종료' : '예정'}
               </span>
               <span>•</span>
-              <span>응답 {survey.response_count}명</span>
+              <span>응답 {survey.stats?.response_count || 0}명</span>
             </div>
             {survey.tags && survey.tags.length > 0 && (
               <div className="flex flex-wrap gap-2 mt-3">
@@ -183,10 +184,10 @@ export default function SurveyDetailPage() {
       {survey.status === 'open' && !hasResponded ? (
         <form onSubmit={handleSubmit} className="space-y-6">
           {survey.questions.map((question, index) => (
-            <div key={question._id} className="bg-zinc-900/50 backdrop-blur-sm border border-zinc-800 rounded-xl p-6">
+            <div key={question.id} className="bg-zinc-900/50 backdrop-blur-sm border border-zinc-800 rounded-xl p-6">
               <div className="mb-4">
                 <h3 className="text-lg font-medium mb-1">
-                  {index + 1}. {question.text}
+                  {index + 1}. {question.title}
                   {question.required && <span className="text-red-400 ml-1">*</span>}
                 </h3>
               </div>
@@ -194,17 +195,17 @@ export default function SurveyDetailPage() {
               {/* 단일 선택 */}
               {question.type === 'single_choice' && (
                 <div className="space-y-2">
-                  {question.options?.map((option, oIndex) => (
-                    <label key={oIndex} className="flex items-center gap-3 p-3 rounded-lg hover:bg-zinc-800/50 cursor-pointer">
+                  {question.properties?.choices?.map((choice) => (
+                    <label key={choice.id} className="flex items-center gap-3 p-3 rounded-lg hover:bg-zinc-800/50 cursor-pointer">
                       <input
                         type="radio"
-                        name={`question-${question._id}`}
-                        value={option}
-                        checked={responses[question._id] === option}
-                        onChange={(e) => handleResponseChange(question._id, e.target.value)}
+                        name={`question-${question.id}`}
+                        value={choice.id}
+                        checked={responses[question.id] === choice.id}
+                        onChange={(e) => handleResponseChange(question.id, e.target.value)}
                         className="text-emerald-500 bg-zinc-900 border-zinc-700 focus:ring-emerald-500"
                       />
-                      <span>{option}</span>
+                      <span>{choice.label}</span>
                     </label>
                   ))}
                 </div>
@@ -213,23 +214,23 @@ export default function SurveyDetailPage() {
               {/* 다중 선택 */}
               {question.type === 'multiple_choice' && (
                 <div className="space-y-2">
-                  {question.options?.map((option, oIndex) => (
-                    <label key={oIndex} className="flex items-center gap-3 p-3 rounded-lg hover:bg-zinc-800/50 cursor-pointer">
+                  {question.properties?.choices?.map((choice) => (
+                    <label key={choice.id} className="flex items-center gap-3 p-3 rounded-lg hover:bg-zinc-800/50 cursor-pointer">
                       <input
                         type="checkbox"
-                        value={option}
-                        checked={responses[question._id]?.includes(option) || false}
+                        value={choice.id}
+                        checked={responses[question.id]?.includes(choice.id) || false}
                         onChange={(e) => {
-                          const currentValues = responses[question._id] || [];
+                          const currentValues = responses[question.id] || [];
                           if (e.target.checked) {
-                            handleResponseChange(question._id, [...currentValues, option]);
+                            handleResponseChange(question.id, [...currentValues, choice.id]);
                           } else {
-                            handleResponseChange(question._id, currentValues.filter((v: string) => v !== option));
+                            handleResponseChange(question.id, currentValues.filter((v: string) => v !== choice.id));
                           }
                         }}
                         className="rounded text-emerald-500 bg-zinc-900 border-zinc-700 focus:ring-emerald-500"
                       />
-                      <span>{option}</span>
+                      <span>{choice.label}</span>
                     </label>
                   ))}
                 </div>
@@ -239,36 +240,36 @@ export default function SurveyDetailPage() {
               {question.type === 'short_text' && (
                 <input
                   type="text"
-                  value={responses[question._id] || ''}
-                  onChange={(e) => handleResponseChange(question._id, e.target.value)}
+                  value={responses[question.id] || ''}
+                  onChange={(e) => handleResponseChange(question.id, e.target.value)}
                   className="w-full px-4 py-2 bg-zinc-900 border border-zinc-800 rounded-lg text-zinc-100 placeholder-zinc-500 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-transparent"
                   placeholder="답변을 입력하세요"
-                  maxLength={question.max_length}
+                  maxLength={question.properties?.max_length || question.validations?.max_characters}
                 />
               )}
 
               {/* 장문형 */}
               {question.type === 'long_text' && (
                 <textarea
-                  value={responses[question._id] || ''}
-                  onChange={(e) => handleResponseChange(question._id, e.target.value)}
+                  value={responses[question.id] || ''}
+                  onChange={(e) => handleResponseChange(question.id, e.target.value)}
                   className="w-full px-4 py-2 bg-zinc-900 border border-zinc-800 rounded-lg text-zinc-100 placeholder-zinc-500 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-transparent"
                   rows={4}
                   placeholder="답변을 입력하세요"
-                  maxLength={question.max_length}
+                  maxLength={question.properties?.max_length || question.validations?.max_characters}
                 />
               )}
 
               {/* 평점 */}
               {question.type === 'rating' && (
                 <div className="flex gap-2">
-                  {[1, 2, 3, 4, 5].map((rating) => (
+                  {Array.from({ length: question.properties?.rating_scale || 5 }, (_, i) => i + 1).map((rating) => (
                     <button
                       key={rating}
                       type="button"
-                      onClick={() => handleResponseChange(question._id, rating)}
+                      onClick={() => handleResponseChange(question.id, rating)}
                       className={`w-12 h-12 rounded-lg border-2 transition-all ${
-                        responses[question._id] === rating
+                        responses[question.id] === rating
                           ? 'bg-emerald-500 border-emerald-500 text-white'
                           : 'bg-zinc-900 border-zinc-700 text-zinc-400 hover:border-zinc-600'
                       }`}

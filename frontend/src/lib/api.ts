@@ -183,7 +183,12 @@ export const surveyApi = {
   get: async (surveyId: string) => {
     const response = await api.get<{
       success: boolean;
-      data: Survey;
+      data: {
+        survey: Survey;
+        can_respond: boolean;
+        has_responded: boolean;
+        is_closed: boolean;
+      };
     }>(`/surveys/${surveyId}`);
     return response.data.data;
   },

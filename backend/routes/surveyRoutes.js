@@ -110,6 +110,99 @@ router.post('/create', createSurveyValidation, async (req, res) => {
   }
 });
 
+// 설문 목록 조회
+router.get('/',
+  query('page').optional().isInt({ min: 1 }),
+  query('limit').optional().isInt({ min: 1, max: 100 }),
+  query('status').optional().isIn(['draft', 'open', 'closed']),
+  query('tag').optional().trim(),
+  query('sort').optional().isIn(['latest', 'popular', 'closing']),
+  query('search').optional().trim(),
+  async (req, res) => {
+    try {
+      const {
+        page = 1,
+        limit = 20,
+        status,
+        tag,
+        sort = 'latest',
+        search
+      } = req.query;
+
+      // 기본 쿼리 조건
+      const query = {
+        is_deleted: false,
+        is_hidden: false
+      };
+
+      // 상태 필터
+      if (status) {
+        query.status = status;
+      }
+
+      // 태그 필터
+      if (tag) {
+        query.tags = tag;
+      }
+
+      // 검색 (제목, 설명)
+      if (search) {
+        query.$text = { $search: search };
+      }
+
+      // 정렬 옵션
+      let sortOption = {};
+      switch (sort) {
+        case 'popular':
+          sortOption = { 'stats.response_count': -1 };
+          break;
+        case 'closing':
+          query.status = 'open';
+          query['settings.close_at'] = { $exists: true };
+          sortOption = { 'settings.close_at': 1 };
+          break;
+        default: // latest
+          sortOption = { created_at: -1 };
+      }
+
+      // 전체 개수
+      const total = await Survey.countDocuments(query);
+
+      // 페이지네이션
+      const skip = (page - 1) * limit;
+      
+      const surveys = await Survey.find(query)
+        .select('-admin_password_hash -admin_token -admin_token_expires -creator_ip')
+        .sort(sortOption)
+        .skip(skip)
+        .limit(parseInt(limit))
+        .lean();
+
+      res.json({
+        success: true,
+        data: {
+          surveys: surveys.map(survey => ({
+            ...survey,
+            response_count: survey.stats?.response_count || 0
+          })),
+          pagination: {
+            page: parseInt(page),
+            limit: parseInt(limit),
+            total,
+            total_pages: Math.ceil(total / limit)
+          }
+        }
+      });
+    } catch (error) {
+      console.error('설문 목록 조회 오류:', error);
+      res.status(500).json({ 
+        success: false, 
+        error: '설문 목록 조회 중 오류가 발생했습니다' 
+      });
+    }
+  }
+);
+
 // 설문 조회 (공개용)
 router.get('/:surveyId', 
   param('surveyId').isAlphanumeric().isLength({ min: 16, max: 16 }),
@@ -241,6 +334,217 @@ router.patch('/:surveyId/status',
       res.status(500).json({ 
         success: false, 
         error: '설문 상태 변경 중 오류가 발생했습니다' 
+      });
+    }
+  }
+);
+
+// 설문 응답 제출
+router.post('/:surveyId/respond',
+  param('surveyId').isAlphanumeric().isLength({ min: 16, max: 16 }),
+  body('answers').isArray({ min: 1 }).withMessage('답변이 필요합니다'),
+  async (req, res) => {
+    try {
+      const errors = validationResult(req);
+      if (!errors.isEmpty()) {
+        return res.status(400).json({ errors: errors.array() });
+      }
+
+      const { surveyId } = req.params;
+      const { answers } = req.body;
+
+      // 설문 조회
+      const survey = await Survey.findOne({ 
+        id: surveyId,
+        is_deleted: false 
+      });
+
+      if (!survey) {
+        return res.status(404).json({ 
+          success: false, 
+          error: '설문을 찾을 수 없습니다' 
+        });
+      }
+
+      // 응답 가능 여부 확인
+      if (!survey.canReceiveResponse()) {
+        return res.status(400).json({ 
+          success: false, 
+          error: '이 설문은 현재 응답을 받지 않습니다' 
+        });
+      }
+
+      // IP 중복 체크
+      const existingResponse = await Response.findOne({
+        survey_id: surveyId,
+        respondent_ip: req.clientIp,
+        is_deleted: false
+      });
+
+      if (existingResponse) {
+        return res.status(400).json({ 
+          success: false, 
+          error: '이미 이 설문에 응답하셨습니다' 
+        });
+      }
+
+      // 답변 데이터 변환
+      const processedAnswers = answers.map(answer => {
+        const question = survey.questions.find(q => q.id === answer.question_id);
+        if (!question) {
+          throw new Error(`질문을 찾을 수 없습니다: ${answer.question_id}`);
+        }
+
+        const processedAnswer = {
+          question_id: answer.question_id,
+          question_type: question.type,
+          answered_at: new Date()
+        };
+
+        // 타입별 답변 처리
+        switch (question.type) {
+          case 'single_choice':
+            processedAnswer.choice_id = answer.answer;
+            break;
+          case 'multiple_choice':
+            processedAnswer.choice_ids = answer.answer;
+            break;
+          case 'short_text':
+          case 'long_text':
+            processedAnswer.text = answer.answer;
+            break;
+          case 'rating':
+            processedAnswer.rating = answer.answer;
+            break;
+        }
+
+        return processedAnswer;
+      });
+
+      // 응답 생성
+      const response = new Response({
+        survey_id: surveyId,
+        survey_ref: survey._id,
+        respondent_ip: req.clientIp,
+        user_agent: req.get('user-agent'),
+        answers: processedAnswers,
+        started_at: new Date(Date.now() - 60000), // 임시로 1분 전으로 설정
+        submitted_at: new Date()
+      });
+
+      // 품질 점수 계산
+      response.calculateQualityScore();
+
+      await response.save();
+
+      // 설문 통계 업데이트
+      survey.stats.response_count += 1;
+      survey.stats.last_response_at = new Date();
+      if (!survey.first_response_at) {
+        survey.first_response_at = new Date();
+        survey.is_editable = false;
+      }
+      await survey.save();
+
+      res.status(201).json({
+        success: true,
+        message: '설문 응답이 제출되었습니다',
+        data: {
+          response_code: response.response_code
+        }
+      });
+    } catch (error) {
+      console.error('설문 응답 오류:', error);
+      res.status(500).json({ 
+        success: false, 
+        error: '설문 응답 중 오류가 발생했습니다' 
+      });
+    }
+  }
+);
+
+// 설문 결과 조회
+router.get('/:surveyId/results',
+  param('surveyId').isAlphanumeric().isLength({ min: 16, max: 16 }),
+  async (req, res) => {
+    try {
+      const { surveyId } = req.params;
+
+      const survey = await Survey.findOne({ 
+        id: surveyId,
+        is_deleted: false 
+      }).select('-admin_password_hash -admin_token -creator_ip');
+
+      if (!survey) {
+        return res.status(404).json({ 
+          success: false, 
+          error: '설문을 찾을 수 없습니다' 
+        });
+      }
+
+      // 기본 통계 계산
+      const responses = await Response.find({
+        survey_id: surveyId,
+        is_deleted: false,
+        is_complete: true
+      });
+
+      const stats = {
+        total_responses: responses.length,
+        completion_rate: survey.stats.completion_rate,
+        question_stats: {}
+      };
+
+      // 질문별 통계
+      survey.questions.forEach(question => {
+        const questionStats = {
+          type: question.type,
+          response_count: 0
+        };
+
+        if (question.type === 'single_choice' || question.type === 'multiple_choice') {
+          questionStats.options = {};
+          question.properties.choices.forEach(choice => {
+            questionStats.options[choice.id] = 0;
+          });
+        } else if (question.type === 'rating') {
+          questionStats.sum = 0;
+          questionStats.average = 0;
+        }
+
+        responses.forEach(response => {
+          const answer = response.answers.find(a => a.question_id === question.id);
+          if (answer) {
+            questionStats.response_count++;
+            
+            if (question.type === 'single_choice' && answer.choice_id) {
+              questionStats.options[answer.choice_id]++;
+            } else if (question.type === 'multiple_choice' && answer.choice_ids) {
+              answer.choice_ids.forEach(choiceId => {
+                questionStats.options[choiceId]++;
+              });
+            } else if (question.type === 'rating' && answer.rating) {
+              questionStats.sum += answer.rating;
+            }
+          }
+        });
+
+        if (question.type === 'rating' && questionStats.response_count > 0) {
+          questionStats.average = questionStats.sum / questionStats.response_count;
+        }
+
+        stats.question_stats[question.id] = questionStats;
+      });
+
+      res.json({
+        success: true,
+        data: stats
+      });
+    } catch (error) {
+      console.error('설문 결과 조회 오류:', error);
+      res.status(500).json({ 
+        success: false, 
+        error: '설문 결과 조회 중 오류가 발생했습니다' 
       });
     }
   }

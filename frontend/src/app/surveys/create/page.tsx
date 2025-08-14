@@ -13,17 +13,38 @@ export default function CreateSurveyPage() {
     description: '',
     questions: [
       {
-        text: '',
+        title: '',
         type: 'single_choice',
         required: true,
-        options: ['', '']
+        properties: {
+          choices: [
+            { id: '1', label: '' },
+            { id: '2', label: '' }
+          ]
+        },
+        order: 0
       }
     ],
-    creator_nickname: '',
+    author_nickname: '',
     admin_password: '',
     tags: [],
-    start_date: new Date().toISOString().slice(0, 16),
-    end_date: ''
+    welcome_screen: {
+      title: '',
+      description: '',
+      button_text: '시작하기',
+      show_button: true
+    },
+    thankyou_screen: {
+      title: '응답해 주셔서 감사합니다!',
+      description: '',
+      show_response_count: true
+    },
+    settings: {
+      show_progress_bar: true,
+      show_question_number: true,
+      allow_back_navigation: true,
+      autosave_progress: true
+    }
   });
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -58,10 +79,16 @@ export default function CreateSurveyPage() {
       questions: [
         ...formData.questions,
         {
-          text: '',
+          title: '',
           type: 'single_choice',
           required: true,
-          options: ['', '']
+          properties: {
+            choices: [
+              { id: Date.now().toString() + '1', label: '' },
+              { id: Date.now().toString() + '2', label: '' }
+            ]
+          },
+          order: formData.questions.length
         }
       ]
     });
@@ -78,31 +105,51 @@ export default function CreateSurveyPage() {
 
   const updateQuestion = (index: number, field: string, value: any) => {
     const newQuestions = [...formData.questions];
-    newQuestions[index] = { ...newQuestions[index], [field]: value };
+    if (field === 'type') {
+      // 타입 변경 시 properties 초기화
+      newQuestions[index] = {
+        ...newQuestions[index],
+        type: value,
+        properties: value === 'single_choice' || value === 'multiple_choice'
+          ? { choices: [{ id: '1', label: '' }, { id: '2', label: '' }] }
+          : value === 'rating'
+          ? { rating_scale: 5 }
+          : { max_length: value === 'short_text' ? 200 : 1000 }
+      };
+    } else {
+      newQuestions[index] = { ...newQuestions[index], [field]: value };
+    }
     setFormData({ ...formData, questions: newQuestions });
   };
 
   const addOption = (questionIndex: number) => {
     const newQuestions = [...formData.questions];
-    if (!newQuestions[questionIndex].options) {
-      newQuestions[questionIndex].options = [];
+    if (!newQuestions[questionIndex].properties) {
+      newQuestions[questionIndex].properties = { choices: [] };
     }
-    newQuestions[questionIndex].options!.push('');
+    if (!newQuestions[questionIndex].properties!.choices) {
+      newQuestions[questionIndex].properties!.choices = [];
+    }
+    newQuestions[questionIndex].properties!.choices!.push({
+      id: Date.now().toString(),
+      label: ''
+    });
     setFormData({ ...formData, questions: newQuestions });
   };
 
   const updateOption = (questionIndex: number, optionIndex: number, value: string) => {
     const newQuestions = [...formData.questions];
-    if (newQuestions[questionIndex].options) {
-      newQuestions[questionIndex].options![optionIndex] = value;
+    if (newQuestions[questionIndex].properties?.choices) {
+      newQuestions[questionIndex].properties!.choices![optionIndex].label = value;
       setFormData({ ...formData, questions: newQuestions });
     }
   };
 
   const removeOption = (questionIndex: number, optionIndex: number) => {
     const newQuestions = [...formData.questions];
-    if (newQuestions[questionIndex].options && newQuestions[questionIndex].options!.length > 2) {
-      newQuestions[questionIndex].options!.splice(optionIndex, 1);
+    if (newQuestions[questionIndex].properties?.choices && 
+        newQuestions[questionIndex].properties!.choices!.length > 2) {
+      newQuestions[questionIndex].properties!.choices!.splice(optionIndex, 1);
       setFormData({ ...formData, questions: newQuestions });
     }
   };
@@ -152,8 +199,8 @@ export default function CreateSurveyPage() {
               </label>
               <input
                 type="text"
-                value={formData.creator_nickname}
-                onChange={(e) => setFormData({ ...formData, creator_nickname: e.target.value })}
+                value={formData.author_nickname}
+                onChange={(e) => setFormData({ ...formData, author_nickname: e.target.value })}
                 className="w-full px-4 py-2 bg-zinc-900 border border-zinc-800 rounded-lg text-zinc-100 placeholder-zinc-500 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-transparent"
                 placeholder="익명 (선택사항)"
               />
@@ -175,29 +222,22 @@ export default function CreateSurveyPage() {
               />
             </div>
 
-            <div className="grid grid-cols-2 gap-4">
-              <div>
-                <label className="block text-sm font-medium text-zinc-300 mb-2">
-                  시작일시
-                </label>
-                <input
-                  type="datetime-local"
-                  value={formData.start_date}
-                  onChange={(e) => setFormData({ ...formData, start_date: e.target.value })}
-                  className="w-full px-4 py-2 bg-zinc-900 border border-zinc-800 rounded-lg text-zinc-100 placeholder-zinc-500 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-transparent"
-                />
-              </div>
-              <div>
-                <label className="block text-sm font-medium text-zinc-300 mb-2">
-                  종료일시
-                </label>
-                <input
-                  type="datetime-local"
-                  value={formData.end_date}
-                  onChange={(e) => setFormData({ ...formData, end_date: e.target.value })}
-                  className="w-full px-4 py-2 bg-zinc-900 border border-zinc-800 rounded-lg text-zinc-100 placeholder-zinc-500 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-transparent"
-                />
-              </div>
+            <div>
+              <label className="block text-sm font-medium text-zinc-300 mb-2">
+                종료일시 (선택사항)
+              </label>
+              <input
+                type="datetime-local"
+                value={formData.settings?.close_at ? new Date(formData.settings.close_at).toISOString().slice(0, 16) : ''}
+                onChange={(e) => setFormData({ 
+                  ...formData, 
+                  settings: {
+                    ...formData.settings,
+                    close_at: e.target.value ? new Date(e.target.value).toISOString() : undefined
+                  }
+                })}
+                className="w-full px-4 py-2 bg-zinc-900 border border-zinc-800 rounded-lg text-zinc-100 placeholder-zinc-500 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-transparent"
+              />
             </div>
           </div>
         </div>
@@ -235,8 +275,8 @@ export default function CreateSurveyPage() {
                   <input
                     type="text"
                     required
-                    value={question.text}
-                    onChange={(e) => updateQuestion(qIndex, 'text', e.target.value)}
+                    value={question.title}
+                    onChange={(e) => updateQuestion(qIndex, 'title', e.target.value)}
                     className="w-full px-3 py-2 bg-zinc-900 border border-zinc-700 rounded-lg text-zinc-100 placeholder-zinc-500 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-transparent"
                     placeholder="질문을 입력하세요"
                   />
@@ -267,17 +307,17 @@ export default function CreateSurveyPage() {
 
                   {(question.type === 'single_choice' || question.type === 'multiple_choice') && (
                     <div className="space-y-2">
-                      {question.options?.map((option, oIndex) => (
-                        <div key={oIndex} className="flex gap-2">
+                      {question.properties?.choices?.map((choice, oIndex) => (
+                        <div key={choice.id} className="flex gap-2">
                           <input
                             type="text"
                             required
-                            value={option}
+                            value={choice.label}
                             onChange={(e) => updateOption(qIndex, oIndex, e.target.value)}
                             className="flex-1 px-3 py-2 bg-zinc-900 border border-zinc-700 rounded-lg text-zinc-100 placeholder-zinc-500 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-transparent"
                             placeholder={`옵션 ${oIndex + 1}`}
                           />
-                          {question.options!.length > 2 && (
+                          {question.properties!.choices!.length > 2 && (
                             <button
                               type="button"
                               onClick={() => removeOption(qIndex, oIndex)}

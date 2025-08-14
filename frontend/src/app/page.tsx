@@ -12,7 +12,7 @@ interface ContentItem {
   title: string;
   description?: string;
   type: 'debate' | 'survey';
-  status: 'open' | 'closed' | 'scheduled';
+  status: 'open' | 'closed' | 'scheduled' | 'draft';
   created_at: string;
   participantCount: number;
   creator_nickname?: string;
@@ -54,13 +54,13 @@ export default function Home() {
 
         const surveys: ContentItem[] = surveysResult.status === 'fulfilled' && surveysResult.value?.surveys
           ? surveysResult.value.surveys.map(survey => ({
-              id: survey.id || survey._id,
+              id: survey.id || survey._id || '',
               title: survey.title,
               description: survey.description,
               type: 'survey' as const,
-              status: survey.status,
+              status: survey.status === 'draft' ? 'scheduled' : survey.status,
               created_at: survey.created_at,
-              participantCount: survey.response_count || 0,
+              participantCount: survey.stats?.response_count || 0,
               creator_nickname: survey.author_nickname,
               tags: survey.tags
             }))
