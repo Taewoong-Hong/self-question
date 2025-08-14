@@ -31,13 +31,16 @@ export async function GET(
     // Check if user can see results
     const showResults = debate.settings.show_results_before_end || debate.status === 'ended';
     
-    const response = debate.toObject();
+    const response: any = debate.toObject();
     if (!showResults) {
       // Hide vote counts if results are not shown
       response.vote_options = response.vote_options.map((opt: any) => ({
         id: opt.id,
         label: opt.label,
-        order: opt.order
+        order: opt.order,
+        votes: [],
+        vote_count: 0,
+        percentage: 0
       }));
       delete response.stats.total_votes;
       delete response.stats.unique_voters;
