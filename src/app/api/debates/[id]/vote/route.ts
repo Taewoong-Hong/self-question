@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { connectDB } from '@/lib/db';
 import Debate from '@/models/Debate';
+export const dynamic = 'force-dynamic';
 import crypto from 'crypto';
 
 export async function POST(

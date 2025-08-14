@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { connectDB } from '@/lib/db';
 import Survey from '@/models/Survey';
+export const dynamic = 'force-dynamic';
 import Response from '@/models/Response';
 import crypto from 'crypto';
 
