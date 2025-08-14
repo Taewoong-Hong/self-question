@@ -14,7 +14,7 @@ import {
   SurveyListResponse
 } from '@/types/survey';
 
-const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000/api';
+const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || '/api';
 
 const api = axios.create({
   baseURL: API_BASE_URL,
@@ -38,15 +38,12 @@ export const debateApi = {
   // 투표 생성
   create: async (data: CreateDebateDto) => {
     const response = await api.post<{
-      success: boolean;
-      data: {
-        id: string;
-        public_url: string;
-        admin_url: string;
-        status: string;
-      };
+      id: string;
+      public_url: string;
+      admin_url: string;
+      admin_token: string;
     }>('/debates/create', data);
-    return response.data.data;
+    return response.data;
   },
 
   // 투표 목록 조회
@@ -58,31 +55,21 @@ export const debateApi = {
     sort?: string;
     search?: string;
   }) => {
-    const response = await api.get<{
-      success: boolean;
-      data: DebateListResponse;
-    }>('/debates', { params });
-    return response.data.data;
+    const response = await api.get<DebateListResponse>('/debates', { params });
+    return response.data;
   },
 
   // 투표 상세 조회
   get: async (debateId: string) => {
-    const response = await api.get<{
-      success: boolean;
-      data: Debate;
-    }>(`/debates/${debateId}`);
-    return response.data.data;
+    const response = await api.get<Debate>(`/debates/${debateId}`);
+    return response.data;
   },
 
   // 투표하기
   vote: async (debateId: string, data: VoteDto) => {
     const response = await api.post<{
-      success: boolean;
       message: string;
-      data: {
-        results: any;
-        can_vote_again: boolean;
-      };
+      results: any;
     }>(`/debates/${debateId}/vote`, data);
     return response.data;
   },
@@ -90,7 +77,6 @@ export const debateApi = {
   // 의견 작성
   addOpinion: async (debateId: string, data: OpinionDto) => {
     const response = await api.post<{
-      success: boolean;
       message: string;
     }>(`/debates/${debateId}/opinion`, data);
     return response.data;
@@ -99,13 +85,10 @@ export const debateApi = {
   // 관리자 비밀번호 확인
   verifyAdmin: async (debateId: string, password: string) => {
     const response = await api.post<{
-      success: boolean;
       message: string;
-      data: {
-        admin_token: string;
-      };
-    }>(`/debates/${debateId}/verify`, { admin_password: password });
-    return response.data.data;
+      admin_token: string;
+    }>(`/debates/${debateId}/verify`, { password });
+    return response.data;
   },
 
   // 투표 수정 (관리자)
@@ -169,14 +152,12 @@ export const surveyApi = {
   // 설문 생성
   create: async (data: SurveyCreateData) => {
     const response = await api.post<{
-      success: boolean;
-      data: {
-        id: string;
-        public_url: string;
-        admin_url: string;
-      };
+      id: string;
+      public_url: string;
+      admin_url: string;
+      admin_token: string;
     }>('/surveys/create', data);
-    return response.data.data;
+    return response.data;
   },
 
   // 설문 목록 조회
@@ -188,46 +169,29 @@ export const surveyApi = {
     sort?: string;
     search?: string;
   }) => {
-    const response = await api.get<{
-      success: boolean;
-      data: SurveyListResponse;
-    }>('/surveys', { params });
-    return response.data.data;
+    const response = await api.get<SurveyListResponse>('/surveys', { params });
+    return response.data;
   },
 
   // 설문 상세 조회
   get: async (surveyId: string) => {
-    const response = await api.get<{
-      success: boolean;
-      data: {
-        survey: Survey;
-        can_respond: boolean;
-        has_responded: boolean;
-        is_closed: boolean;
-      };
-    }>(`/surveys/${surveyId}`);
-    return response.data.data;
+    const response = await api.get<Survey>(`/surveys/${surveyId}`);
+    return { survey: response.data, can_respond: true, has_responded: false, is_closed: response.data.is_closed || false };
   },
 
   // 설문 응답
   respond: async (surveyId: string, data: SurveyResponseData) => {
     const response = await api.post<{
-      success: boolean;
       message: string;
-      data: {
-        response_code: string;
-      };
+      response_code: string;
     }>(`/surveys/${surveyId}/respond`, data);
     return response.data;
   },
 
   // 설문 결과 조회
   getResults: async (surveyId: string) => {
-    const response = await api.get<{
-      success: boolean;
-      data: SurveyStats;
-    }>(`/surveys/${surveyId}/results`);
-    return response.data.data;
+    const response = await api.get<SurveyStats>(`/surveys/${surveyId}/results`);
+    return response.data;
   },
 
   // CSV 다운로드
@@ -253,12 +217,10 @@ export const surveyApi = {
   // 관리자 비밀번호 확인
   verifyAdmin: async (surveyId: string, password: string) => {
     const response = await api.post<{
-      success: boolean;
       message: string;
-      data: {
-        admin_token: string;
-      };
-    }>(`/surveys/${surveyId}/verify`, { admin_password: password });
+      admin_token: string;
+      expires_at?: Date;
+    }>(`/surveys/${surveyId}/verify`, { password });
     return response.data;
   },
 

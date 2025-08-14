@@ -32,9 +32,6 @@ yarn-error.log*
 .env.test.local
 .env.production.local
 .env.production
-backend/.env
-backend/.env.local
-backend/.env.production
 frontend/.env.local
 frontend/.env.production
 
@@ -58,3 +55,9 @@ firebase-debug.*.log
 
 # OS
 Thumbs.db
+
+# MongoDB Playground files
+playground-*.mongodb.js
+
+# Old backend folder (removed)
+backend/

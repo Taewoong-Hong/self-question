@@ -1,6 +1,6 @@
 # Self Question - 투표 & 설문 플랫폼
 
-Firebase Functions와 Firestore를 사용한 회원가입 없는 투표 및 설문 서비스입니다.
+Next.js와 MongoDB를 사용한 회원가입 없는 투표 및 설문 서비스입니다.
 
 ## 주요 기능
 
@@ -24,113 +24,96 @@ Firebase Functions와 Firestore를 사용한 회원가입 없는 투표 및 설�
 
 ## 기술 스택
 
-### Backend
-- Firebase Functions
-- Express.js
-- Firestore
-- TypeScript
+- **Frontend & Backend**: Next.js 14 (App Router)
+- **Database**: MongoDB with Mongoose
+- **Authentication**: JWT, bcrypt
+- **Styling**: Tailwind CSS
+- **Language**: TypeScript
+- **Charts**: Recharts
 
-### Frontend
-- Next.js 14
-- TypeScript
-- Tailwind CSS
-- Axios
+## 설치 및 실행
 
-## Firebase 프로젝트 설정
+### 사전 요구사항
+- Node.js 18+
+- MongoDB 연결 (로컬 또는 MongoDB Atlas)
 
-### 1. Firebase 프로젝트 생성
-1. [Firebase Console](https://console.firebase.google.com)에서 새 프로젝트 생성
-2. Firestore Database 활성화 (asia-northeast3 리전 권장)
-3. Firebase Functions 활성화
+### 설치
 
-### 2. Firebase CLI 설치
 ```bash
-npm install -g firebase-tools
-firebase login
-```
+# 프로젝트 클론
+git clone https://github.com/yourusername/selfquestion.git
+cd selfquestion/frontend
 
-### 3. 프로젝트 연결
-```bash
-# 프로젝트 루트에서
-firebase use --add
-# 생성한 프로젝트 선택
-```
-
-### 4. `.firebaserc` 파일 수정
-```json
-{
-  "projects": {
-    "default": "your-project-id"
-  }
-}
-```
-
-### 5. 환경 변수 설정
-```bash
-# Firebase Functions 환경 변수 설정
-firebase functions:config:set mongodb.uri="your-mongodb-uri" # Firestore 사용시 불필요
-```
-
-## 로컬 개발
-
-### Backend (Firebase Functions Emulator)
-```bash
-cd backend
+# 의존성 설치
 npm install
-firebase emulators:start --only functions
+
+# 환경변수 설정
+cp .env.local.example .env.local
+# .env.local 파일을 열어 MongoDB URI와 시크릿 키 설정
 ```
 
-### Frontend
+### 환경변수 설정
+
+`.env.local` 파일에 다음 변수들을 설정하세요:
+
+```env
+# MongoDB 연결
+MONGODB_URI=mongodb://localhost:27017/selfquestion
+
+# 보안
+JWT_SECRET=your-super-secret-jwt-key
+IP_SALT=your-ip-salt-for-hashing
+
+# 애플리케이션
+NEXT_PUBLIC_BASE_URL=http://localhost:3001
+```
+
+### 개발 서버 실행
+
 ```bash
-cd frontend
-npm install
 npm run dev
+# http://localhost:3001 에서 접속
+```
+
+### 프로덕션 빌드
+
+```bash
+npm run build
+npm start
 ```
 
 ## 배포
 
-### 1. Frontend 빌드
-```bash
-cd frontend
-npm run build
-```
+### Vercel 배포 (권장)
 
-### 2. Firebase 배포
-```bash
-# 프로젝트 루트에서
-firebase deploy
-```
+1. [Vercel](https://vercel.com)에 가입 및 GitHub 연동
+2. 프로젝트 import
+3. 환경변수 설정
+4. 배포
 
-개별 배포:
-```bash
-# Functions만 배포
-firebase deploy --only functions
+### 기타 플랫폼
 
-# Hosting만 배포
-firebase deploy --only hosting
-```
+- Netlify
+- Railway
+- Heroku
+- AWS Amplify
 
 ## 프로젝트 구조
 
 ```
 selfquestion/
-├── backend/                 # Firebase Functions
-│   ├── index.js            # Functions 진입점
-│   ├── config/             # 설정 파일
-│   ├── models/             # Firestore 모델
-│   ├── routes/             # API 라우트
-│   ├── middleware/         # Express 미들웨어
-│   └── utils/              # 유틸리티 함수
-├── frontend/               # Next.js 앱
+├── frontend/
 │   ├── src/
-│   │   ├── pages/         # 페이지 컴포넌트
-│   │   ├── components/    # 재사용 컴포넌트
-│   │   ├── lib/           # API 클라이언트
-│   │   ├── types/         # TypeScript 타입
-│   │   └── styles/        # 글로벌 스타일
-│   └── out/               # 정적 빌드 결과
-├── firebase.json          # Firebase 설정
-└── .firebaserc           # Firebase 프로젝트 설정
+│   │   ├── app/           # Next.js App Router
+│   │   │   ├── api/       # API Routes
+│   │   │   ├── debates/   # 투표 페이지
+│   │   │   └── surveys/   # 설문 페이지
+│   │   ├── components/    # React 컴포넌트
+│   │   ├── lib/          # 유틸리티 함수
+│   │   ├── models/       # Mongoose 모델
+│   │   └── types/        # TypeScript 타입
+│   └── public/           # 정적 파일
+└── README.md
 ```
 
 ## API 엔드포인트
@@ -156,15 +139,19 @@ selfquestion/
 - `PUT /api/surveys/:id/status` - 설문 열기/닫기 (관리자)
 - `DELETE /api/surveys/:id` - 설문 삭제 (관리자)
 
-## 주의사항
+## 보안 고려사항
 
-1. **Firestore 인덱스**: 정렬/필터링을 위해 복합 인덱스가 필요할 수 있습니다. 에러 메시지에서 제공하는 링크를 통해 생성하세요.
+- 비밀번호는 bcrypt로 해싱
+- IP는 SHA-256으로 해싱하여 저장
+- JWT 토큰으로 관리자 인증
+- Rate limiting으로 DDoS 방지
+- 입력값 검증 및 XSS 방지
 
-2. **CORS 설정**: Firebase Functions에서 CORS가 자동 처리되지만, 필요시 `cors` 옵션을 조정하세요.
+## 개발 팁
 
-3. **Rate Limiting**: DDoS 방지를 위해 rate limiting이 적용되어 있습니다.
-
-4. **보안 규칙**: Firestore 보안 규칙을 프로덕션 환경에 맞게 설정하세요.
+1. **MongoDB 연결**: MongoDB Compass를 사용하여 데이터베이스를 시각적으로 관리할 수 있습니다.
+2. **API 테스트**: Postman이나 Thunder Client를 사용하여 API 엔드포인트를 테스트하세요.
+3. **타입 안정성**: TypeScript를 활용하여 컴파일 타임에 오류를 발견할 수 있습니다.
 
 ## 라이선스
 
