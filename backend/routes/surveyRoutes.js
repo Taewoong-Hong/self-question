@@ -1,5 +1,6 @@
 const express = require('express');
 const router = express.Router();
+const crypto = require('crypto');
 const { body, param, query, validationResult } = require('express-validator');
 const Survey = require('../models/Survey');
 const Response = require('../models/Response');
@@ -252,6 +253,57 @@ router.get('/:surveyId',
   }
 );
 
+// 관리자 비밀번호 확인
+router.post('/:surveyId/verify',
+  param('surveyId').isAlphanumeric().isLength({ min: 16, max: 16 }),
+  body('admin_password').notEmpty().withMessage('비밀번호를 입력해주세요'),
+  async (req, res) => {
+    try {
+      const { surveyId } = req.params;
+      const { admin_password } = req.body;
+
+      const survey = await Survey.findOne({ 
+        id: surveyId,
+        is_deleted: false 
+      });
+
+      if (!survey) {
+        return res.status(404).json({ 
+          success: false, 
+          error: '설문을 찾을 수 없습니다' 
+        });
+      }
+
+      // 비밀번호 확인
+      const isValid = await survey.validatePassword(admin_password);
+      if (!isValid) {
+        return res.status(401).json({ 
+          success: false, 
+          error: '비밀번호가 올바르지 않습니다' 
+        });
+      }
+
+      // 관리자 토큰 생성
+      const adminToken = survey.generateAdminToken();
+      await survey.save();
+
+      res.json({
+        success: true,
+        message: '인증되었습니다',
+        data: {
+          admin_token: adminToken
+        }
+      });
+    } catch (error) {
+      console.error('관리자 인증 오류:', error);
+      res.status(500).json({ 
+        success: false, 
+        error: '인증 중 오류가 발생했습니다' 
+      });
+    }
+  }
+);
+
 // 설문 수정
 router.put('/:surveyId', 
   authenticateAdmin,
@@ -421,15 +473,23 @@ router.post('/:surveyId/respond',
         return processedAnswer;
       });
 
+      // IP 해시 생성
+      const ipHash = crypto.createHash('sha256').update(req.clientIp).digest('hex');
+      
       // 응답 생성
+      const startTime = new Date(Date.now() - 60000); // 임시로 1분 전으로 설정
+      const submitTime = new Date();
+      
       const response = new Response({
         survey_id: surveyId,
         survey_ref: survey._id,
         respondent_ip: req.clientIp,
+        respondent_ip_hash: ipHash,
         user_agent: req.get('user-agent'),
         answers: processedAnswers,
-        started_at: new Date(Date.now() - 60000), // 임시로 1분 전으로 설정
-        submitted_at: new Date()
+        started_at: startTime,
+        submitted_at: submitTime,
+        completion_time: Math.floor((submitTime - startTime) / 1000) // 초 단위
       });
 
       // 품질 점수 계산
@@ -510,6 +570,8 @@ router.get('/:surveyId/results',
         } else if (question.type === 'rating') {
           questionStats.sum = 0;
           questionStats.average = 0;
+        } else if (question.type === 'short_text' || question.type === 'long_text') {
+          questionStats.responses = [];
         }
 
         responses.forEach(response => {
@@ -525,6 +587,8 @@ router.get('/:surveyId/results',
               });
             } else if (question.type === 'rating' && answer.rating) {
               questionStats.sum += answer.rating;
+            } else if ((question.type === 'short_text' || question.type === 'long_text') && answer.text) {
+              questionStats.responses.push(answer.text);
             }
           }
         });

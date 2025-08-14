@@ -407,4 +407,19 @@ debateSchema.methods.validatePassword = async function(password) {
   return await bcrypt.compare(password, this.admin_password_hash);
 };
 
+// JWT 토큰 생성
+const jwt = require('jsonwebtoken');
+
+debateSchema.methods.generateAdminToken = function() {
+  const payload = {
+    debate_id: this.id,
+    type: 'debate_admin',
+    created_at: new Date()
+  };
+  
+  return jwt.sign(payload, process.env.JWT_SECRET || 'your-secret-key', {
+    expiresIn: '24h'
+  });
+};
+
 module.exports = mongoose.model('Debate', debateSchema);

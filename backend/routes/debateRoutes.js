@@ -303,6 +303,60 @@ router.post('/:debateId/opinion', async (req, res) => {
   }
 });
 
+// 관리자 비밀번호 확인
+router.post('/:debateId/verify', async (req, res) => {
+  try {
+    const { debateId } = req.params;
+    const { admin_password } = req.body;
+
+    if (!admin_password) {
+      return res.status(400).json({ 
+        success: false, 
+        error: '비밀번호를 입력해주세요' 
+      });
+    }
+
+    const debate = await Debate.findOne({ 
+      id: debateId,
+      is_deleted: false 
+    });
+
+    if (!debate) {
+      return res.status(404).json({ 
+        success: false, 
+        error: '투표를 찾을 수 없습니다' 
+      });
+    }
+
+    // 비밀번호 확인
+    const isValid = await debate.validatePassword(admin_password);
+    if (!isValid) {
+      return res.status(401).json({ 
+        success: false, 
+        error: '비밀번호가 올바르지 않습니다' 
+      });
+    }
+
+    // 관리자 토큰 생성
+    const adminToken = debate.generateAdminToken();
+    await debate.save();
+
+    res.json({
+      success: true,
+      message: '인증되었습니다',
+      data: {
+        admin_token: adminToken
+      }
+    });
+  } catch (error) {
+    console.error('관리자 인증 오류:', error);
+    res.status(500).json({ 
+      success: false, 
+      error: '인증 중 오류가 발생했습니다' 
+    });
+  }
+});
+
 // 투표 목록 조회 (게시판)
 router.get('/', async (req, res) => {
   try {
@@ -427,6 +481,42 @@ router.get('/', async (req, res) => {
   }
 });
 
+// 투표 상태 변경 (관리자)
+router.put('/:debateId/status', authenticateAdmin, async (req, res) => {
+  try {
+    const { status } = req.body;
+    const debate = await Debate.findOne({ 
+      id: req.params.debateId,
+      is_deleted: false 
+    });
+
+    if (!debate) {
+      return res.status(404).json({
+        success: false,
+        error: '투표를 찾을 수 없습니다'
+      });
+    }
+
+    // 상태 변경
+    debate.status = status;
+    await debate.save();
+
+    res.json({
+      success: true,
+      message: '투표 상태가 변경되었습니다',
+      data: {
+        status: debate.status
+      }
+    });
+  } catch (error) {
+    console.error('투표 상태 변경 오류:', error);
+    res.status(500).json({
+      success: false,
+      error: '투표 상태 변경 중 오류가 발생했습니다'
+    });
+  }
+});
+
 // 투표 수정 (관리자)
 router.put('/:debateId', authenticateAdmin, async (req, res) => {
   try {
@@ -528,6 +618,60 @@ router.delete('/:debateId', authenticateAdmin, async (req, res) => {
     res.status(500).json({
       success: false,
       error: '투표 삭제 중 오류가 발생했습니다'
+    });
+  }
+});
+
+// CSV 내보내기 (관리자)
+router.get('/:debateId/export', authenticateAdmin, async (req, res) => {
+  try {
+    const debate = await Debate.findOne({ 
+      id: req.params.debateId,
+      is_deleted: false 
+    });
+
+    if (!debate) {
+      return res.status(404).json({
+        success: false,
+        error: '투표를 찾을 수 없습니다'
+      });
+    }
+
+    // CSV 데이터 생성
+    let csvContent = 'Type,Option,Voter,Timestamp,IsAnonymous\n';
+    
+    // 투표 데이터
+    debate.vote_options.forEach(option => {
+      option.votes.forEach(vote => {
+        const voter = vote.is_anonymous ? 'Anonymous' : (vote.user_nickname || 'Unknown');
+        csvContent += `Vote,"${option.label}","${voter}","${vote.voted_at}",${vote.is_anonymous}\n`;
+      });
+    });
+
+    // 의견 데이터 추가
+    csvContent += '\nType,Author,SelectedOption,Content,Timestamp,IsAnonymous\n';
+    debate.opinions.filter(op => !op.is_deleted).forEach(opinion => {
+      const author = opinion.is_anonymous ? 'Anonymous' : opinion.author_nickname;
+      const selectedOption = debate.vote_options.find(opt => opt.id === opinion.selected_option_id)?.label || 'None';
+      csvContent += `Opinion,"${author}","${selectedOption}","${opinion.content.replace(/"/g, '""')}","${opinion.created_at}",${opinion.is_anonymous}\n`;
+    });
+
+    // 통계 데이터 추가
+    csvContent += '\n\nStatistics\n';
+    csvContent += `Total Votes,${debate.stats.total_votes}\n`;
+    csvContent += `Unique Voters,${debate.stats.unique_voters}\n`;
+    csvContent += `Total Opinions,${debate.stats.opinion_count}\n`;
+    csvContent += `View Count,${debate.stats.view_count}\n`;
+
+    // CSV 파일 전송
+    res.setHeader('Content-Type', 'text/csv; charset=utf-8');
+    res.setHeader('Content-Disposition', `attachment; filename="debate_${debate.id}_results.csv"`);
+    res.send('\ufeff' + csvContent); // BOM 추가 for Excel
+  } catch (error) {
+    console.error('CSV 내보내기 오류:', error);
+    res.status(500).json({
+      success: false,
+      error: 'CSV 내보내기 중 오류가 발생했습니다'
     });
   }
 });

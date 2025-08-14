@@ -121,13 +121,13 @@ export default function SurveyDetailPage() {
           ← 설문 목록으로
         </Link>
         
-        <div className="flex items-start justify-between">
+        <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-4">
           <div>
-            <h1 className="text-3xl font-bold mb-2">{survey.title}</h1>
+            <h1 className="text-xl sm:text-2xl lg:text-3xl font-bold mb-2">{survey.title}</h1>
             {survey.description && (
-              <p className="text-zinc-400 text-lg">{survey.description}</p>
+              <p className="text-zinc-400 text-sm sm:text-base lg:text-lg">{survey.description}</p>
             )}
-            <div className="flex items-center gap-4 mt-4 text-sm text-zinc-500">
+            <div className="flex flex-wrap items-center gap-2 sm:gap-4 mt-3 text-xs sm:text-sm text-zinc-500">
               <span>작성자: {survey.author_nickname || '익명'}</span>
               <span>•</span>
               <span>
@@ -139,7 +139,7 @@ export default function SurveyDetailPage() {
               <span>•</span>
               <span className={`inline-flex items-center px-2.5 py-0.5 rounded text-xs font-medium ${
                 survey.status === 'open' 
-                  ? 'bg-emerald-100/10 text-emerald-400' 
+                  ? 'bg-surbate/10 text-surbate' 
                   : survey.status === 'closed'
                   ? 'bg-red-100/10 text-red-400'
                   : 'bg-yellow-100/10 text-yellow-400'
@@ -163,18 +163,20 @@ export default function SurveyDetailPage() {
             )}
           </div>
           
-          <div className="flex gap-2">
+          <div className="flex gap-2 self-start">
             <Link
               href={`/surveys/${surveyId}/results`}
-              className="px-4 py-2 bg-zinc-800 text-zinc-100 rounded-lg hover:bg-zinc-700 transition-colors"
+              className="px-3 py-1.5 sm:px-4 sm:py-2 text-sm bg-zinc-800 text-zinc-100 rounded-lg hover:bg-zinc-700 transition-colors"
             >
-              결과 보기
+              <span className="sm:hidden">결과</span>
+              <span className="hidden sm:inline">결과 보기</span>
             </Link>
             <Link
               href={`/surveys/${surveyId}/admin`}
-              className="px-4 py-2 bg-zinc-800 text-zinc-100 rounded-lg hover:bg-zinc-700 transition-colors"
+              className="px-3 py-1.5 sm:px-4 sm:py-2 text-sm bg-zinc-800 text-zinc-100 rounded-lg hover:bg-zinc-700 transition-colors"
             >
-              작성자 페이지
+              <span className="sm:hidden">관리</span>
+              <span className="hidden sm:inline">작성자 페이지</span>
             </Link>
           </div>
         </div>
@@ -184,9 +186,9 @@ export default function SurveyDetailPage() {
       {survey.status === 'open' && !hasResponded ? (
         <form onSubmit={handleSubmit} className="space-y-6">
           {survey.questions.map((question, index) => (
-            <div key={question.id} className="bg-zinc-900/50 backdrop-blur-sm border border-zinc-800 rounded-xl p-6">
-              <div className="mb-4">
-                <h3 className="text-lg font-medium mb-1">
+            <div key={question.id} className="bg-zinc-900/50 backdrop-blur-sm border border-zinc-800 rounded-xl p-4 sm:p-6">
+              <div className="mb-3 sm:mb-4">
+                <h3 className="text-base sm:text-lg font-medium mb-1">
                   {index + 1}. {question.title}
                   {question.required && <span className="text-red-400 ml-1">*</span>}
                 </h3>
@@ -196,16 +198,16 @@ export default function SurveyDetailPage() {
               {question.type === 'single_choice' && (
                 <div className="space-y-2">
                   {question.properties?.choices?.map((choice) => (
-                    <label key={choice.id} className="flex items-center gap-3 p-3 rounded-lg hover:bg-zinc-800/50 cursor-pointer">
+                    <label key={choice.id} className="flex items-center gap-2 sm:gap-3 p-2.5 sm:p-3 rounded-lg hover:bg-zinc-800/50 cursor-pointer">
                       <input
                         type="radio"
                         name={`question-${question.id}`}
                         value={choice.id}
                         checked={responses[question.id] === choice.id}
                         onChange={(e) => handleResponseChange(question.id, e.target.value)}
-                        className="text-emerald-500 bg-zinc-900 border-zinc-700 focus:ring-emerald-500"
+                        className="text-brand-500 bg-zinc-900 border-zinc-700 focus:ring-brand-500"
                       />
-                      <span>{choice.label}</span>
+                      <span className="text-sm sm:text-base">{choice.label}</span>
                     </label>
                   ))}
                 </div>
@@ -215,7 +217,7 @@ export default function SurveyDetailPage() {
               {question.type === 'multiple_choice' && (
                 <div className="space-y-2">
                   {question.properties?.choices?.map((choice) => (
-                    <label key={choice.id} className="flex items-center gap-3 p-3 rounded-lg hover:bg-zinc-800/50 cursor-pointer">
+                    <label key={choice.id} className="flex items-center gap-2 sm:gap-3 p-2.5 sm:p-3 rounded-lg hover:bg-zinc-800/50 cursor-pointer">
                       <input
                         type="checkbox"
                         value={choice.id}
@@ -228,9 +230,9 @@ export default function SurveyDetailPage() {
                             handleResponseChange(question.id, currentValues.filter((v: string) => v !== choice.id));
                           }
                         }}
-                        className="rounded text-emerald-500 bg-zinc-900 border-zinc-700 focus:ring-emerald-500"
+                        className="rounded text-brand-500 bg-zinc-900 border-zinc-700 focus:ring-brand-500"
                       />
-                      <span>{choice.label}</span>
+                      <span className="text-sm sm:text-base">{choice.label}</span>
                     </label>
                   ))}
                 </div>
@@ -242,7 +244,7 @@ export default function SurveyDetailPage() {
                   type="text"
                   value={responses[question.id] || ''}
                   onChange={(e) => handleResponseChange(question.id, e.target.value)}
-                  className="w-full px-4 py-2 bg-zinc-900 border border-zinc-800 rounded-lg text-zinc-100 placeholder-zinc-500 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-transparent"
+                  className="w-full px-3 py-1.5 sm:px-4 sm:py-2 text-sm sm:text-base bg-zinc-900 border border-zinc-800 rounded-lg text-zinc-100 placeholder-zinc-500 focus:outline-none focus:ring-2 focus:ring-brand-500 focus:border-transparent"
                   placeholder="답변을 입력하세요"
                   maxLength={question.properties?.max_length || question.validations?.max_characters}
                 />
@@ -253,7 +255,7 @@ export default function SurveyDetailPage() {
                 <textarea
                   value={responses[question.id] || ''}
                   onChange={(e) => handleResponseChange(question.id, e.target.value)}
-                  className="w-full px-4 py-2 bg-zinc-900 border border-zinc-800 rounded-lg text-zinc-100 placeholder-zinc-500 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-transparent"
+                  className="w-full px-3 py-1.5 sm:px-4 sm:py-2 text-sm sm:text-base bg-zinc-900 border border-zinc-800 rounded-lg text-zinc-100 placeholder-zinc-500 focus:outline-none focus:ring-2 focus:ring-brand-500 focus:border-transparent"
                   rows={4}
                   placeholder="답변을 입력하세요"
                   maxLength={question.properties?.max_length || question.validations?.max_characters}
@@ -268,9 +270,9 @@ export default function SurveyDetailPage() {
                       key={rating}
                       type="button"
                       onClick={() => handleResponseChange(question.id, rating)}
-                      className={`w-12 h-12 rounded-lg border-2 transition-all ${
+                      className={`w-10 h-10 sm:w-12 sm:h-12 text-sm sm:text-base rounded-lg border-2 transition-all ${
                         responses[question.id] === rating
-                          ? 'bg-emerald-500 border-emerald-500 text-white'
+                          ? 'bg-brand-500 border-brand-500 text-white'
                           : 'bg-zinc-900 border-zinc-700 text-zinc-400 hover:border-zinc-600'
                       }`}
                     >
@@ -286,22 +288,22 @@ export default function SurveyDetailPage() {
             <button
               type="submit"
               disabled={submitting}
-              className="px-6 py-3 bg-emerald-500 text-white rounded-lg hover:bg-emerald-600 transition-colors disabled:opacity-50"
+              className="px-4 py-2 sm:px-6 sm:py-3 text-sm sm:text-base bg-gradient-to-r from-surbate to-brand-600 text-zinc-900 font-semibold rounded-lg hover:from-brand-400 hover:to-brand-600 shadow-sm hover:shadow-lg hover:shadow-surbate/20 transform hover:-translate-y-0.5 transition-all duration-200 disabled:opacity-50 disabled:transform-none disabled:shadow-none"
             >
               {submitting ? '제출 중...' : '설문 제출'}
             </button>
             <button
               type="button"
               onClick={() => router.back()}
-              className="px-6 py-3 bg-zinc-800 text-zinc-100 rounded-lg hover:bg-zinc-700 transition-colors"
+              className="px-4 py-2 sm:px-6 sm:py-3 text-sm sm:text-base bg-zinc-800 text-zinc-100 rounded-lg hover:bg-zinc-700 transition-colors"
             >
               취소
             </button>
           </div>
         </form>
       ) : (
-        <div className="bg-zinc-900/50 backdrop-blur-sm border border-zinc-800 rounded-xl p-6">
-          <p className="text-center text-zinc-400">
+        <div className="bg-zinc-900/50 backdrop-blur-sm border border-zinc-800 rounded-xl p-4 sm:p-6">
+          <p className="text-center text-sm sm:text-base text-zinc-400">
             {hasResponded ? '이미 설문에 참여하셨습니다.' : 
              survey.status === 'closed' ? '이 설문은 종료되었습니다.' :
              '이 설문은 아직 시작되지 않았습니다.'}

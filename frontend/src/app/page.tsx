@@ -128,7 +128,7 @@ export default function Home() {
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
             placeholder="검색..."
-            className="w-full pl-10 pr-4 py-2 bg-zinc-900 border border-zinc-800 rounded-lg text-zinc-100 placeholder-zinc-500 focus:outline-none focus:ring-2 ring-surbate focus:border-transparent"
+            className="w-full pl-10 pr-4 py-2 bg-zinc-900 border border-zinc-800 rounded-lg text-zinc-100 placeholder-zinc-500 focus:outline-none focus:ring-2 focus:ring-brand-500 focus:border-transparent"
           />
         </div>
         
@@ -215,13 +215,13 @@ export default function Home() {
                       <span className={`inline-flex items-center px-2.5 py-0.5 rounded text-xs font-medium ${
                         item.type === 'debate' 
                           ? 'bg-blue-100/10 text-blue-400' 
-                          : 'bg-green-100/10 text-green-400'
+                          : 'bg-brand-100/10 text-brand-400'
                       }`}>
                         {item.type === 'debate' ? '📊 투표' : '📝 설문'}
                       </span>
                       <span className={`inline-flex items-center px-2.5 py-0.5 rounded text-xs font-medium ${
                         item.status === 'open' 
-                          ? 'bg-surbate/10 text-surbate' 
+                          ? 'bg-brand-100/10 text-brand-400' 
                           : item.status === 'closed'
                           ? 'bg-red-100/10 text-red-400'
                           : 'bg-yellow-100/10 text-yellow-400'
@@ -291,7 +291,7 @@ export default function Home() {
             <div className="flex gap-4">
               <Link
                 href="/debates/create"
-                className="px-6 py-3 bg-surbate text-zinc-900 font-semibold rounded-lg hover:opacity-90 transition-opacity"
+                className="px-6 py-3 bg-gradient-to-r from-surbate to-brand-600 text-zinc-900 font-semibold rounded-lg hover:from-brand-400 hover:to-brand-600 shadow-sm hover:shadow-lg hover:shadow-surbate/20 transform hover:-translate-y-0.5 transition-all duration-200"
               >
                 투표 만들기
               </Link>

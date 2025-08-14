@@ -7,6 +7,7 @@ import { debateApi } from '@/lib/api';
 import { Debate } from '@/types/debate';
 import { formatDistanceToNow } from 'date-fns';
 import { ko } from 'date-fns/locale';
+import QRCode from 'qrcode';
 
 export default function DebateAdminPage() {
   const params = useParams();
@@ -18,16 +19,49 @@ export default function DebateAdminPage() {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [password, setPassword] = useState('');
   const [verifying, setVerifying] = useState(false);
+  const [adminToken, setAdminToken] = useState<string | null>(null);
+  const [qrCodeUrl, setQrCodeUrl] = useState<string>('');
 
   useEffect(() => {
+    // localStorage에서 토큰 확인
+    const savedToken = localStorage.getItem(`debate_admin_${debateId}`);
+    if (savedToken) {
+      setAdminToken(savedToken);
+      setIsAuthenticated(true);
+    }
+    
     checkAuthStatus();
+    
+    // QR 코드 생성
+    generateQRCode();
   }, [debateId]);
+
+  const generateQRCode = async () => {
+    try {
+      const debateUrl = `${process.env.NEXT_PUBLIC_APP_URL || window.location.origin}/debates/${debateId}`;
+      const qrDataUrl = await QRCode.toDataURL(debateUrl, {
+        width: 200,
+        margin: 2,
+        color: {
+          dark: '#000000',
+          light: '#FFFFFF',
+        },
+      });
+      setQrCodeUrl(qrDataUrl);
+    } catch (error) {
+      console.error('QR 코드 생성 실패:', error);
+    }
+  };
 
   const checkAuthStatus = async () => {
     try {
       const data = await debateApi.get(debateId);
       setDebate(data);
-      setIsAuthenticated(data.isAdmin || false);
+      // localStorage에 토큰이 있으면 인증 상태 유지
+      const savedToken = localStorage.getItem(`debate_admin_${debateId}`);
+      if (savedToken) {
+        setIsAuthenticated(true);
+      }
     } catch (error) {
       console.error('투표 조회 실패:', error);
     } finally {
@@ -40,10 +74,19 @@ export default function DebateAdminPage() {
     
     try {
       setVerifying(true);
-      await debateApi.verifyAdmin(debateId, password);
-      setIsAuthenticated(true);
-      await checkAuthStatus();
+      const response = await debateApi.verifyAdmin(debateId, password);
+      
+      // 토큰을 localStorage에 저장
+      if (response.admin_token) {
+        localStorage.setItem(`debate_admin_${debateId}`, response.admin_token);
+        setAdminToken(response.admin_token);
+        setIsAuthenticated(true);
+        // 토론 데이터 다시 불러오기
+        const data = await debateApi.get(debateId);
+        setDebate(data);
+      }
     } catch (error) {
+      console.error('인증 오류:', error);
       alert('비밀번호가 올바르지 않습니다.');
     } finally {
       setVerifying(false);
@@ -51,13 +94,13 @@ export default function DebateAdminPage() {
   };
 
   const handleStatusToggle = async () => {
-    if (!debate) return;
+    if (!debate || !adminToken) return;
     
     try {
-      const newStatus = debate.status === 'open' ? 'closed' : 'open';
-      await debateApi.updateStatus(debateId, newStatus);
+      const newStatus = debate.status === 'active' ? 'ended' : 'active';
+      await debateApi.updateStatus(debateId, newStatus, adminToken);
       setDebate({ ...debate, status: newStatus });
-      alert(`투표가 ${newStatus === 'open' ? '열렸습니다' : '닫혔습니다'}.`);
+      alert(`투표가 ${newStatus === 'active' ? '시작되었습니다' : '종료되었습니다'}.`);
     } catch (error) {
       alert('상태 변경에 실패했습니다.');
     }
@@ -68,8 +111,13 @@ export default function DebateAdminPage() {
       return;
     }
 
+    if (!adminToken) {
+      alert('관리자 인증이 필요합니다.');
+      return;
+    }
+
     try {
-      await debateApi.delete(debateId);
+      await debateApi.delete(debateId, adminToken);
       alert('투표가 삭제되었습니다.');
       router.push('/debates');
     } catch (error) {
@@ -79,7 +127,14 @@ export default function DebateAdminPage() {
 
   const handleExportCSV = async () => {
     try {
-      await debateApi.exportCSV(debateId);
+      // localStorage에서 토큰 확인
+      const adminToken = localStorage.getItem(`debate_admin_${debateId}`);
+      if (!adminToken) {
+        alert('관리자 인증이 필요합니다. 작성자 페이지에서 먼저 로그인해주세요.');
+        return;
+      }
+      
+      await debateApi.exportCSV(debateId, adminToken);
       alert('CSV 다운로드가 시작됩니다.');
     } catch (error) {
       alert('CSV 다운로드에 실패했습니다.');
@@ -117,7 +172,7 @@ export default function DebateAdminPage() {
                 type="password"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
-                className="w-full px-4 py-2 bg-zinc-900 border border-zinc-800 rounded-lg text-zinc-100 placeholder-zinc-500 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-transparent"
+                className="w-full px-4 py-2 bg-zinc-900 border border-zinc-800 rounded-lg text-zinc-100 placeholder-zinc-500 focus:outline-none focus:ring-2 focus:ring-surbate focus:border-transparent"
                 placeholder="비밀번호를 입력하세요"
                 required
                 autoFocus
@@ -126,7 +181,7 @@ export default function DebateAdminPage() {
             <button
               type="submit"
               disabled={verifying}
-              className="w-full px-4 py-2 bg-emerald-500 text-white rounded-lg hover:bg-emerald-600 transition-colors disabled:opacity-50"
+              className="w-full px-4 py-2 bg-gradient-to-r from-surbate to-brand-600 text-zinc-900 font-semibold rounded-lg hover:from-brand-400 hover:to-brand-600 shadow-sm hover:shadow-lg hover:shadow-surbate/20 transform hover:-translate-y-0.5 transition-all duration-200 disabled:opacity-50 disabled:transform-none disabled:shadow-none"
             >
               {verifying ? '확인 중...' : '확인'}
             </button>
@@ -142,9 +197,11 @@ export default function DebateAdminPage() {
     );
   }
 
-  const totalVotes = debate.agreeCount + debate.disagreeCount;
-  const agreePercentage = totalVotes > 0 ? (debate.agreeCount / totalVotes) * 100 : 0;
-  const disagreePercentage = totalVotes > 0 ? (debate.disagreeCount / totalVotes) * 100 : 0;
+  const totalVotes = debate.stats.total_votes;
+  const agreeVotes = debate.vote_options.find(opt => opt.label === '찬성')?.vote_count || 0;
+  const disagreeVotes = debate.vote_options.find(opt => opt.label === '반대')?.vote_count || 0;
+  const agreePercentage = totalVotes > 0 ? (agreeVotes / totalVotes) * 100 : 0;
+  const disagreePercentage = totalVotes > 0 ? (disagreeVotes / totalVotes) * 100 : 0;
 
   // 인증된 경우 관리자 페이지 표시
   return (
@@ -157,9 +214,9 @@ export default function DebateAdminPage() {
         
         <div className="flex items-start justify-between">
           <div>
-            <h1 className="text-3xl font-bold mb-2">{debate.title} - 관리</h1>
-            <div className="flex items-center gap-4 mt-4 text-sm text-zinc-500">
-              <span>작성자: {debate.creator_nickname || '익명'}</span>
+            <h1 className="text-xl sm:text-2xl lg:text-3xl font-bold mb-2">{debate.title} - 관리</h1>
+            <div className="flex flex-wrap items-center gap-2 sm:gap-4 mt-3 text-xs sm:text-sm text-zinc-500">
+              <span>작성자: {debate.author_nickname || '익명'}</span>
               <span>•</span>
               <span>
                 {formatDistanceToNow(new Date(debate.created_at), { 
@@ -177,17 +234,17 @@ export default function DebateAdminPage() {
       {/* 관리 옵션 */}
       <div className="space-y-6">
         {/* 투표 현황 */}
-        <div className="bg-zinc-900/50 backdrop-blur-sm border border-zinc-800 rounded-xl p-6">
-          <h2 className="text-lg font-semibold mb-4">투표 현황</h2>
+        <div className="bg-zinc-900/50 backdrop-blur-sm border border-zinc-800 rounded-xl p-4 sm:p-6">
+          <h2 className="text-base sm:text-lg font-semibold mb-3 sm:mb-4">투표 현황</h2>
           <div className="space-y-4">
             <div>
               <div className="flex justify-between items-center mb-2">
-                <span className="font-medium">찬성</span>
-                <span className="text-emerald-400">{debate.agreeCount}표 ({agreePercentage.toFixed(1)}%)</span>
+                <span className="text-sm sm:text-base font-medium">찬성</span>
+                <span className="text-sm sm:text-base text-surbate">{agreeVotes}표 ({agreePercentage.toFixed(1)}%)</span>
               </div>
-              <div className="w-full bg-zinc-800 rounded-full h-4 overflow-hidden">
+              <div className="w-full bg-zinc-800 rounded-full h-3 sm:h-4 overflow-hidden">
                 <div 
-                  className="bg-emerald-500 h-full transition-all duration-500"
+                  className="bg-gradient-to-r from-surbate to-brand-600 h-full transition-all duration-500"
                   style={{ width: `${agreePercentage}%` }}
                 />
               </div>
@@ -195,10 +252,10 @@ export default function DebateAdminPage() {
             
             <div>
               <div className="flex justify-between items-center mb-2">
-                <span className="font-medium">반대</span>
-                <span className="text-red-400">{debate.disagreeCount}표 ({disagreePercentage.toFixed(1)}%)</span>
+                <span className="text-sm sm:text-base font-medium">반대</span>
+                <span className="text-sm sm:text-base text-red-400">{disagreeVotes}표 ({disagreePercentage.toFixed(1)}%)</span>
               </div>
-              <div className="w-full bg-zinc-800 rounded-full h-4 overflow-hidden">
+              <div className="w-full bg-zinc-800 rounded-full h-3 sm:h-4 overflow-hidden">
                 <div 
                   className="bg-red-500 h-full transition-all duration-500"
                   style={{ width: `${disagreePercentage}%` }}
@@ -209,45 +266,47 @@ export default function DebateAdminPage() {
         </div>
 
         {/* 상태 관리 */}
-        <div className="bg-zinc-900/50 backdrop-blur-sm border border-zinc-800 rounded-xl p-6">
-          <h2 className="text-lg font-semibold mb-4">투표 상태 관리</h2>
+        <div className="bg-zinc-900/50 backdrop-blur-sm border border-zinc-800 rounded-xl p-4 sm:p-6">
+          <h2 className="text-base sm:text-lg font-semibold mb-3 sm:mb-4">투표 상태 관리</h2>
           <div className="flex items-center justify-between">
             <div>
               <p className="text-zinc-300">
                 현재 상태: 
                 <span className={`ml-2 inline-flex items-center px-2.5 py-0.5 rounded text-xs font-medium ${
-                  debate.status === 'open' 
-                    ? 'bg-emerald-100/10 text-emerald-400' 
+                  debate.status === 'active' 
+                    ? 'bg-surbate/10 text-surbate' 
                     : 'bg-red-100/10 text-red-400'
                 }`}>
-                  {debate.status === 'open' ? '진행중' : '종료'}
+                  {debate.status === 'active' ? '진행중' : debate.status === 'scheduled' ? '예정' : '종료'}
                 </span>
               </p>
-              <p className="text-sm text-zinc-500 mt-1">
-                {debate.status === 'open' 
+              <p className="text-xs sm:text-sm text-zinc-500 mt-1">
+                {debate.status === 'active' 
                   ? '투표를 종료하면 더 이상 투표를 받지 않습니다.' 
-                  : '투표를 다시 열면 투표를 받을 수 있습니다.'}
+                  : debate.status === 'ended'
+                  ? '투표를 다시 열면 투표를 받을 수 있습니다.'
+                  : '예정된 시간에 투표가 시작됩니다.'}
               </p>
             </div>
             <button
               onClick={handleStatusToggle}
-              className={`px-4 py-2 rounded-lg transition-colors ${
-                debate.status === 'open'
+              className={`px-3 py-1.5 sm:px-4 sm:py-2 text-sm sm:text-base rounded-lg font-semibold transition-all duration-200 ${
+                debate.status === 'active'
                   ? 'bg-red-500 text-white hover:bg-red-600'
-                  : 'bg-emerald-500 text-white hover:bg-emerald-600'
+                  : 'bg-gradient-to-r from-surbate to-brand-600 text-zinc-900 hover:from-brand-400 hover:to-brand-600 shadow-sm hover:shadow-lg hover:shadow-surbate/20 transform hover:-translate-y-0.5'
               }`}
             >
-              {debate.status === 'open' ? '투표 종료' : '투표 재개'}
+              {debate.status === 'active' ? '투표 종료' : '투표 재개'}
             </button>
           </div>
         </div>
 
         {/* 데이터 내보내기 */}
-        <div className="bg-zinc-900/50 backdrop-blur-sm border border-zinc-800 rounded-xl p-6">
-          <h2 className="text-lg font-semibold mb-4">데이터 내보내기</h2>
+        <div className="bg-zinc-900/50 backdrop-blur-sm border border-zinc-800 rounded-xl p-4 sm:p-6">
+          <h2 className="text-base sm:text-lg font-semibold mb-3 sm:mb-4">데이터 내보내기</h2>
           <button
             onClick={handleExportCSV}
-            className="w-full flex items-center justify-between p-3 bg-zinc-800/50 rounded-lg hover:bg-zinc-800 transition-colors"
+            className="w-full flex items-center justify-between p-2.5 sm:p-3 text-sm sm:text-base bg-zinc-800/50 rounded-lg hover:bg-zinc-800 transition-colors"
           >
             <span>투표 데이터 CSV 다운로드</span>
             <span className="text-zinc-400">↓</span>
@@ -255,11 +314,11 @@ export default function DebateAdminPage() {
         </div>
 
         {/* 공유 링크 */}
-        <div className="bg-zinc-900/50 backdrop-blur-sm border border-zinc-800 rounded-xl p-6">
-          <h2 className="text-lg font-semibold mb-4">공유 링크</h2>
+        <div className="bg-zinc-900/50 backdrop-blur-sm border border-zinc-800 rounded-xl p-4 sm:p-6">
+          <h2 className="text-base sm:text-lg font-semibold mb-3 sm:mb-4">공유 링크</h2>
           <div className="space-y-3">
             <div>
-              <label className="block text-sm font-medium text-zinc-300 mb-2">
+              <label className="block text-xs sm:text-sm font-medium text-zinc-300 mb-1.5 sm:mb-2">
                 투표 참여 링크
               </label>
               <div className="flex gap-2">
@@ -267,18 +326,18 @@ export default function DebateAdminPage() {
                   type="text"
                   value={`${window.location.origin}/debates/${debateId}`}
                   readOnly
-                  className="flex-1 px-4 py-2 bg-zinc-900 border border-zinc-800 rounded-lg text-zinc-100"
+                  className="flex-1 px-3 py-1.5 sm:px-4 sm:py-2 text-sm sm:text-base bg-zinc-900 border border-zinc-800 rounded-lg text-zinc-100"
                 />
                 <button
                   onClick={() => navigator.clipboard.writeText(`${window.location.origin}/debates/${debateId}`)}
-                  className="px-4 py-2 bg-zinc-800 text-zinc-100 rounded-lg hover:bg-zinc-700 transition-colors"
+                  className="px-3 py-1.5 sm:px-4 sm:py-2 text-sm sm:text-base bg-zinc-800 text-zinc-100 rounded-lg hover:bg-zinc-700 transition-colors"
                 >
                   복사
                 </button>
               </div>
             </div>
             <div>
-              <label className="block text-sm font-medium text-zinc-300 mb-2">
+              <label className="block text-xs sm:text-sm font-medium text-zinc-300 mb-1.5 sm:mb-2">
                 작성자 페이지 링크
               </label>
               <div className="flex gap-2">
@@ -286,11 +345,11 @@ export default function DebateAdminPage() {
                   type="text"
                   value={`${window.location.origin}/debates/${debateId}/admin`}
                   readOnly
-                  className="flex-1 px-4 py-2 bg-zinc-900 border border-zinc-800 rounded-lg text-zinc-100"
+                  className="flex-1 px-3 py-1.5 sm:px-4 sm:py-2 text-sm sm:text-base bg-zinc-900 border border-zinc-800 rounded-lg text-zinc-100"
                 />
                 <button
                   onClick={() => navigator.clipboard.writeText(`${window.location.origin}/debates/${debateId}/admin`)}
-                  className="px-4 py-2 bg-zinc-800 text-zinc-100 rounded-lg hover:bg-zinc-700 transition-colors"
+                  className="px-3 py-1.5 sm:px-4 sm:py-2 text-sm sm:text-base bg-zinc-800 text-zinc-100 rounded-lg hover:bg-zinc-700 transition-colors"
                 >
                   복사
                 </button>
@@ -299,18 +358,52 @@ export default function DebateAdminPage() {
           </div>
         </div>
 
+        {/* QR 코드 */}
+        <div className="bg-zinc-900/50 backdrop-blur-sm border border-zinc-800 rounded-xl p-4 sm:p-6">
+          <h2 className="text-base sm:text-lg font-semibold mb-3 sm:mb-4">QR 코드</h2>
+          <div className="flex flex-col items-center space-y-4">
+            {qrCodeUrl && (
+              <img 
+                src={qrCodeUrl} 
+                alt="투표 QR 코드" 
+                className="w-48 h-48 bg-white p-2 rounded-lg"
+              />
+            )}
+            <p className="text-xs sm:text-sm text-zinc-500 text-center">
+              이 QR 코드를 스캔하면 투표 페이지로 바로 이동합니다
+            </p>
+            <button
+              onClick={() => {
+                const link = document.createElement('a');
+                link.download = `debate_${debateId}_qr.png`;
+                link.href = qrCodeUrl;
+                link.click();
+              }}
+              className="px-3 py-1.5 sm:px-4 sm:py-2 text-sm sm:text-base bg-zinc-800 text-zinc-100 rounded-lg hover:bg-zinc-700 transition-colors"
+            >
+              QR 코드 다운로드
+            </button>
+          </div>
+        </div>
+
         {/* 위험 구역 */}
-        <div className="bg-red-900/10 border border-red-900/50 rounded-xl p-6">
-          <h2 className="text-lg font-semibold mb-4 text-red-400">위험 구역</h2>
-          <p className="text-sm text-zinc-400 mb-4">
-            다음 작업은 되돌릴 수 없습니다. 신중하게 진행하세요.
-          </p>
-          <button
-            onClick={handleDelete}
-            className="px-4 py-2 bg-red-500 text-white rounded-lg hover:bg-red-600 transition-colors"
-          >
-            투표 삭제
-          </button>
+        <div className="bg-zinc-900/50 backdrop-blur-sm border border-zinc-800 rounded-xl p-4 sm:p-6">
+          <div className="flex items-center justify-between">
+            <div>
+              <p className="text-sm sm:text-base text-zinc-300">
+                투표 삭제
+              </p>
+              <p className="text-xs sm:text-sm text-zinc-500 mt-1">
+                이 작업은 되돌릴 수 없으며, 모든 투표 데이터가 함께 삭제됩니다.
+              </p>
+            </div>
+            <button
+              onClick={handleDelete}
+              className="px-3 py-1.5 sm:px-4 sm:py-2 text-sm sm:text-base bg-red-500 text-white rounded-lg hover:bg-red-600 transition-colors"
+            >
+              투표 삭제
+            </button>
+          </div>
         </div>
       </div>
     </div>

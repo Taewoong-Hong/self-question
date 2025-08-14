@@ -7,6 +7,7 @@ import { surveyApi } from '@/lib/api';
 import { Survey } from '@/types/survey';
 import { formatDistanceToNow } from 'date-fns';
 import { ko } from 'date-fns/locale';
+import QRCode from 'qrcode';
 
 export default function SurveyAdminPage() {
   const params = useParams();
@@ -18,10 +19,22 @@ export default function SurveyAdminPage() {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [password, setPassword] = useState('');
   const [verifying, setVerifying] = useState(false);
+  const [adminToken, setAdminToken] = useState<string | null>(null);
+  const [qrCodeUrl, setQrCodeUrl] = useState<string>('');
 
   useEffect(() => {
-    // 먼저 인증 상태 확인
+    // localStorage에서 토큰 확인
+    const savedToken = localStorage.getItem(`survey_admin_${surveyId}`);
+    if (savedToken) {
+      setAdminToken(savedToken);
+      setIsAuthenticated(true);
+    }
+    
+    // 설문 데이터 가져오기
     checkAuthStatus();
+    
+    // QR 코드 생성
+    generateQRCode();
   }, [surveyId]);
 
   const checkAuthStatus = async () => {
@@ -30,7 +43,8 @@ export default function SurveyAdminPage() {
       const data = await surveyApi.get(surveyId);
       setSurvey(data);
       // 관리자 권한이 있는지는 서버 응답에 따라 결정
-      setIsAuthenticated(data.isAdmin || false);
+      // 일단 false로 설정하여 비밀번호 입력을 받도록 함
+      setIsAuthenticated(false);
     } catch (error) {
       console.error('설문 조회 실패:', error);
     } finally {
@@ -43,9 +57,19 @@ export default function SurveyAdminPage() {
     
     try {
       setVerifying(true);
-      await surveyApi.verifyAdmin(surveyId, password);
+      const response = await surveyApi.verifyAdmin(surveyId, password);
+      
+      // 토큰을 localStorage에 저장 (세션 기반으로 처리)
+      if (response.data?.admin_token) {
+        localStorage.setItem(`survey_admin_${surveyId}`, response.data.admin_token);
+        setAdminToken(response.data.admin_token);
+      }
+      
       setIsAuthenticated(true);
-      await checkAuthStatus(); // 인증 후 데이터 새로고침
+      
+      // 인증 후 데이터 새로고침
+      const surveyData = await surveyApi.get(surveyId);
+      setSurvey(surveyData);
     } catch (error) {
       alert('비밀번호가 올바르지 않습니다.');
     } finally {
@@ -54,11 +78,11 @@ export default function SurveyAdminPage() {
   };
 
   const handleStatusToggle = async () => {
-    if (!survey) return;
+    if (!survey || !adminToken) return;
     
     try {
       const newStatus = survey.status === 'open' ? 'closed' : 'open';
-      await surveyApi.updateStatus(surveyId, newStatus);
+      await surveyApi.updateStatus(surveyId, newStatus, adminToken);
       setSurvey({ ...survey, status: newStatus });
       alert(`설문이 ${newStatus === 'open' ? '열렸습니다' : '닫혔습니다'}.`);
     } catch (error) {
@@ -71,12 +95,34 @@ export default function SurveyAdminPage() {
       return;
     }
 
+    if (!adminToken) {
+      alert('관리자 인증이 필요합니다.');
+      return;
+    }
+
     try {
-      await surveyApi.delete(surveyId);
+      await surveyApi.delete(surveyId, adminToken);
       alert('설문이 삭제되었습니다.');
       router.push('/surveys');
     } catch (error) {
       alert('설문 삭제에 실패했습니다.');
+    }
+  };
+
+  const generateQRCode = async () => {
+    try {
+      const surveyUrl = `${process.env.NEXT_PUBLIC_APP_URL || window.location.origin}/surveys/${surveyId}`;
+      const qrDataUrl = await QRCode.toDataURL(surveyUrl, {
+        width: 200,
+        margin: 2,
+        color: {
+          dark: '#000000',
+          light: '#FFFFFF',
+        },
+      });
+      setQrCodeUrl(qrDataUrl);
+    } catch (error) {
+      console.error('QR 코드 생성 실패:', error);
     }
   };
 
@@ -111,7 +157,7 @@ export default function SurveyAdminPage() {
                 type="password"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
-                className="w-full px-4 py-2 bg-zinc-900 border border-zinc-800 rounded-lg text-zinc-100 placeholder-zinc-500 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-transparent"
+                className="w-full px-4 py-2 bg-zinc-900 border border-zinc-800 rounded-lg text-zinc-100 placeholder-zinc-500 focus:outline-none focus:ring-2 focus:ring-surbate focus:border-transparent"
                 placeholder="비밀번호를 입력하세요"
                 required
                 autoFocus
@@ -120,7 +166,7 @@ export default function SurveyAdminPage() {
             <button
               type="submit"
               disabled={verifying}
-              className="w-full px-4 py-2 bg-emerald-500 text-white rounded-lg hover:bg-emerald-600 transition-colors disabled:opacity-50"
+              className="w-full px-4 py-2 bg-gradient-to-r from-surbate to-brand-600 text-zinc-900 font-semibold rounded-lg hover:from-brand-400 hover:to-brand-600 shadow-sm hover:shadow-lg hover:shadow-surbate/20 transform hover:-translate-y-0.5 transition-all duration-200 disabled:opacity-50 disabled:transform-none disabled:shadow-none"
             >
               {verifying ? '확인 중...' : '확인'}
             </button>
@@ -149,16 +195,20 @@ export default function SurveyAdminPage() {
           <div>
             <h1 className="text-3xl font-bold mb-2">{survey.title} - 관리</h1>
             <div className="flex items-center gap-4 mt-4 text-sm text-zinc-500">
-              <span>작성자: {survey.creator_nickname || '익명'}</span>
+              <span>작성자: {survey.author_nickname || '익명'}</span>
+              {survey.created_at && (
+                <>
+                  <span>•</span>
+                  <span>
+                    {formatDistanceToNow(new Date(survey.created_at), { 
+                      addSuffix: true, 
+                      locale: ko 
+                    })}
+                  </span>
+                </>
+              )}
               <span>•</span>
-              <span>
-                {formatDistanceToNow(new Date(survey.created_at), { 
-                  addSuffix: true, 
-                  locale: ko 
-                })}
-              </span>
-              <span>•</span>
-              <span>응답 {survey.response_count}명</span>
+              <span>응답 {survey.stats?.response_count || 0}명</span>
             </div>
           </div>
         </div>
@@ -175,7 +225,7 @@ export default function SurveyAdminPage() {
                 현재 상태: 
                 <span className={`ml-2 inline-flex items-center px-2.5 py-0.5 rounded text-xs font-medium ${
                   survey.status === 'open' 
-                    ? 'bg-emerald-100/10 text-emerald-400' 
+                    ? 'bg-surbate/10 text-surbate' 
                     : 'bg-red-100/10 text-red-400'
                 }`}>
                   {survey.status === 'open' ? '진행중' : '종료'}
@@ -189,10 +239,10 @@ export default function SurveyAdminPage() {
             </div>
             <button
               onClick={handleStatusToggle}
-              className={`px-4 py-2 rounded-lg transition-colors ${
+              className={`px-4 py-2 rounded-lg font-semibold transition-all duration-200 ${
                 survey.status === 'open'
                   ? 'bg-red-500 text-white hover:bg-red-600'
-                  : 'bg-emerald-500 text-white hover:bg-emerald-600'
+                  : 'bg-gradient-to-r from-surbate to-brand-600 text-zinc-900 hover:from-brand-400 hover:to-brand-600 shadow-sm hover:shadow-lg hover:shadow-surbate/20 transform hover:-translate-y-0.5'
               }`}
             >
               {survey.status === 'open' ? '설문 종료' : '설문 재개'}
@@ -212,7 +262,7 @@ export default function SurveyAdminPage() {
               <span className="text-zinc-400">→</span>
             </Link>
             <button
-              onClick={() => surveyApi.exportCSV(surveyId)}
+              onClick={() => adminToken && surveyApi.exportCSV(surveyId, adminToken)}
               className="w-full flex items-center justify-between p-3 bg-zinc-800/50 rounded-lg hover:bg-zinc-800 transition-colors"
             >
               <span>응답 데이터 CSV 다운로드</span>
@@ -232,17 +282,34 @@ export default function SurveyAdminPage() {
               <div className="flex gap-2">
                 <input
                   type="text"
-                  value={`${window.location.origin}/surveys/${surveyId}`}
+                  value={`${process.env.NEXT_PUBLIC_APP_URL || window.location.origin}/surveys/${surveyId}`}
                   readOnly
                   className="flex-1 px-4 py-2 bg-zinc-900 border border-zinc-800 rounded-lg text-zinc-100"
                 />
                 <button
-                  onClick={() => navigator.clipboard.writeText(`${window.location.origin}/surveys/${surveyId}`)}
+                  onClick={() => navigator.clipboard.writeText(`${process.env.NEXT_PUBLIC_APP_URL || window.location.origin}/surveys/${surveyId}`)}
                   className="px-4 py-2 bg-zinc-800 text-zinc-100 rounded-lg hover:bg-zinc-700 transition-colors"
                 >
                   복사
                 </button>
               </div>
+              {/* QR 코드 표시 */}
+              {qrCodeUrl && (
+                <div className="mt-4 flex flex-col items-center">
+                  <img src={qrCodeUrl} alt="설문 참여 QR 코드" className="rounded-lg shadow-lg" />
+                  <button
+                    onClick={() => {
+                      const link = document.createElement('a');
+                      link.download = `survey_${surveyId}_qr.png`;
+                      link.href = qrCodeUrl;
+                      link.click();
+                    }}
+                    className="mt-2 text-sm text-zinc-400 hover:text-zinc-100 transition-colors"
+                  >
+                    QR 코드 다운로드
+                  </button>
+                </div>
+              )}
             </div>
             <div>
               <label className="block text-sm font-medium text-zinc-300 mb-2">
@@ -251,12 +318,12 @@ export default function SurveyAdminPage() {
               <div className="flex gap-2">
                 <input
                   type="text"
-                  value={`${window.location.origin}/surveys/${surveyId}/admin`}
+                  value={`${process.env.NEXT_PUBLIC_APP_URL || window.location.origin}/surveys/${surveyId}/admin`}
                   readOnly
                   className="flex-1 px-4 py-2 bg-zinc-900 border border-zinc-800 rounded-lg text-zinc-100"
                 />
                 <button
-                  onClick={() => navigator.clipboard.writeText(`${window.location.origin}/surveys/${surveyId}/admin`)}
+                  onClick={() => navigator.clipboard.writeText(`${process.env.NEXT_PUBLIC_APP_URL || window.location.origin}/surveys/${surveyId}/admin`)}
                   className="px-4 py-2 bg-zinc-800 text-zinc-100 rounded-lg hover:bg-zinc-700 transition-colors"
                 >
                   복사
@@ -266,18 +333,24 @@ export default function SurveyAdminPage() {
           </div>
         </div>
 
-        {/* 위험 구역 */}
-        <div className="bg-red-900/10 border border-red-900/50 rounded-xl p-6">
-          <h2 className="text-lg font-semibold mb-4 text-red-400">위험 구역</h2>
-          <p className="text-sm text-zinc-400 mb-4">
-            다음 작업은 되돌릴 수 없습니다. 신중하게 진행하세요.
-          </p>
-          <button
-            onClick={handleDelete}
-            className="px-4 py-2 bg-red-500 text-white rounded-lg hover:bg-red-600 transition-colors"
-          >
-            설문 삭제
-          </button>
+        {/* 설문 삭제 */}
+        <div className="bg-zinc-900/50 backdrop-blur-sm border border-zinc-800 rounded-xl p-6">
+          <div className="flex items-center justify-between">
+            <div>
+              <p className="text-zinc-300">
+                설문 삭제
+              </p>
+              <p className="text-sm text-zinc-500 mt-1">
+                이 작업은 되돌릴 수 없으며, 모든 응답 데이터가 함께 삭제됩니다.
+              </p>
+            </div>
+            <button
+              onClick={handleDelete}
+              className="px-4 py-2 bg-red-500 text-white rounded-lg hover:bg-red-600 transition-colors"
+            >
+              설문 삭제
+            </button>
+          </div>
         </div>
       </div>
     </div>

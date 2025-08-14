@@ -4,6 +4,9 @@ import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { debateApi } from '@/lib/api';
 import { CreateDebateDto } from '@/types/debate';
+import DatePicker from 'react-datepicker';
+import 'react-datepicker/dist/react-datepicker.css';
+import { ko } from 'date-fns/locale';
 
 export default function CreateDebatePage() {
   const router = useRouter();
@@ -132,26 +135,44 @@ export default function CreateDebatePage() {
             </div>
 
             <div className="grid grid-cols-2 gap-4">
-              <div>
+              <div className="relative">
                 <label className="block text-sm font-medium text-zinc-300 mb-2">
                   시작일시
                 </label>
-                <input
-                  type="datetime-local"
-                  value={formData.start_at}
-                  onChange={(e) => setFormData({ ...formData, start_at: e.target.value })}
-                  className="w-full px-4 py-2 bg-zinc-900 border border-zinc-800 rounded-lg text-zinc-100 placeholder-zinc-500 focus:outline-none focus:ring-2 ring-surbate focus:border-transparent"
+                <DatePicker
+                  selected={formData.start_at ? new Date(formData.start_at) : null}
+                  onChange={(date) => setFormData({ ...formData, start_at: date?.toISOString() || '' })}
+                  showTimeSelect
+                  timeFormat="HH:mm"
+                  timeIntervals={1}
+                  dateFormat="yyyy년 MM월 dd일 HH:mm"
+                  locale={ko}
+                  placeholderText="시작일시를 선택하세요"
+                  className="w-full px-2 py-1.5 sm:px-4 sm:py-2 text-sm sm:text-base bg-zinc-900 border border-zinc-800 rounded-lg text-zinc-100 placeholder-zinc-500 focus:outline-none focus:ring-2 ring-surbate focus:border-transparent"
+                  wrapperClassName="w-full"
+                  withPortal
+                  portalId="root-portal"
+                  minDate={new Date()}
                 />
               </div>
-              <div>
+              <div className="relative">
                 <label className="block text-sm font-medium text-zinc-300 mb-2">
                   종료일시
                 </label>
-                <input
-                  type="datetime-local"
-                  value={formData.end_at}
-                  onChange={(e) => setFormData({ ...formData, end_at: e.target.value })}
-                  className="w-full px-4 py-2 bg-zinc-900 border border-zinc-800 rounded-lg text-zinc-100 placeholder-zinc-500 focus:outline-none focus:ring-2 ring-surbate focus:border-transparent"
+                <DatePicker
+                  selected={formData.end_at ? new Date(formData.end_at) : null}
+                  onChange={(date) => setFormData({ ...formData, end_at: date?.toISOString() || '' })}
+                  showTimeSelect
+                  timeFormat="HH:mm"
+                  timeIntervals={1}
+                  dateFormat="yyyy년 MM월 dd일 HH:mm"
+                  locale={ko}
+                  placeholderText="종료일시를 선택하세요"
+                  className="w-full px-2 py-1.5 sm:px-4 sm:py-2 text-sm sm:text-base bg-zinc-900 border border-zinc-800 rounded-lg text-zinc-100 placeholder-zinc-500 focus:outline-none focus:ring-2 ring-surbate focus:border-transparent"
+                  wrapperClassName="w-full"
+                  withPortal
+                  portalId="root-portal"
+                  minDate={formData.start_at ? new Date(formData.start_at) : new Date()}
                 />
               </div>
             </div>
@@ -246,7 +267,7 @@ export default function CreateDebatePage() {
           <button
             type="submit"
             disabled={loading}
-            className="px-6 py-3 bg-surbate text-zinc-900 font-semibold rounded-lg hover:opacity-90 transition-opacity disabled:opacity-50"
+            className="px-6 py-3 bg-gradient-to-r from-surbate to-brand-600 text-zinc-900 font-semibold rounded-lg hover:from-brand-400 hover:to-brand-600 shadow-sm hover:shadow-lg hover:shadow-surbate/20 transform hover:-translate-y-0.5 transition-all duration-200 disabled:opacity-50 disabled:transform-none disabled:shadow-none"
           >
             {loading ? '생성 중...' : '투표 만들기'}
           </button>

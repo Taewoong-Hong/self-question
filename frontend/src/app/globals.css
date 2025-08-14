@@ -38,4 +38,108 @@
   .prose-invert {
     @apply text-zinc-300;
   }
+  
+  /* datetime-local 입력 아이콘 스타일링 */
+  input[type="datetime-local"]::-webkit-calendar-picker-indicator {
+    filter: invert(1);
+    cursor: pointer;
+  }
+  
+  input[type="datetime-local"]::-webkit-datetime-edit-fields-wrapper {
+    color: #e4e4e7;
+  }
+  
+  input[type="datetime-local"]::-webkit-datetime-edit-text {
+    color: #71717a;
+  }
+  
+  input[type="datetime-local"]::-webkit-datetime-edit-month-field,
+  input[type="datetime-local"]::-webkit-datetime-edit-day-field,
+  input[type="datetime-local"]::-webkit-datetime-edit-year-field,
+  input[type="datetime-local"]::-webkit-datetime-edit-hour-field,
+  input[type="datetime-local"]::-webkit-datetime-edit-minute-field {
+    color: #e4e4e7;
+  }
+  
+  /* React DatePicker 다크 테마 스타일 */
+  .react-datepicker-wrapper {
+    width: 100%;
+  }
+  
+  .react-datepicker-popper {
+    z-index: 9999 !important;
+  }
+  
+  .react-datepicker__portal {
+    z-index: 9999 !important;
+  }
+  
+  .react-datepicker {
+    @apply bg-zinc-900 border-zinc-800 text-zinc-100 shadow-xl;
+    font-family: inherit;
+  }
+  
+  .react-datepicker__header {
+    @apply bg-zinc-800 border-b border-zinc-700;
+  }
+  
+  .react-datepicker__current-month,
+  .react-datepicker__navigation-icon::before,
+  .react-datepicker__day-name,
+  .react-datepicker__time-label {
+    @apply text-zinc-100;
+  }
+  
+  .react-datepicker__navigation {
+    @apply top-3;
+  }
+  
+  .react-datepicker__navigation:hover *::before {
+    @apply border-zinc-400;
+  }
+  
+  .react-datepicker__day {
+    @apply text-zinc-300 hover:bg-zinc-700 hover:text-zinc-100;
+  }
+  
+  .react-datepicker__day--selected,
+  .react-datepicker__day--keyboard-selected {
+    @apply bg-surbate text-zinc-900 font-semibold hover:bg-surbate;
+  }
+  
+  .react-datepicker__day--disabled {
+    @apply text-zinc-600;
+  }
+  
+  .react-datepicker__day--outside-month {
+    @apply text-zinc-600;
+  }
+  
+  .react-datepicker__time-container {
+    @apply border-l border-zinc-700;
+  }
+  
+  .react-datepicker__time {
+    @apply bg-zinc-900;
+  }
+  
+  .react-datepicker__time-box {
+    @apply w-full;
+  }
+  
+  .react-datepicker__time-list-item {
+    @apply text-zinc-300 hover:bg-zinc-700 hover:text-zinc-100;
+  }
+  
+  .react-datepicker__time-list-item--selected {
+    @apply bg-surbate text-zinc-900 font-semibold hover:bg-surbate;
+  }
+  
+  .react-datepicker__triangle {
+    display: none;
+  }
+  
+  .react-datepicker__close-icon::after {
+    @apply bg-zinc-700 text-zinc-300;
+  }
 }

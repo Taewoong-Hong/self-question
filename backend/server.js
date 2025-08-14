@@ -1,4 +1,9 @@
-require('dotenv').config();
+// 환경별 설정 파일 로드
+const path = require('path');
+const envFile = process.env.NODE_ENV === 'production' ? '.env.production' : '.env.local';
+require('dotenv').config({ path: path.resolve(__dirname, envFile) });
+
+console.log(`📁 환경설정 파일: ${envFile}`);
 const express = require('express');
 const cors = require('cors');
 const helmet = require('helmet');
@@ -18,7 +23,7 @@ const PORT = process.env.PORT || 5000;
 // 보안 미들웨어
 app.use(helmet());
 app.use(cors({
-  origin: process.env.FRONTEND_URL || 'http://localhost:3001',
+  origin: process.env.FRONTEND_URL || ['http://localhost:3001', 'http://localhost:3002'],
   credentials: true
 }));
 

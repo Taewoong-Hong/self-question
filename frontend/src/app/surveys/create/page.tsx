@@ -4,6 +4,9 @@ import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { surveyApi } from '@/lib/api';
 import { SurveyCreateData, QuestionType } from '@/types/survey';
+import DatePicker from 'react-datepicker';
+import 'react-datepicker/dist/react-datepicker.css';
+import { ko } from 'date-fns/locale';
 
 export default function CreateSurveyPage() {
   const router = useRouter();
@@ -175,7 +178,7 @@ export default function CreateSurveyPage() {
                 required
                 value={formData.title}
                 onChange={(e) => setFormData({ ...formData, title: e.target.value })}
-                className="w-full px-4 py-2 bg-zinc-900 border border-zinc-800 rounded-lg text-zinc-100 placeholder-zinc-500 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-transparent"
+                className="w-full px-4 py-2 bg-zinc-900 border border-zinc-800 rounded-lg text-zinc-100 placeholder-zinc-500 focus:outline-none focus:ring-2 focus:ring-brand-500 focus:border-transparent"
                 placeholder="예: 신제품 출시에 대한 의견 조사"
               />
             </div>
@@ -187,7 +190,7 @@ export default function CreateSurveyPage() {
               <textarea
                 value={formData.description}
                 onChange={(e) => setFormData({ ...formData, description: e.target.value })}
-                className="w-full px-4 py-2 bg-zinc-900 border border-zinc-800 rounded-lg text-zinc-100 placeholder-zinc-500 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-transparent"
+                className="w-full px-4 py-2 bg-zinc-900 border border-zinc-800 rounded-lg text-zinc-100 placeholder-zinc-500 focus:outline-none focus:ring-2 focus:ring-brand-500 focus:border-transparent"
                 rows={3}
                 placeholder="설문에 대한 설명을 입력하세요"
               />
@@ -201,7 +204,7 @@ export default function CreateSurveyPage() {
                 type="text"
                 value={formData.author_nickname}
                 onChange={(e) => setFormData({ ...formData, author_nickname: e.target.value })}
-                className="w-full px-4 py-2 bg-zinc-900 border border-zinc-800 rounded-lg text-zinc-100 placeholder-zinc-500 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-transparent"
+                className="w-full px-4 py-2 bg-zinc-900 border border-zinc-800 rounded-lg text-zinc-100 placeholder-zinc-500 focus:outline-none focus:ring-2 focus:ring-brand-500 focus:border-transparent"
                 placeholder="익명 (선택사항)"
               />
             </div>
@@ -217,7 +220,7 @@ export default function CreateSurveyPage() {
                   ...formData, 
                   tags: e.target.value.split(',').map(tag => tag.trim()).filter(tag => tag) 
                 })}
-                className="w-full px-4 py-2 bg-zinc-900 border border-zinc-800 rounded-lg text-zinc-100 placeholder-zinc-500 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-transparent"
+                className="w-full px-4 py-2 bg-zinc-900 border border-zinc-800 rounded-lg text-zinc-100 placeholder-zinc-500 focus:outline-none focus:ring-2 focus:ring-brand-500 focus:border-transparent"
                 placeholder="태그1, 태그2 (쉼표로 구분)"
               />
             </div>
@@ -226,17 +229,27 @@ export default function CreateSurveyPage() {
               <label className="block text-sm font-medium text-zinc-300 mb-2">
                 종료일시 (선택사항)
               </label>
-              <input
-                type="datetime-local"
-                value={formData.settings?.close_at ? new Date(formData.settings.close_at).toISOString().slice(0, 16) : ''}
-                onChange={(e) => setFormData({ 
+              <DatePicker
+                selected={formData.settings?.close_at ? new Date(formData.settings.close_at) : null}
+                onChange={(date) => setFormData({ 
                   ...formData, 
                   settings: {
                     ...formData.settings,
-                    close_at: e.target.value ? new Date(e.target.value).toISOString() : undefined
+                    close_at: date ? date.toISOString() : undefined
                   }
                 })}
-                className="w-full px-4 py-2 bg-zinc-900 border border-zinc-800 rounded-lg text-zinc-100 placeholder-zinc-500 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-transparent"
+                showTimeSelect
+                timeFormat="HH:mm"
+                timeIntervals={1}
+                dateFormat="yyyy년 MM월 dd일 HH:mm"
+                locale={ko}
+                placeholderText="종료일시를 선택하세요 (선택사항)"
+                isClearable
+                className="w-full px-2 py-1.5 sm:px-4 sm:py-2 text-sm sm:text-base bg-zinc-900 border border-zinc-800 rounded-lg text-zinc-100 placeholder-zinc-500 focus:outline-none focus:ring-2 focus:ring-brand-500 focus:border-transparent"
+                wrapperClassName="w-full"
+                withPortal
+                portalId="root-portal"
+                minDate={new Date()}
               />
             </div>
           </div>
@@ -249,7 +262,7 @@ export default function CreateSurveyPage() {
             <button
               type="button"
               onClick={addQuestion}
-              className="px-4 py-2 bg-emerald-500 text-white rounded-lg hover:bg-emerald-600 transition-colors"
+              className="px-4 py-2 bg-gradient-to-r from-surbate to-brand-600 text-zinc-900 font-semibold rounded-lg hover:from-brand-400 hover:to-brand-600 shadow-sm hover:shadow-lg hover:shadow-surbate/20 transform hover:-translate-y-0.5 transition-all duration-200"
             >
               질문 추가
             </button>
@@ -277,7 +290,7 @@ export default function CreateSurveyPage() {
                     required
                     value={question.title}
                     onChange={(e) => updateQuestion(qIndex, 'title', e.target.value)}
-                    className="w-full px-3 py-2 bg-zinc-900 border border-zinc-700 rounded-lg text-zinc-100 placeholder-zinc-500 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-transparent"
+                    className="w-full px-3 py-2 bg-zinc-900 border border-zinc-700 rounded-lg text-zinc-100 placeholder-zinc-500 focus:outline-none focus:ring-2 focus:ring-brand-500 focus:border-transparent"
                     placeholder="질문을 입력하세요"
                   />
 
@@ -285,7 +298,7 @@ export default function CreateSurveyPage() {
                     <select
                       value={question.type}
                       onChange={(e) => updateQuestion(qIndex, 'type', e.target.value)}
-                      className="px-3 py-2 bg-zinc-900 border border-zinc-700 rounded-lg text-zinc-100 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-transparent"
+                      className="px-3 py-2 bg-zinc-900 border border-zinc-700 rounded-lg text-zinc-100 focus:outline-none focus:ring-2 focus:ring-brand-500 focus:border-transparent"
                     >
                       <option value="single_choice">단일 선택</option>
                       <option value="multiple_choice">다중 선택</option>
@@ -299,7 +312,7 @@ export default function CreateSurveyPage() {
                         type="checkbox"
                         checked={question.required}
                         onChange={(e) => updateQuestion(qIndex, 'required', e.target.checked)}
-                        className="rounded bg-zinc-900 border-zinc-700 text-emerald-500 focus:ring-emerald-500"
+                        className="rounded bg-zinc-900 border-zinc-700 text-brand-500 focus:ring-brand-500"
                       />
                       <span className="text-sm text-zinc-300">필수 응답</span>
                     </label>
@@ -314,7 +327,7 @@ export default function CreateSurveyPage() {
                             required
                             value={choice.label}
                             onChange={(e) => updateOption(qIndex, oIndex, e.target.value)}
-                            className="flex-1 px-3 py-2 bg-zinc-900 border border-zinc-700 rounded-lg text-zinc-100 placeholder-zinc-500 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-transparent"
+                            className="flex-1 px-3 py-2 bg-zinc-900 border border-zinc-700 rounded-lg text-zinc-100 placeholder-zinc-500 focus:outline-none focus:ring-2 focus:ring-brand-500 focus:border-transparent"
                             placeholder={`옵션 ${oIndex + 1}`}
                           />
                           {question.properties!.choices!.length > 2 && (
@@ -331,7 +344,7 @@ export default function CreateSurveyPage() {
                       <button
                         type="button"
                         onClick={() => addOption(qIndex)}
-                        className="px-3 py-1 text-sm text-emerald-400 hover:text-emerald-300"
+                        className="px-3 py-1 text-sm text-brand-400 hover:text-brand-300"
                       >
                         + 옵션 추가
                       </button>
@@ -370,7 +383,7 @@ export default function CreateSurveyPage() {
           <button
             type="submit"
             disabled={loading}
-            className="px-6 py-3 bg-emerald-500 text-white rounded-lg hover:bg-emerald-600 transition-colors disabled:opacity-50"
+            className="px-6 py-3 bg-gradient-to-r from-surbate to-brand-600 text-zinc-900 font-semibold rounded-lg hover:from-brand-400 hover:to-brand-600 shadow-sm hover:shadow-lg hover:shadow-surbate/20 transform hover:-translate-y-0.5 transition-all duration-200 disabled:opacity-50 disabled:transform-none disabled:shadow-none"
           >
             {loading ? '생성 중...' : '설문 만들기'}
           </button>

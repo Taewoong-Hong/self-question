@@ -44,7 +44,7 @@ export default function SurveysPage() {
           </div>
           <Link
             href="/surveys/create"
-            className="px-4 py-2 bg-emerald-500 text-white rounded-lg hover:bg-emerald-600 transition-colors"
+            className="px-4 py-2 bg-gradient-to-r from-surbate to-brand-600 text-zinc-900 font-semibold rounded-lg hover:from-brand-400 hover:to-brand-600 shadow-sm hover:shadow-lg hover:shadow-surbate/20 transform hover:-translate-y-0.5 transition-all duration-200"
           >
             새 설문 만들기
           </Link>
@@ -118,8 +118,8 @@ export default function SurveysPage() {
           <div className="divide-y divide-zinc-800">
             {surveys.map((survey) => (
               <Link
-                key={survey._id}
-                href={`/surveys/${survey._id}`}
+                key={survey.id}
+                href={`/surveys/${survey.id}`}
                 className="block p-6 hover:bg-zinc-800/30 transition-all duration-200"
               >
                 <div className="flex items-start justify-between mb-3">
@@ -193,7 +193,7 @@ export default function SurveysPage() {
           </p>
           <Link
             href="/surveys/create"
-            className="inline-block px-6 py-3 bg-emerald-500 text-white rounded-lg hover:bg-emerald-600 transition-colors"
+            className="inline-block px-6 py-3 bg-gradient-to-r from-surbate to-brand-600 text-zinc-900 font-semibold rounded-lg hover:from-brand-400 hover:to-brand-600 shadow-sm hover:shadow-lg hover:shadow-surbate/20 transform hover:-translate-y-0.5 transition-all duration-200"
           >
             설문 만들기
           </Link>

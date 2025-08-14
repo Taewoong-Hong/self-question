@@ -8,12 +8,26 @@ module.exports = {
   theme: {
     extend: {
       colors: {
-        primary: '#4F46E5',
-        secondary: '#7C3AED',
+        primary: '#39FF14',
+        secondary: '#2ECC0B',
         success: '#10B981',
         danger: '#EF4444',
         warning: '#F59E0B',
         info: '#3B82F6',
+        // Surbate brand colors - 형광초록 기반
+        surbate: '#39FF14',
+        brand: {
+          50: '#f0ffe6',
+          100: '#d6ffcc',
+          200: '#b3ff99',
+          300: '#8cff66',
+          400: '#5cff2e',
+          500: '#39FF14', // 메인 브랜드 컬러
+          600: '#2ed10f',
+          700: '#25a30c',
+          800: '#1d7a09',
+          900: '#155706',
+        },
       },
       animation: {
         'fade-in': 'fadeIn 0.5s ease-in-out',

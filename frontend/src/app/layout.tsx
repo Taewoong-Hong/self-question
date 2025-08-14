@@ -48,7 +48,7 @@ export default function RootLayout({
               </button>
               <div className="flex items-center gap-2">
                 <img src="/images/logo_surbate.png" alt="Surbate" className="h-7 w-7" />
-                <h1 className="text-lg font-bold text-surbate">Surbate</h1>
+                <h1 className="text-xl font-bold text-surbate">Surbate</h1>
               </div>
               <div className="w-10" /> {/* 균형을 위한 빈 공간 */}
             </div>
@@ -72,9 +72,9 @@ export default function RootLayout({
             <div className="flex flex-col h-full">
               <div className="p-6 flex items-center justify-between">
                 <Link href="/" className="block hover:opacity-80 transition-opacity" onClick={closeSidebar}>
-                  <div className="flex items-center gap-3">
-                    <img src="/images/logo_surbate.png" alt="Surbate" className="h-9 w-9" />
-                    <h1 className="text-2xl font-bold text-surbate">Surbate</h1>
+                  <div className="flex items-center gap-2">
+                    <img src="/images/logo_surbate.png" alt="Surbate" className="h-7 w-7" />
+                    <h1 className="text-xl font-bold text-surbate">Surbate</h1>
                   </div>
                 </Link>
                 {/* 모바일 닫기 버튼 */}
@@ -93,7 +93,7 @@ export default function RootLayout({
                   <li>
                     <Link
                       href="/"
-                      className="flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-zinc-800 transition-colors"
+                      className="flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-zinc-800 hover:text-brand-400 transition-all duration-200"
                       onClick={closeSidebar}
                     >
                       <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -112,7 +112,7 @@ export default function RootLayout({
                   <li>
                     <Link
                       href="/debates"
-                      className="flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-zinc-800 transition-colors"
+                      className="flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-zinc-800 hover:text-brand-400 transition-all duration-200"
                       onClick={closeSidebar}
                     >
                       <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -124,7 +124,7 @@ export default function RootLayout({
                   <li>
                     <Link
                       href="/debates/create"
-                      className="flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-zinc-800 transition-colors"
+                      className="flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-zinc-800 hover:text-brand-400 transition-all duration-200"
                       onClick={closeSidebar}
                     >
                       <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -143,7 +143,7 @@ export default function RootLayout({
                   <li>
                     <Link
                       href="/surveys"
-                      className="flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-zinc-800 transition-colors"
+                      className="flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-zinc-800 hover:text-brand-400 transition-all duration-200"
                       onClick={closeSidebar}
                     >
                       <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -155,7 +155,7 @@ export default function RootLayout({
                   <li>
                     <Link
                       href="/surveys/create"
-                      className="flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-zinc-800 transition-colors"
+                      className="flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-zinc-800 hover:text-brand-400 transition-all duration-200"
                       onClick={closeSidebar}
                     >
                       <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">

@@ -100,35 +100,51 @@ export const debateApi = {
   verifyAdmin: async (debateId: string, password: string) => {
     const response = await api.post<{
       success: boolean;
+      message: string;
       data: {
-        token: string;
+        admin_token: string;
       };
     }>(`/debates/${debateId}/verify`, { admin_password: password });
     return response.data.data;
   },
 
   // 투표 수정 (관리자)
-  update: async (debateId: string, data: any) => {
-    const response = await api.put(`/debates/${debateId}`, data);
+  update: async (debateId: string, data: any, adminToken: string) => {
+    const response = await api.put(`/debates/${debateId}`, data, {
+      headers: {
+        Authorization: `Bearer ${adminToken}`,
+      },
+    });
     return response.data;
   },
 
   // 투표 상태 변경 (관리자)
-  updateStatus: async (debateId: string, status: 'open' | 'closed') => {
-    const response = await api.put(`/debates/${debateId}/status`, { status });
+  updateStatus: async (debateId: string, status: 'scheduled' | 'active' | 'ended', adminToken: string) => {
+    const response = await api.put(`/debates/${debateId}/status`, { status }, {
+      headers: {
+        Authorization: `Bearer ${adminToken}`,
+      },
+    });
     return response.data;
   },
 
   // 투표 삭제 (관리자)
-  delete: async (debateId: string) => {
-    const response = await api.delete(`/debates/${debateId}`);
+  delete: async (debateId: string, adminToken: string) => {
+    const response = await api.delete(`/debates/${debateId}`, {
+      headers: {
+        Authorization: `Bearer ${adminToken}`,
+      },
+    });
     return response.data;
   },
 
   // CSV 다운로드
-  exportCSV: async (debateId: string) => {
+  exportCSV: async (debateId: string, adminToken: string) => {
     const response = await api.get(`/debates/${debateId}/export`, {
       responseType: 'blob',
+      headers: {
+        Authorization: `Bearer ${adminToken}`,
+      },
     });
     
     // 브라우저에서 다운로드 처리
@@ -215,9 +231,12 @@ export const surveyApi = {
   },
 
   // CSV 다운로드
-  exportCSV: async (surveyId: string) => {
-    const response = await api.get(`/surveys/${surveyId}/export`, {
+  exportCSV: async (surveyId: string, adminToken: string) => {
+    const response = await api.get(`/admin/surveys/${surveyId}/export/csv`, {
       responseType: 'blob',
+      headers: {
+        Authorization: `Bearer ${adminToken}`,
+      },
     });
     
     // 브라우저에서 다운로드 처리
@@ -235,11 +254,12 @@ export const surveyApi = {
   verifyAdmin: async (surveyId: string, password: string) => {
     const response = await api.post<{
       success: boolean;
+      message: string;
       data: {
-        token: string;
+        admin_token: string;
       };
     }>(`/surveys/${surveyId}/verify`, { admin_password: password });
-    return response.data.data;
+    return response.data;
   },
 
   // 설문 수정 (관리자)
@@ -253,14 +273,22 @@ export const surveyApi = {
   },
 
   // 설문 상태 변경 (관리자)
-  updateStatus: async (surveyId: string, status: 'open' | 'closed') => {
-    const response = await api.put(`/surveys/${surveyId}/status`, { status });
+  updateStatus: async (surveyId: string, status: 'open' | 'closed', adminToken: string) => {
+    const response = await api.patch(`/surveys/${surveyId}/status`, { status }, {
+      headers: {
+        Authorization: `Bearer ${adminToken}`,
+      },
+    });
     return response.data;
   },
 
   // 설문 삭제 (관리자)
-  delete: async (surveyId: string) => {
-    const response = await api.delete(`/surveys/${surveyId}`);
+  delete: async (surveyId: string, adminToken: string) => {
+    const response = await api.delete(`/surveys/${surveyId}`, {
+      headers: {
+        Authorization: `Bearer ${adminToken}`,
+      },
+    });
     return response.data;
   },
 };
