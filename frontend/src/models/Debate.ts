@@ -379,7 +379,7 @@ debateSchema.methods.canVote = function(ipHash: string): boolean {
   if (this.is_hidden || this.is_deleted) return false;
   
   // Check IP vote count
-  const voterRecord = this.voter_ips.find(v => v.ip_hash === ipHash);
+  const voterRecord = this.voter_ips.find((v: any) => v.ip_hash === ipHash);
   if (voterRecord && voterRecord.vote_count >= this.settings.max_votes_per_ip) {
     return false;
   }
@@ -402,15 +402,15 @@ debateSchema.methods.castVote = async function(
   }
   
   // Validate options
-  const validOptionIds = this.vote_options.map(opt => opt.id);
-  const invalidOptions = optionIds.filter(id => !validOptionIds.includes(id));
+  const validOptionIds = this.vote_options.map((opt: IVoteOption) => opt.id);
+  const invalidOptions = optionIds.filter((id: string) => !validOptionIds.includes(id));
   if (invalidOptions.length > 0) {
     throw new Error('유효하지 않은 옵션입니다');
   }
   
   // Add votes
   for (const optionId of optionIds) {
-    const option = this.vote_options.find(opt => opt.id === optionId);
+    const option = this.vote_options.find((opt: IVoteOption) => opt.id === optionId);
     if (option) {
       option.votes.push({
         user_id: userInfo.user_id,
@@ -424,7 +424,7 @@ debateSchema.methods.castVote = async function(
   }
   
   // Update IP record
-  const voterRecord = this.voter_ips.find(v => v.ip_hash === ipHash);
+  const voterRecord = this.voter_ips.find((v: any) => v.ip_hash === ipHash);
   if (voterRecord) {
     voterRecord.vote_count += 1;
     voterRecord.last_vote_at = new Date();
@@ -448,9 +448,9 @@ debateSchema.methods.castVote = async function(
 };
 
 debateSchema.methods.updatePercentages = function(): void {
-  const totalVotes = this.vote_options.reduce((sum, opt) => sum + opt.vote_count, 0);
+  const totalVotes = this.vote_options.reduce((sum: number, opt: IVoteOption) => sum + opt.vote_count, 0);
   
-  this.vote_options.forEach(option => {
+  this.vote_options.forEach((option: IVoteOption) => {
     option.percentage = totalVotes > 0 
       ? Math.round((option.vote_count / totalVotes) * 100) 
       : 0;
@@ -479,7 +479,7 @@ debateSchema.methods.addOpinion = async function(
   };
   
   this.opinions.push(opinion);
-  this.stats.opinion_count = this.opinions.filter(op => !op.is_deleted).length;
+  this.stats.opinion_count = this.opinions.filter((op: IOpinion) => !op.is_deleted).length;
   
   return this.save();
 };
@@ -492,7 +492,7 @@ debateSchema.methods.getResults = function(forceShow = false): any {
   }
   
   return {
-    options: this.vote_options.map(opt => ({
+    options: this.vote_options.map((opt: IVoteOption) => ({
       id: opt.id,
       label: opt.label,
       vote_count: opt.vote_count,

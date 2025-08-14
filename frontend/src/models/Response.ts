@@ -242,12 +242,12 @@ responseSchema.methods.calculateQualityScore = function(): number {
   }
   
   // Check if all multiple choice answers are the same
-  const choiceAnswers = this.answers.filter(a => 
+  const choiceAnswers = this.answers.filter((a: IAnswer) => 
     a.question_type === 'single_choice' || a.question_type === 'multiple_choice'
   );
   if (choiceAnswers.length > 3) {
     const firstChoice = choiceAnswers[0].choice_id || choiceAnswers[0].choice_ids?.[0];
-    const allSame = choiceAnswers.every(a => 
+    const allSame = choiceAnswers.every((a: IAnswer) => 
       a.choice_id === firstChoice || a.choice_ids?.[0] === firstChoice
     );
     if (allSame) {

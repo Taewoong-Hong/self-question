@@ -41,7 +41,7 @@ export default function SurveyAdminPage() {
     try {
       // 서버에서 인증 상태 확인 (쿠키 기반)
       const data = await surveyApi.get(surveyId);
-      setSurvey(data);
+      setSurvey(data.survey);
       // 관리자 권한이 있는지는 서버 응답에 따라 결정
       // 일단 false로 설정하여 비밀번호 입력을 받도록 함
       setIsAuthenticated(false);
@@ -60,16 +60,16 @@ export default function SurveyAdminPage() {
       const response = await surveyApi.verifyAdmin(surveyId, password);
       
       // 토큰을 localStorage에 저장 (세션 기반으로 처리)
-      if (response.data?.admin_token) {
-        localStorage.setItem(`survey_admin_${surveyId}`, response.data.admin_token);
-        setAdminToken(response.data.admin_token);
+      if (response.admin_token) {
+        localStorage.setItem(`survey_admin_${surveyId}`, response.admin_token);
+        setAdminToken(response.admin_token);
       }
       
       setIsAuthenticated(true);
       
       // 인증 후 데이터 새로고침
       const surveyData = await surveyApi.get(surveyId);
-      setSurvey(surveyData);
+      setSurvey(surveyData.survey);
     } catch (error) {
       alert('비밀번호가 올바르지 않습니다.');
     } finally {

@@ -76,7 +76,7 @@ export default function SurveyDetailPage() {
       
       const result = await surveyApi.respond(surveyId, responseData);
       setHasResponded(true);
-      alert(`설문이 제출되었습니다!\n응답 코드: ${result.data.response_code}`);
+      alert(`설문이 제출되었습니다!\n응답 코드: ${result.response_code}`);
       router.push(`/surveys/${surveyId}/results`);
     } catch (error: any) {
       if (error.message?.includes('이미 응답')) {

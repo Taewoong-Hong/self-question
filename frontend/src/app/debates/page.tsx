@@ -22,7 +22,7 @@ export default function DebatesPage() {
         setLoading(true);
         const response = await debateApi.list({ page, limit, sort, search: searchQuery });
         setDebates(response.debates);
-        setTotal(response.total);
+        setTotal(response.pagination?.total || 0);
       } catch (error) {
         console.error('투표 목록 조회 실패:', error);
       } finally {
@@ -117,13 +117,13 @@ export default function DebatesPage() {
                         📊 투표
                       </span>
                       <span className={`inline-flex items-center px-2.5 py-0.5 rounded text-xs font-medium ${
-                        debate.status === 'open' 
+                        debate.status === 'active' 
                           ? 'bg-emerald-100/10 text-emerald-400' 
-                          : debate.status === 'closed'
+                          : debate.status === 'ended'
                           ? 'bg-red-100/10 text-red-400'
                           : 'bg-yellow-100/10 text-yellow-400'
                       }`}>
-                        {debate.status === 'open' ? '진행중' : debate.status === 'closed' ? '종료' : '예정'}
+                        {debate.status === 'active' ? '진행중' : debate.status === 'ended' ? '종료' : '예정'}
                       </span>
                     </div>
                   </div>
@@ -140,9 +140,9 @@ export default function DebatesPage() {
                   
                   <div className="flex items-center justify-between text-sm text-zinc-500">
                     <div className="flex items-center gap-4">
-                      <span>참여 {debate.participantCount}명</span>
-                      {debate.creator_nickname && (
-                        <span>작성자: {debate.creator_nickname}</span>
+                      <span>참여 {debate.stats?.unique_voters || 0}명</span>
+                      {debate.author_nickname && (
+                        <span>작성자: {debate.author_nickname}</span>
                       )}
                     </div>
                     <span>

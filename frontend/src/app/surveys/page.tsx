@@ -151,9 +151,9 @@ export default function SurveysPage() {
                 
                 <div className="flex items-center justify-between text-sm text-zinc-500">
                   <div className="flex items-center gap-4">
-                    <span>응답 {survey.response_count}명</span>
-                    {survey.creator_nickname && (
-                      <span>작성자: {survey.creator_nickname}</span>
+                    <span>응답 {survey.stats?.response_count || 0}명</span>
+                    {survey.author_nickname && (
+                      <span>작성자: {survey.author_nickname}</span>
                     )}
                   </div>
                   <span>

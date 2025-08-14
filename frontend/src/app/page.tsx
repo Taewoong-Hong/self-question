@@ -15,7 +15,7 @@ interface ContentItem {
   status: 'open' | 'closed' | 'scheduled' | 'draft';
   created_at: string;
   participantCount: number;
-  creator_nickname?: string;
+  author_nickname?: string;
   tags?: string[];
 }
 
@@ -47,7 +47,7 @@ export default function Home() {
               status: debate.status === 'active' ? 'open' : debate.status === 'ended' ? 'closed' : 'scheduled',
               created_at: debate.created_at,
               participantCount: debate.stats?.unique_voters || 0,
-              creator_nickname: debate.author_nickname,
+              author_nickname: debate.author_nickname,
               tags: debate.tags
             }))
           : [];
@@ -61,7 +61,7 @@ export default function Home() {
               status: survey.status === 'draft' ? 'scheduled' : survey.status,
               created_at: survey.created_at,
               participantCount: survey.stats?.response_count || 0,
-              creator_nickname: survey.author_nickname,
+              author_nickname: survey.author_nickname,
               tags: survey.tags
             }))
           : [];
@@ -244,8 +244,8 @@ export default function Home() {
                   <div className="flex items-center justify-between text-sm text-zinc-500">
                     <div className="flex items-center gap-4">
                       <span>참여 {item.participantCount}명</span>
-                      {item.creator_nickname && (
-                        <span>작성자: {item.creator_nickname}</span>
+                      {item.author_nickname && (
+                        <span>작성자: {item.author_nickname}</span>
                       )}
                     </div>
                     <span>

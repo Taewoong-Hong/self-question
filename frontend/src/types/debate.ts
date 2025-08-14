@@ -75,6 +75,12 @@ export interface VoteDto {
   is_anonymous?: boolean;
 }
 
+// For backward compatibility with older API
+export interface LegacyVoteDto {
+  choice: 'agree' | 'disagree';
+  voter_name?: string;
+}
+
 export interface OpinionDto {
   author_nickname: string;
   selected_option_id?: string;

@@ -202,7 +202,7 @@ export default function SurveyResultsPage() {
                             dataKey="value"
                             label={({ name, percentage }) => `${name} (${percentage}%)`}
                           >
-                            {prepareChartData(question, questionResults).map((entry, index) => (
+                            {prepareChartData(question, questionResults).map((entry: any, index: number) => (
                               <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
                             ))}
                           </Pie>
