@@ -1,11 +1,42 @@
 {
-  "name": "selfquestion",
+  "name": "selfquestion-frontend",
   "version": "1.0.0",
   "private": true,
   "scripts": {
-    "dev": "cd frontend && npm run dev",
-    "build": "cd frontend && npm run build",
-    "start": "cd frontend && npm start",
-    "install": "cd frontend && npm install"
+    "dev": "next dev -p 3001",
+    "build": "next build",
+    "start": "next start -p 3001",
+    "lint": "next lint",
+    "type-check": "tsc --noEmit"
+  },
+  "dependencies": {
+    "@types/node": "20.11.0",
+    "@types/qrcode": "^1.5.5",
+    "@types/react": "18.2.48",
+    "@types/react-datepicker": "^6.2.0",
+    "@types/react-dom": "18.2.18",
+    "axios": "^1.6.5",
+    "bcryptjs": "^3.0.2",
+    "date-fns": "^3.6.0",
+    "jsonwebtoken": "^9.0.2",
+    "mongoose": "^8.17.1",
+    "next": "14.1.0",
+    "qrcode": "^1.5.4",
+    "react": "18.2.0",
+    "react-datepicker": "^8.4.0",
+    "react-dom": "18.2.0",
+    "react-hot-toast": "^2.4.1",
+    "recharts": "^3.1.2",
+    "typescript": "5.3.3"
+  },
+  "devDependencies": {
+    "@types/jsonwebtoken": "^9.0.10",
+    "@typescript-eslint/eslint-plugin": "^6.19.0",
+    "@typescript-eslint/parser": "^6.19.0",
+    "autoprefixer": "^10.4.17",
+    "eslint": "8.56.0",
+    "eslint-config-next": "14.1.0",
+    "postcss": "^8.4.33",
+    "tailwindcss": "^3.4.1"
   }
 }
