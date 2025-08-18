@@ -23,7 +23,7 @@ export default function Home() {
   const [items, setItems] = useState<ContentItem[]>([]);
   const [loading, setLoading] = useState(true);
   const [filter, setFilter] = useState<'all' | 'debate' | 'survey'>('all');
-  const [sort, setSort] = useState<'latest' | 'popular'>('latest');
+  const [sort, setSort] = useState<'latest' | 'oldest' | 'popular' | 'unpopular'>('latest');
   const [searchQuery, setSearchQuery] = useState('');
 
   useEffect(() => {
@@ -84,10 +84,17 @@ export default function Home() {
 
         // 정렬
         combinedItems.sort((a, b) => {
-          if (sort === 'latest') {
-            return new Date(b.created_at).getTime() - new Date(a.created_at).getTime();
-          } else {
-            return b.participantCount - a.participantCount;
+          switch (sort) {
+            case 'latest':
+              return new Date(b.created_at).getTime() - new Date(a.created_at).getTime();
+            case 'oldest':
+              return new Date(a.created_at).getTime() - new Date(b.created_at).getTime();
+            case 'popular':
+              return b.participantCount - a.participantCount;
+            case 'unpopular':
+              return a.participantCount - b.participantCount;
+            default:
+              return 0;
           }
         });
 
@@ -167,27 +174,17 @@ export default function Home() {
             <span className="ml-1 text-zinc-500">({items.filter(i => i.type === 'survey').length})</span>
           </button>
           
-          <div className="ml-auto flex gap-1.5">
-            <button
-              onClick={() => setSort('latest')}
-              className={`px-3 py-1.5 rounded-full text-xs font-medium transition-colors ${
-                sort === 'latest' 
-                  ? 'bg-zinc-800 text-zinc-100' 
-                  : 'bg-zinc-900 text-zinc-400 hover:bg-zinc-800 hover:text-zinc-200'
-              }`}
+          <div className="ml-auto">
+            <select
+              value={sort}
+              onChange={(e) => setSort(e.target.value as any)}
+              className="px-3 py-1.5 bg-zinc-900 border border-zinc-800 rounded-lg text-xs text-zinc-100 focus:outline-none focus:ring-2 focus:ring-brand-500 focus:border-transparent"
             >
-              최신순
-            </button>
-            <button
-              onClick={() => setSort('popular')}
-              className={`px-3 py-1.5 rounded-full text-xs font-medium transition-colors ${
-                sort === 'popular' 
-                  ? 'bg-zinc-800 text-zinc-100' 
-                  : 'bg-zinc-900 text-zinc-400 hover:bg-zinc-800 hover:text-zinc-200'
-              }`}
-            >
-              인기순
-            </button>
+              <option value="latest">최신순 ↓</option>
+              <option value="oldest">오래된순 ↑</option>
+              <option value="popular">인기순 ↓</option>
+              <option value="unpopular">인기낮은순 ↑</option>
+            </select>
           </div>
         </div>
       </div>
