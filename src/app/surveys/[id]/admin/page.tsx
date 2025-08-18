@@ -245,7 +245,7 @@ export default function SurveyAdminPage() {
                   : 'bg-gradient-to-r from-surbate to-brand-600 text-zinc-900 hover:from-brand-400 hover:to-brand-600 shadow-sm hover:shadow-lg hover:shadow-surbate/20 transform hover:-translate-y-0.5'
               }`}
             >
-              {survey.status === 'open' ? '설문 종료' : '설문 재개'}
+              {survey.status === 'open' ? '종료' : '재개'}
             </button>
           </div>
         </div>
@@ -348,7 +348,7 @@ export default function SurveyAdminPage() {
               onClick={handleDelete}
               className="px-4 py-2 bg-red-500 text-white rounded-lg hover:bg-red-600 transition-colors"
             >
-              설문 삭제
+              삭제
             </button>
           </div>
         </div>

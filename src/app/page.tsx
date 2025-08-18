@@ -133,10 +133,10 @@ export default function Home() {
         </div>
         
         {/* 카테고리 탭 */}
-        <div className="flex flex-wrap gap-2">
+        <div className="flex flex-wrap gap-1.5">
           <button
             onClick={() => setFilter('all')}
-            className={`px-4 py-2 rounded-full text-sm font-medium transition-colors ${
+            className={`px-3 py-1.5 rounded-full text-xs font-medium transition-colors ${
               filter === 'all' 
                 ? 'bg-zinc-800 text-zinc-100' 
                 : 'bg-zinc-900 text-zinc-400 hover:bg-zinc-800 hover:text-zinc-200'
@@ -146,31 +146,31 @@ export default function Home() {
           </button>
           <button
             onClick={() => setFilter('debate')}
-            className={`px-4 py-2 rounded-full text-sm font-medium transition-colors ${
+            className={`px-3 py-1.5 rounded-full text-xs font-medium transition-colors ${
               filter === 'debate' 
                 ? 'bg-zinc-800 text-zinc-100' 
                 : 'bg-zinc-900 text-zinc-400 hover:bg-zinc-800 hover:text-zinc-200'
             }`}
           >
-            투표만
+            투표
             <span className="ml-1 text-zinc-500">({items.filter(i => i.type === 'debate').length})</span>
           </button>
           <button
             onClick={() => setFilter('survey')}
-            className={`px-4 py-2 rounded-full text-sm font-medium transition-colors ${
+            className={`px-3 py-1.5 rounded-full text-xs font-medium transition-colors ${
               filter === 'survey' 
                 ? 'bg-zinc-800 text-zinc-100' 
                 : 'bg-zinc-900 text-zinc-400 hover:bg-zinc-800 hover:text-zinc-200'
             }`}
           >
-            설문만
+            설문
             <span className="ml-1 text-zinc-500">({items.filter(i => i.type === 'survey').length})</span>
           </button>
           
-          <div className="ml-auto flex gap-2">
+          <div className="ml-auto flex gap-1.5">
             <button
               onClick={() => setSort('latest')}
-              className={`px-4 py-2 rounded-full text-sm font-medium transition-colors ${
+              className={`px-3 py-1.5 rounded-full text-xs font-medium transition-colors ${
                 sort === 'latest' 
                   ? 'bg-zinc-800 text-zinc-100' 
                   : 'bg-zinc-900 text-zinc-400 hover:bg-zinc-800 hover:text-zinc-200'
@@ -180,7 +180,7 @@ export default function Home() {
             </button>
             <button
               onClick={() => setSort('popular')}
-              className={`px-4 py-2 rounded-full text-sm font-medium transition-colors ${
+              className={`px-3 py-1.5 rounded-full text-xs font-medium transition-colors ${
                 sort === 'popular' 
                   ? 'bg-zinc-800 text-zinc-100' 
                   : 'bg-zinc-900 text-zinc-400 hover:bg-zinc-800 hover:text-zinc-200'
