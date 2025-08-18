@@ -119,11 +119,11 @@ export default function Home() {
   return (
     <div className="min-h-screen">
       {/* 페이지 헤더 */}
-      <div className="mb-8">
+      <div className="mb-6">
         <div className="flex items-center justify-between">
-          <div>
-            <h1 className="text-2xl font-bold">모든 투표 & 설문</h1>
-            <p className="text-zinc-400 mt-1">누구나 참여할 수 있는 투표와 설문을 확인하세요</p>
+          <div className="pl-[3px]">
+            <h1 className="text-xl font-bold">모든 투표 & 설문</h1>
+            <p className="text-zinc-400 text-sm">누구나 참여할 수 있는 투표와 설문을 확인하세요</p>
           </div>
         </div>
       </div>
