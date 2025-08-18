@@ -307,7 +307,7 @@ export default function AdminContentsPage() {
             <table className="w-full">
               <thead>
                 <tr className="border-b border-zinc-800">
-                  <th className="px-6 py-4 text-left">
+                  <th className="px-3 py-3 text-left">
                     <input
                       type="checkbox"
                       checked={selectedItems.length === filteredContents.length && filteredContents.length > 0}
@@ -321,25 +321,25 @@ export default function AdminContentsPage() {
                       className="rounded text-surbate bg-zinc-900 border-zinc-700"
                     />
                   </th>
-                  <th className="px-6 py-4 text-left text-xs font-medium text-zinc-500 uppercase tracking-wider">
+                  <th className="px-3 py-3 text-left text-xs font-medium text-zinc-500 uppercase tracking-wider min-w-[200px]">
                     제목
                   </th>
-                  <th className="px-6 py-4 text-left text-xs font-medium text-zinc-500 uppercase tracking-wider">
+                  <th className="px-3 py-3 text-left text-xs font-medium text-zinc-500 uppercase tracking-wider">
                     유형
                   </th>
-                  <th className="px-6 py-4 text-left text-xs font-medium text-zinc-500 uppercase tracking-wider">
+                  <th className="px-3 py-3 text-left text-xs font-medium text-zinc-500 uppercase tracking-wider">
                     상태
                   </th>
-                  <th className="px-6 py-4 text-left text-xs font-medium text-zinc-500 uppercase tracking-wider">
+                  <th className="px-3 py-3 text-left text-xs font-medium text-zinc-500 uppercase tracking-wider">
                     작성자
                   </th>
-                  <th className="px-6 py-4 text-left text-xs font-medium text-zinc-500 uppercase tracking-wider">
+                  <th className="px-3 py-3 text-center text-xs font-medium text-zinc-500 uppercase tracking-wider">
                     참여자
                   </th>
-                  <th className="px-6 py-4 text-left text-xs font-medium text-zinc-500 uppercase tracking-wider">
+                  <th className="px-3 py-3 text-left text-xs font-medium text-zinc-500 uppercase tracking-wider">
                     생성일
                   </th>
-                  <th className="px-6 py-4 text-left text-xs font-medium text-zinc-500 uppercase tracking-wider">
+                  <th className="px-3 py-3 text-left text-xs font-medium text-zinc-500 uppercase tracking-wider">
                     작업
                   </th>
                 </tr>
@@ -347,7 +347,7 @@ export default function AdminContentsPage() {
               <tbody className="divide-y divide-zinc-800">
                 {filteredContents.map((content) => (
                   <tr key={content.id} className={content.is_hidden ? 'opacity-50' : ''}>
-                    <td className="px-6 py-4">
+                    <td className="px-3 py-2">
                       <input
                         type="checkbox"
                         checked={selectedItems.includes(content.id)}
@@ -361,23 +361,23 @@ export default function AdminContentsPage() {
                         className="rounded text-surbate bg-zinc-900 border-zinc-700"
                       />
                     </td>
-                    <td className="px-6 py-4">
+                    <td className="px-3 py-2">
                       <div className="flex items-center gap-2">
                         <span className="text-zinc-100">{content.title}</span>
                         {content.is_reported && (
-                          <span className="inline-flex items-center px-2 py-0.5 rounded text-xs bg-red-900/50 text-red-400">
+                          <span className="inline-flex items-center px-1.5 py-0.5 rounded text-[10px] bg-red-900/50 text-red-400">
                             신고됨
                           </span>
                         )}
                         {content.is_hidden && (
-                          <span className="inline-flex items-center px-2 py-0.5 rounded text-xs bg-zinc-700 text-zinc-400">
+                          <span className="inline-flex items-center px-1.5 py-0.5 rounded text-[10px] bg-zinc-700 text-zinc-400">
                             숨김
                           </span>
                         )}
                       </div>
                     </td>
-                    <td className="px-6 py-4">
-                      <span className={`inline-flex items-center px-2.5 py-0.5 rounded text-xs font-medium ${
+                    <td className="px-3 py-2">
+                      <span className={`inline-flex items-center px-2 py-0.5 rounded text-[11px] font-medium whitespace-nowrap ${
                         content.type === 'debate' 
                           ? 'bg-blue-100/10 text-blue-400' 
                           : 'bg-brand-100/10 text-brand-400'
@@ -385,8 +385,8 @@ export default function AdminContentsPage() {
                         {content.type === 'debate' ? '투표' : '설문'}
                       </span>
                     </td>
-                    <td className="px-6 py-4">
-                      <span className={`inline-flex items-center px-2.5 py-0.5 rounded text-xs font-medium ${
+                    <td className="px-3 py-2">
+                      <span className={`inline-flex items-center px-2 py-0.5 rounded text-[11px] font-medium whitespace-nowrap ${
                         content.status === 'open' 
                           ? 'bg-green-100/10 text-green-400' 
                           : content.status === 'closed'
@@ -396,31 +396,31 @@ export default function AdminContentsPage() {
                         {content.status === 'open' ? '진행중' : content.status === 'closed' ? '종료' : '예정'}
                       </span>
                     </td>
-                    <td className="px-6 py-4">
-                      <div className="text-sm">
-                        <div className="text-zinc-100">{content.author_nickname || '익명'}</div>
-                        <div className="text-zinc-500 text-xs truncate max-w-[150px]" title={content.author_ip}>
+                    <td className="px-3 py-2">
+                      <div className="text-xs">
+                        <div className="text-zinc-100 text-sm">{content.author_nickname || '익명'}</div>
+                        <div className="text-zinc-500 text-[10px] truncate max-w-[120px]" title={content.author_ip}>
                           {content.author_ip}
                         </div>
                       </div>
                     </td>
-                    <td className="px-6 py-4 text-zinc-400">
+                    <td className="px-3 py-2 text-zinc-400 text-center text-sm">
                       {content.participant_count}명
                     </td>
-                    <td className="px-6 py-4 text-zinc-400 text-sm">
+                    <td className="px-3 py-2 text-zinc-400 text-xs">
                       {formatDistanceToNow(new Date(content.created_at), { 
                         addSuffix: true, 
                         locale: ko 
                       })}
                     </td>
-                    <td className="px-6 py-4">
+                    <td className="px-3 py-2">
                       <div className="flex gap-2">
                         <Link
                           href={`/${content.type}s/${content.id}`}
                           className="text-zinc-400 hover:text-zinc-100 transition-colors"
                           title="보기"
                         >
-                          <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
                           </svg>
@@ -430,7 +430,7 @@ export default function AdminContentsPage() {
                           className="text-zinc-400 hover:text-zinc-100 transition-colors"
                           title={content.is_hidden ? '공개' : '숨기기'}
                         >
-                          <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             {content.is_hidden ? (
                               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
                             ) : (
@@ -443,7 +443,7 @@ export default function AdminContentsPage() {
                           className="text-red-400 hover:text-red-300 transition-colors"
                           title="삭제"
                         >
-                          <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
                           </svg>
                         </button>
@@ -456,7 +456,7 @@ export default function AdminContentsPage() {
                                 e.target.value = '0';
                               }
                             }}
-                            className="px-2 py-1 bg-zinc-800 border border-zinc-700 rounded text-xs text-zinc-100 focus:outline-none focus:ring-2 focus:ring-brand-500"
+                            className="px-1.5 py-0.5 bg-zinc-800 border border-zinc-700 rounded text-[10px] text-zinc-100 focus:outline-none focus:ring-2 focus:ring-brand-500"
                             title="테스트 데이터 생성"
                           >
                             <option value="0">데이터</option>
@@ -498,14 +498,14 @@ export default function AdminContentsPage() {
                       <div className="flex-1">
                         <h3 className="text-zinc-100 font-medium pr-2">{content.title}</h3>
                         <div className="flex flex-wrap items-center gap-2 mt-1">
-                          <span className={`inline-flex items-center px-2 py-0.5 rounded text-xs font-medium ${
+                          <span className={`inline-flex items-center px-1.5 py-0.5 rounded text-[10px] font-medium ${
                             content.type === 'debate' 
                               ? 'bg-blue-100/10 text-blue-400' 
                               : 'bg-brand-100/10 text-brand-400'
                           }`}>
                             {content.type === 'debate' ? '투표' : '설문'}
                           </span>
-                          <span className={`inline-flex items-center px-2 py-0.5 rounded text-xs font-medium ${
+                          <span className={`inline-flex items-center px-1.5 py-0.5 rounded text-[10px] font-medium ${
                             content.status === 'open' 
                               ? 'bg-green-100/10 text-green-400' 
                               : content.status === 'closed'
@@ -515,12 +515,12 @@ export default function AdminContentsPage() {
                             {content.status === 'open' ? '진행중' : content.status === 'closed' ? '종료' : '예정'}
                           </span>
                           {content.is_reported && (
-                            <span className="inline-flex items-center px-2 py-0.5 rounded text-xs bg-red-900/50 text-red-400">
+                            <span className="inline-flex items-center px-1.5 py-0.5 rounded text-[10px] bg-red-900/50 text-red-400">
                               신고됨
                             </span>
                           )}
                           {content.is_hidden && (
-                            <span className="inline-flex items-center px-2 py-0.5 rounded text-xs bg-zinc-700 text-zinc-400">
+                            <span className="inline-flex items-center px-1.5 py-0.5 rounded text-[10px] bg-zinc-700 text-zinc-400">
                               숨김
                             </span>
                           )}
@@ -565,7 +565,7 @@ export default function AdminContentsPage() {
                                 e.target.value = '0';
                               }
                             }}
-                            className="px-1 py-0.5 bg-zinc-800 border border-zinc-700 rounded text-xs text-zinc-100 focus:outline-none focus:ring-2 focus:ring-brand-500"
+                            className="px-1 py-0.5 bg-zinc-800 border border-zinc-700 rounded text-[10px] text-zinc-100 focus:outline-none focus:ring-2 focus:ring-brand-500"
                             title="테스트 데이터 생성"
                           >
                             <option value="0">데이터</option>
