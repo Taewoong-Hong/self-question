@@ -34,50 +34,23 @@ export default function AdminContentsPage() {
   const fetchContents = async () => {
     try {
       setLoading(true);
-      // 실제로는 API 호출
-      // const response = await fetch(`/api/admin/contents?filter=${filter}&search=${searchQuery}`);
-      // const data = await response.json();
+      const token = localStorage.getItem('admin_token');
       
-      // 임시 데이터
-      setContents([
-        {
-          id: '1',
-          title: '회사 야유회 장소 투표',
-          type: 'debate',
-          status: 'open',
-          created_at: new Date().toISOString(),
-          author_ip: '192.168.1.1',
-          author_nickname: '김철수',
-          participant_count: 45,
-          is_reported: false,
-          is_hidden: false
-        },
-        {
-          id: '2',
-          title: '서비스 만족도 조사',
-          type: 'survey',
-          status: 'open',
-          created_at: new Date(Date.now() - 86400000).toISOString(),
-          author_ip: '192.168.1.2',
-          author_nickname: '이영희',
-          participant_count: 123,
-          is_reported: true,
-          is_hidden: false
-        },
-        {
-          id: '3',
-          title: '불법 광고 설문',
-          type: 'survey',
-          status: 'closed',
-          created_at: new Date(Date.now() - 172800000).toISOString(),
-          author_ip: '192.168.1.3',
-          participant_count: 5,
-          is_reported: true,
-          is_hidden: true
+      const response = await fetch(`/api/admin/contents?filter=${filter}&search=${searchQuery}`, {
+        headers: {
+          'Authorization': `Bearer ${token}`
         }
-      ]);
+      });
+      
+      if (!response.ok) {
+        throw new Error('Failed to fetch contents');
+      }
+      
+      const data = await response.json();
+      setContents(data.contents || []);
     } catch (error) {
       console.error('Failed to fetch contents:', error);
+      setContents([]);
     } finally {
       setLoading(false);
     }
@@ -85,9 +58,24 @@ export default function AdminContentsPage() {
 
   const handleToggleHide = async (contentId: string) => {
     try {
-      // API 호출
-      // await fetch(`/api/admin/contents/${contentId}/toggle-hide`, { method: 'PUT' });
+      const token = localStorage.getItem('admin_token');
+      const content = contents.find(c => c.id === contentId);
+      if (!content) return;
       
+      const response = await fetch(`/api/admin/contents/${contentId}`, {
+        method: 'PUT',
+        headers: {
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ action: content.is_hidden ? 'show' : 'hide' })
+      });
+      
+      if (!response.ok) {
+        throw new Error('Failed to toggle hide');
+      }
+      
+      // 상태 업데이트
       setContents(prev => prev.map(content => 
         content.id === contentId 
           ? { ...content, is_hidden: !content.is_hidden }
@@ -95,6 +83,7 @@ export default function AdminContentsPage() {
       ));
     } catch (error) {
       console.error('Failed to toggle hide:', error);
+      alert('숨김 처리에 실패했습니다.');
     }
   };
 
@@ -104,12 +93,24 @@ export default function AdminContentsPage() {
     }
 
     try {
-      // API 호출
-      // await fetch(`/api/admin/contents/${contentId}`, { method: 'DELETE' });
+      const token = localStorage.getItem('admin_token');
       
+      const response = await fetch(`/api/admin/contents/${contentId}`, {
+        method: 'DELETE',
+        headers: {
+          'Authorization': `Bearer ${token}`
+        }
+      });
+      
+      if (!response.ok) {
+        throw new Error('Failed to delete');
+      }
+      
+      // 목록에서 제거
       setContents(prev => prev.filter(content => content.id !== contentId));
     } catch (error) {
       console.error('Failed to delete:', error);
+      alert('삭제에 실패했습니다.');
     }
   };
 
@@ -124,11 +125,20 @@ export default function AdminContentsPage() {
     }
 
     try {
-      // API 호출
-      // await fetch('/api/admin/contents/bulk', {
-      //   method: 'POST',
-      //   body: JSON.stringify({ ids: selectedItems, action })
-      // });
+      const token = localStorage.getItem('admin_token');
+      
+      const response = await fetch('/api/admin/contents', {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ ids: selectedItems, action })
+      });
+      
+      if (!response.ok) {
+        throw new Error('Failed to perform bulk action');
+      }
 
       if (action === 'delete') {
         setContents(prev => prev.filter(content => !selectedItems.includes(content.id)));
@@ -143,6 +153,7 @@ export default function AdminContentsPage() {
       setSelectedItems([]);
     } catch (error) {
       console.error('Failed to perform bulk action:', error);
+      alert('작업 처리에 실패했습니다.');
     }
   };
 

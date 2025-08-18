@@ -45,10 +45,10 @@ export default function RootLayout({
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
                 </svg>
               </button>
-              <div className="flex items-center gap-2">
+              <Link href="/" className="flex items-center gap-2 hover:opacity-80 transition-opacity">
                 <img src="/images/logo_surbate.png" alt="Surbate" className="h-7 w-7" />
                 <h1 className="text-xl font-bold text-surbate">Surbate</h1>
-              </div>
+              </Link>
               <div className="w-10" /> {/* 균형을 위한 빈 공간 */}
             </div>
           </header>
@@ -102,63 +102,84 @@ export default function RootLayout({
                     </Link>
                   </li>
                   
-                  {/* 투표 섹션 */}
-                  <li className="mt-6">
-                    <h3 className="px-3 text-xs font-semibold text-zinc-500 uppercase tracking-wider mb-2">
-                      투표
-                    </h3>
-                  </li>
+                  {/* 방명록 */}
                   <li>
                     <Link
-                      href="/debates"
-                      className="flex items-center justify-between gap-3 px-3 py-2 rounded-lg hover:bg-zinc-800 hover:text-brand-400 transition-all duration-200"
+                      href="/guestbook"
+                      className="flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-zinc-800 hover:text-brand-400 transition-all duration-200"
                       onClick={closeSidebar}
                     >
-                      <div className="flex items-center gap-3">
-                        <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
-                        </svg>
-                        <span>투표 목록</span>
-                      </div>
-                      <Link
-                        href="/debates/create"
-                        className="p-1.5 rounded-lg hover:bg-zinc-700 transition-colors"
-                        onClick={(e) => e.stopPropagation()}
-                      >
-                        <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z" />
-                        </svg>
-                      </Link>
+                      <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
+                      </svg>
+                      <span>방명록</span>
                     </Link>
                   </li>
                   
-                  {/* 설문 섹션 */}
+                  {/* 게시판 섹션 */}
                   <li className="mt-6">
                     <h3 className="px-3 text-xs font-semibold text-zinc-500 uppercase tracking-wider mb-2">
-                      설문조사
+                      게시판
                     </h3>
                   </li>
                   <li>
-                    <Link
-                      href="/surveys"
-                      className="flex items-center justify-between gap-3 px-3 py-2 rounded-lg hover:bg-zinc-800 hover:text-brand-400 transition-all duration-200"
-                      onClick={closeSidebar}
-                    >
-                      <div className="flex items-center gap-3">
-                        <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01" />
-                        </svg>
-                        <span>설문 목록</span>
-                      </div>
+                    <div className="flex items-center justify-between gap-3 px-3 py-2 rounded-lg hover:bg-zinc-800 hover:text-brand-400 transition-all duration-200">
                       <Link
-                        href="/surveys/create"
+                        href="/debates"
+                        className="flex items-center gap-3 flex-1"
+                        onClick={closeSidebar}
+                      >
+                        <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
+                        </svg>
+                        <span>투표 게시판</span>
+                      </Link>
+                      <Link
+                        href="/debates/create"
                         className="p-1.5 rounded-lg hover:bg-zinc-700 transition-colors"
-                        onClick={(e) => e.stopPropagation()}
+                        onClick={closeSidebar}
                       >
                         <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z" />
                         </svg>
                       </Link>
+                    </div>
+                  </li>
+                  <li>
+                    <div className="flex items-center justify-between gap-3 px-3 py-2 rounded-lg hover:bg-zinc-800 hover:text-brand-400 transition-all duration-200">
+                      <Link
+                        href="/surveys"
+                        className="flex items-center gap-3 flex-1"
+                        onClick={closeSidebar}
+                      >
+                        <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01" />
+                        </svg>
+                        <span>설문 게시판</span>
+                      </Link>
+                      <Link
+                        href="/surveys/create"
+                        className="p-1.5 rounded-lg hover:bg-zinc-700 transition-colors"
+                        onClick={closeSidebar}
+                      >
+                        <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z" />
+                        </svg>
+                      </Link>
+                    </div>
+                  </li>
+                  
+                  {/* 요청 게시판 */}
+                  <li>
+                    <Link
+                      href="/requests"
+                      className="flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-zinc-800 hover:text-brand-400 transition-all duration-200"
+                      onClick={closeSidebar}
+                    >
+                      <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 8h10M7 12h4m1 8l-4-4H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-3l-4 4z" />
+                      </svg>
+                      <span>요청 게시판</span>
                     </Link>
                   </li>
                 </ul>

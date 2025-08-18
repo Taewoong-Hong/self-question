@@ -43,21 +43,38 @@ export default function AdminDashboardPage() {
   const fetchDashboardStats = async () => {
     try {
       setLoading(true);
-      // 실제로는 API 호출해야 함
-      // const response = await fetch('/api/admin/stats');
-      // const data = await response.json();
+      const token = localStorage.getItem('admin_token');
       
-      // 임시 데이터
+      const response = await fetch('/api/admin/stats', {
+        headers: {
+          'Authorization': `Bearer ${token}`
+        }
+      });
+      
+      if (!response.ok) {
+        throw new Error('Failed to fetch stats');
+      }
+      
+      const data = await response.json();
       setStats({
-        totalDebates: 124,
-        totalSurveys: 87,
-        totalUsers: 1542,
-        todayUsers: 234,
-        monthlyActiveUsers: 892,
-        recentErrors: 12
+        totalDebates: data.totalDebates || 0,
+        totalSurveys: data.totalSurveys || 0,
+        totalUsers: data.totalUsers || 0,
+        todayUsers: data.todayUsers || 0,
+        monthlyActiveUsers: data.monthlyActiveUsers || 0,
+        recentErrors: data.recentErrors || 0
       });
     } catch (error) {
       console.error('Failed to fetch stats:', error);
+      // 에러 시 기본값 사용
+      setStats({
+        totalDebates: 0,
+        totalSurveys: 0,
+        totalUsers: 0,
+        todayUsers: 0,
+        monthlyActiveUsers: 0,
+        recentErrors: 0
+      });
     } finally {
       setLoading(false);
     }

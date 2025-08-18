@@ -144,11 +144,11 @@
 ## 7) 기술 스택
 
 ### Backend
-- Firebase Functions
-- Express.js
-- Firestore
+- Next.js API Routes
+- MongoDB (Mongoose)
 - TypeScript
 - bcrypt (비밀번호 해싱)
+- JWT (관리자 인증)
 
 ### Frontend  
 - Next.js 14

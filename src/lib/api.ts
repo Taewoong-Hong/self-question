@@ -13,6 +13,18 @@ import {
   SurveyStats,
   SurveyListResponse
 } from '@/types/survey';
+import {
+  GuestbookNote,
+  CreateGuestbookRequest,
+  UpdateGuestbookPositionRequest,
+  GuestbookListResponse
+} from '@/types/guestbook';
+import {
+  RequestPost,
+  CreateRequestDto,
+  UpdateRequestDto,
+  RequestListResponse
+} from '@/types/request';
 
 const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || '/api';
 
@@ -250,6 +262,72 @@ export const surveyApi = {
       headers: {
         Authorization: `Bearer ${adminToken}`,
       },
+    });
+    return response.data;
+  },
+};
+
+export const guestbookApi = {
+  // 방명록 목록 조회
+  list: async () => {
+    const response = await api.get<GuestbookListResponse>('/guestbook');
+    return response.data;
+  },
+
+  // 방명록 생성
+  create: async (data: CreateGuestbookRequest) => {
+    const response = await api.post<GuestbookNote>('/guestbook', data);
+    return response.data;
+  },
+
+  // 방명록 위치 업데이트
+  updatePosition: async (id: string, data: UpdateGuestbookPositionRequest) => {
+    const response = await api.patch(`/guestbook/${id}`, data);
+    return response.data;
+  },
+
+  // 방명록 삭제
+  delete: async (id: string, password?: string) => {
+    const response = await api.delete(`/guestbook/${id}`, {
+      data: { password }
+    });
+    return response.data;
+  },
+};
+
+export const requestApi = {
+  // 요청 목록 조회
+  list: async (params?: {
+    page?: number;
+    limit?: number;
+    search?: string;
+  }) => {
+    const response = await api.get<RequestListResponse>('/requests', { params });
+    return response.data;
+  },
+
+  // 요청 상세 조회
+  get: async (id: string) => {
+    const response = await api.get<RequestPost>(`/requests/${id}`);
+    return response.data;
+  },
+
+  // 요청 생성
+  create: async (data: CreateRequestDto) => {
+    const response = await api.post<RequestPost>('/requests', data);
+    return response.data;
+  },
+
+  // 요청 수정
+  update: async (id: string, data: UpdateRequestDto & { password: string }) => {
+    const response = await api.put<RequestPost>(`/requests/${id}`, data);
+    return response.data;
+  },
+
+  // 요청 삭제
+  delete: async (id: string, password: string) => {
+    const response = await api.delete(`/requests/${id}`, {
+      data: { password }
     });
     return response.data;
   },
