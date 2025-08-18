@@ -105,7 +105,7 @@ export async function POST(request: NextRequest) {
         let livingType = '전세';
         let cumProb = 0;
         for (const [type, prob] of Object.entries(livingTypeDistribution)) {
-          cumProb += prob[ageGroup];
+          cumProb += (prob as any)[ageGroup];
           if (livingTypeRand < cumProb) {
             livingType = type;
             break;
@@ -121,8 +121,8 @@ export async function POST(request: NextRequest) {
         const intentionRand = Math.random();
         let useIntention = '매우 사용하고 싶다';
         cumProb = 0;
-        for (const [intention, prob] of Object.entries(serviceIntention[ageGroup])) {
-          cumProb += prob;
+        for (const [intention, prob] of Object.entries((serviceIntention as any)[ageGroup])) {
+          cumProb += prob as number;
           if (intentionRand < cumProb) {
             useIntention = intention;
             break;
