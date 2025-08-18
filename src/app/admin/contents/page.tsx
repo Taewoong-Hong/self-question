@@ -5,6 +5,7 @@ import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { formatDistanceToNow } from 'date-fns';
 import { ko } from 'date-fns/locale';
+import toast from 'react-hot-toast';
 
 interface ContentItem {
   id: string;
@@ -83,7 +84,7 @@ export default function AdminContentsPage() {
       ));
     } catch (error) {
       console.error('Failed to toggle hide:', error);
-      alert('숨김 처리에 실패했습니다.');
+      toast.error('숨김 처리에 실패했습니다.');
     }
   };
 
@@ -110,13 +111,51 @@ export default function AdminContentsPage() {
       setContents(prev => prev.filter(content => content.id !== contentId));
     } catch (error) {
       console.error('Failed to delete:', error);
-      alert('삭제에 실패했습니다.');
+      toast.error('삭제에 실패했습니다.');
+    }
+  };
+
+  const handleGenerateTestData = async (contentId: string, count: number) => {
+    try {
+      const token = localStorage.getItem('admin_token');
+      const content = contents.find(c => c.id === contentId);
+      
+      if (!content || content.type !== 'survey') {
+        toast.error('설문만 테스트 데이터를 생성할 수 있습니다.');
+        return;
+      }
+
+      const response = await fetch('/api/admin/generate-test-data', {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ surveyId: contentId, responseCount: count })
+      });
+      
+      if (!response.ok) {
+        throw new Error('Failed to generate test data');
+      }
+      
+      const result = await response.json();
+      toast.success(`${count}개의 테스트 응답이 생성되었습니다.`);
+      
+      // 참여자 수 업데이트
+      setContents(prev => prev.map(content => 
+        content.id === contentId 
+          ? { ...content, participant_count: count }
+          : content
+      ));
+    } catch (error) {
+      console.error('Failed to generate test data:', error);
+      toast.error('테스트 데이터 생성에 실패했습니다.');
     }
   };
 
   const handleBulkAction = async (action: 'hide' | 'show' | 'delete') => {
     if (selectedItems.length === 0) {
-      alert('선택된 항목이 없습니다.');
+      toast.error('선택된 항목이 없습니다.');
       return;
     }
 
@@ -153,7 +192,7 @@ export default function AdminContentsPage() {
       setSelectedItems([]);
     } catch (error) {
       console.error('Failed to perform bulk action:', error);
-      alert('작업 처리에 실패했습니다.');
+      toast.error('작업 처리에 실패했습니다.');
     }
   };
 
@@ -261,9 +300,10 @@ export default function AdminContentsPage() {
           </div>
         </div>
 
-        {/* 콘텐츠 테이블 */}
+        {/* 콘텐츠 목록 - 모바일에서는 카드, 데스크톱에서는 테이블 */}
         <div className="bg-zinc-900/50 backdrop-blur-sm border border-zinc-800 rounded-xl overflow-hidden">
-          <div className="overflow-x-auto">
+          {/* 데스크톱 테이블 뷰 */}
+          <div className="hidden lg:block overflow-x-auto">
             <table className="w-full">
               <thead>
                 <tr className="border-b border-zinc-800">
@@ -405,12 +445,146 @@ export default function AdminContentsPage() {
                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
                           </svg>
                         </button>
+                        {content.type === 'survey' && (
+                          <select
+                            onChange={(e) => {
+                              const count = parseInt(e.target.value);
+                              if (count > 0) {
+                                handleGenerateTestData(content.id, count);
+                                e.target.value = '0';
+                              }
+                            }}
+                            className="px-2 py-1 bg-zinc-800 border border-zinc-700 rounded text-xs text-zinc-100 focus:outline-none focus:ring-2 focus:ring-brand-500"
+                            title="테스트 데이터 생성"
+                          >
+                            <option value="0">데이터</option>
+                            <option value="50">50개</option>
+                            <option value="100">100개</option>
+                            <option value="200">200개</option>
+                            <option value="300">300개</option>
+                            <option value="500">500개</option>
+                            <option value="1000">1000개</option>
+                          </select>
+                        )}
                       </div>
                     </td>
                   </tr>
                 ))}
               </tbody>
             </table>
+          </div>
+
+          {/* 모바일 카드 뷰 */}
+          <div className="lg:hidden">
+            {filteredContents.map((content) => (
+              <div key={content.id} className={`p-4 border-b border-zinc-800 ${content.is_hidden ? 'opacity-50' : ''}`}>
+                <div className="flex items-start gap-3">
+                  <input
+                    type="checkbox"
+                    checked={selectedItems.includes(content.id)}
+                    onChange={(e) => {
+                      if (e.target.checked) {
+                        setSelectedItems([...selectedItems, content.id]);
+                      } else {
+                        setSelectedItems(selectedItems.filter(id => id !== content.id));
+                      }
+                    }}
+                    className="rounded text-surbate bg-zinc-900 border-zinc-700 mt-1"
+                  />
+                  <div className="flex-1">
+                    <div className="flex items-start justify-between mb-2">
+                      <div className="flex-1">
+                        <h3 className="text-zinc-100 font-medium pr-2">{content.title}</h3>
+                        <div className="flex flex-wrap items-center gap-2 mt-1">
+                          <span className={`inline-flex items-center px-2 py-0.5 rounded text-xs font-medium ${
+                            content.type === 'debate' 
+                              ? 'bg-blue-100/10 text-blue-400' 
+                              : 'bg-brand-100/10 text-brand-400'
+                          }`}>
+                            {content.type === 'debate' ? '투표' : '설문'}
+                          </span>
+                          <span className={`inline-flex items-center px-2 py-0.5 rounded text-xs font-medium ${
+                            content.status === 'open' 
+                              ? 'bg-green-100/10 text-green-400' 
+                              : content.status === 'closed'
+                              ? 'bg-red-100/10 text-red-400'
+                              : 'bg-yellow-100/10 text-yellow-400'
+                          }`}>
+                            {content.status === 'open' ? '진행중' : content.status === 'closed' ? '종료' : '예정'}
+                          </span>
+                          {content.is_reported && (
+                            <span className="inline-flex items-center px-2 py-0.5 rounded text-xs bg-red-900/50 text-red-400">
+                              신고됨
+                            </span>
+                          )}
+                          {content.is_hidden && (
+                            <span className="inline-flex items-center px-2 py-0.5 rounded text-xs bg-zinc-700 text-zinc-400">
+                              숨김
+                            </span>
+                          )}
+                        </div>
+                      </div>
+                      <div className="flex gap-1 items-center">
+                        <Link
+                          href={`/${content.type}s/${content.id}`}
+                          className="p-1.5 text-zinc-400 hover:text-zinc-100 transition-colors"
+                        >
+                          <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+                          </svg>
+                        </Link>
+                        <button
+                          onClick={() => handleToggleHide(content.id)}
+                          className="p-1.5 text-zinc-400 hover:text-zinc-100 transition-colors"
+                        >
+                          <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            {content.is_hidden ? (
+                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                            ) : (
+                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13.875 18.825A10.05 10.05 0 0112 19c-4.478 0-8.268-2.943-9.543-7a9.97 9.97 0 011.563-3.029m5.858.908a3 3 0 114.243 4.243M9.878 9.878l4.242 4.242M9.88 9.88l-3.29-3.29m7.532 7.532l3.29 3.29M3 3l3.59 3.59m0 0A9.953 9.953 0 0112 5c4.478 0 8.268 2.943 9.543 7a10.025 10.025 0 01-4.132 5.411m0 0L21 21" />
+                            )}
+                          </svg>
+                        </button>
+                        <button
+                          onClick={() => handleDelete(content.id)}
+                          className="p-1.5 text-red-400 hover:text-red-300 transition-colors"
+                        >
+                          <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                          </svg>
+                        </button>
+                        {content.type === 'survey' && (
+                          <select
+                            onChange={(e) => {
+                              const count = parseInt(e.target.value);
+                              if (count > 0) {
+                                handleGenerateTestData(content.id, count);
+                                e.target.value = '0';
+                              }
+                            }}
+                            className="px-1 py-0.5 bg-zinc-800 border border-zinc-700 rounded text-xs text-zinc-100 focus:outline-none focus:ring-2 focus:ring-brand-500"
+                            title="테스트 데이터 생성"
+                          >
+                            <option value="0">데이터</option>
+                            <option value="50">50개</option>
+                            <option value="100">100개</option>
+                            <option value="200">200개</option>
+                            <option value="300">300개</option>
+                            <option value="500">500개</option>
+                            <option value="1000">1000개</option>
+                          </select>
+                        )}
+                      </div>
+                    </div>
+                    <div className="text-xs text-zinc-400 space-y-0.5">
+                      <div>{content.author_nickname || '익명'} • {content.author_ip}</div>
+                      <div>참여자 {content.participant_count}명 • {formatDistanceToNow(new Date(content.created_at), { addSuffix: true, locale: ko })}</div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            ))}
           </div>
         </div>
       </main>
