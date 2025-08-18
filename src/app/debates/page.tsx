@@ -6,13 +6,14 @@ import { debateApi } from '@/lib/api';
 import { Debate } from '@/types/debate';
 import { formatDistanceToNow } from 'date-fns';
 import { ko } from 'date-fns/locale';
+import SortDropdown from '@/components/SortDropdown';
 
 export default function DebatesPage() {
   const [debates, setDebates] = useState<Debate[]>([]);
   const [loading, setLoading] = useState(true);
   const [page, setPage] = useState(1);
   const [total, setTotal] = useState(0);
-  const [sort, setSort] = useState<'latest' | 'popular'>('latest');
+  const [sortOption, setSortOption] = useState<'latest' | 'oldest' | 'popular' | 'unpopular'>('latest');
   const [searchQuery, setSearchQuery] = useState('');
   const limit = 12;
 
@@ -20,8 +21,24 @@ export default function DebatesPage() {
     const fetchDebates = async () => {
       try {
         setLoading(true);
-        const response = await debateApi.list({ page, limit, sort, search: searchQuery });
-        setDebates(response.debates);
+        const response = await debateApi.list({ 
+          page, 
+          limit, 
+          sort: sortOption === 'latest' || sortOption === 'oldest' ? 'latest' : 'popular', 
+          search: searchQuery 
+        });
+        
+        // 클라이언트 사이드에서 추가 정렬
+        let sortedDebates = response.debates;
+        if (sortOption === 'oldest') {
+          sortedDebates = sortedDebates.reverse();
+        } else if (sortOption === 'unpopular') {
+          sortedDebates = sortedDebates.sort((a, b) => 
+            (a.stats?.unique_voters || 0) - (b.stats?.unique_voters || 0)
+          );
+        }
+        
+        setDebates(sortedDebates);
         setTotal(response.pagination?.total || 0);
       } catch (error) {
         console.error('투표 목록 조회 실패:', error);
@@ -31,7 +48,7 @@ export default function DebatesPage() {
     };
 
     fetchDebates();
-  }, [page, sort, searchQuery]);
+  }, [page, sortOption, searchQuery]);
 
   return (
     <div className="min-h-screen">
@@ -77,28 +94,12 @@ export default function DebatesPage() {
           />
         </div>
         
-        {/* 정렬 탭 */}
-        <div className="flex gap-2">
-          <button
-            onClick={() => setSort('latest')}
-            className={`px-4 py-2 rounded-full text-sm font-medium transition-colors ${
-              sort === 'latest' 
-                ? 'bg-zinc-800 text-zinc-100' 
-                : 'bg-zinc-900 text-zinc-400 hover:bg-zinc-800 hover:text-zinc-200'
-            }`}
-          >
-            최신순
-          </button>
-          <button
-            onClick={() => setSort('popular')}
-            className={`px-4 py-2 rounded-full text-sm font-medium transition-colors ${
-              sort === 'popular' 
-                ? 'bg-zinc-800 text-zinc-100' 
-                : 'bg-zinc-900 text-zinc-400 hover:bg-zinc-800 hover:text-zinc-200'
-            }`}
-          >
-            인기순
-          </button>
+        {/* 정렬 드롭다운 */}
+        <div className="flex justify-end">
+          <SortDropdown
+            value={sortOption}
+            onChange={(value) => setSortOption(value as 'latest' | 'oldest' | 'popular' | 'unpopular')}
+          />
         </div>
       </div>
 

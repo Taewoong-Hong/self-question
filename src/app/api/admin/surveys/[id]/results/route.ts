@@ -30,7 +30,7 @@ export async function PUT(
       return NextResponse.json({ error: '유효하지 않은 토큰입니다' }, { status: 401 });
     }
     
-    const { admin_results, response_count } = await request.json();
+    const { admin_results, response_count, created_at, first_response_at } = await request.json();
     
     const survey = await Survey.findOne({ id: params.id });
     
@@ -42,9 +42,12 @@ export async function PUT(
     survey.admin_results = admin_results;
     survey.stats.response_count = response_count;
     
-    // 첫 응답으로 설정하여 수정 불가능하게 만들기
-    if (!survey.first_response_at) {
-      survey.first_response_at = new Date();
+    // 날짜 업데이트
+    if (created_at) {
+      survey.created_at = new Date(created_at);
+    }
+    if (first_response_at) {
+      survey.first_response_at = new Date(first_response_at);
       survey.is_editable = false;
     }
     

@@ -6,26 +6,38 @@ import { surveyApi } from '@/lib/api';
 import { Survey } from '@/types/survey';
 import { formatDistanceToNow } from 'date-fns';
 import { ko } from 'date-fns/locale';
+import SortDropdown from '@/components/SortDropdown';
 
 export default function SurveysPage() {
   const [surveys, setSurveys] = useState<Survey[]>([]);
   const [loading, setLoading] = useState(true);
-  const [sort, setSort] = useState<'latest' | 'popular'>('latest');
+  const [sortOption, setSortOption] = useState<'latest' | 'oldest' | 'popular' | 'unpopular'>('latest');
   const [statusFilter, setStatusFilter] = useState<'all' | 'open' | 'closed'>('all');
 
   useEffect(() => {
     fetchSurveys();
-  }, [sort, statusFilter]);
+  }, [sortOption, statusFilter]);
 
   const fetchSurveys = async () => {
     try {
       setLoading(true);
       const data = await surveyApi.list({
-        sort,
+        sort: sortOption === 'latest' || sortOption === 'oldest' ? 'latest' : 'popular',
         status: statusFilter === 'all' ? undefined : statusFilter,
         limit: 20,
       });
-      setSurveys(data.surveys || []);
+      
+      // 클라이언트 사이드에서 추가 정렬
+      let sortedSurveys = data.surveys || [];
+      if (sortOption === 'oldest') {
+        sortedSurveys = sortedSurveys.reverse();
+      } else if (sortOption === 'unpopular') {
+        sortedSurveys = sortedSurveys.sort((a, b) => 
+          (a.stats?.response_count || 0) - (b.stats?.response_count || 0)
+        );
+      }
+      
+      setSurveys(sortedSurveys);
     } catch (error) {
       console.error('설문 목록 조회 실패:', error);
     } finally {
@@ -92,27 +104,11 @@ export default function SurveysPage() {
           종료
         </button>
         
-        <div className="ml-auto flex gap-2">
-          <button
-            onClick={() => setSort('latest')}
-            className={`px-4 py-2 rounded-full text-sm font-medium transition-colors ${
-              sort === 'latest' 
-                ? 'bg-zinc-800 text-zinc-100' 
-                : 'bg-zinc-900 text-zinc-400 hover:bg-zinc-800 hover:text-zinc-200'
-            }`}
-          >
-            최신순
-          </button>
-          <button
-            onClick={() => setSort('popular')}
-            className={`px-4 py-2 rounded-full text-sm font-medium transition-colors ${
-              sort === 'popular' 
-                ? 'bg-zinc-800 text-zinc-100' 
-                : 'bg-zinc-900 text-zinc-400 hover:bg-zinc-800 hover:text-zinc-200'
-            }`}
-          >
-            인기순
-          </button>
+        <div className="ml-auto">
+          <SortDropdown
+            value={sortOption}
+            onChange={(value) => setSortOption(value as 'latest' | 'oldest' | 'popular' | 'unpopular')}
+          />
         </div>
       </div>
 
