@@ -240,13 +240,23 @@ export default function SurveyAdminPage() {
             </div>
             <button
               onClick={handleStatusToggle}
-              className={`px-4 py-2 rounded-lg font-semibold transition-all duration-200 ${
+              className={`p-2 rounded-lg transition-all duration-200 ${
                 survey.status === 'open'
                   ? 'bg-red-500 text-white hover:bg-red-600'
-                  : 'bg-gradient-to-r from-surbate to-brand-600 text-zinc-900 hover:from-brand-400 hover:to-brand-600 shadow-sm hover:shadow-lg hover:shadow-surbate/20 transform hover:-translate-y-0.5'
+                  : 'bg-gradient-to-r from-surbate to-brand-600 text-zinc-900 hover:from-brand-400 hover:to-brand-600'
               }`}
+              title={survey.status === 'open' ? '설문 종료' : '설문 재개'}
             >
-              {survey.status === 'open' ? '종료' : '재개'}
+              {survey.status === 'open' ? (
+                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                </svg>
+              ) : (
+                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z" />
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                </svg>
+              )}
             </button>
           </div>
         </div>
@@ -272,106 +282,6 @@ export default function SurveyAdminPage() {
           </div>
         </div>
 
-        {/* 응답 데이터 조작 */}
-        <div className="bg-zinc-900/50 backdrop-blur-sm border border-zinc-800 rounded-xl p-6">
-          <h2 className="text-lg font-semibold mb-4">테스트 데이터 생성</h2>
-          <div className="space-y-4">
-            <div>
-              <p className="text-zinc-300 mb-2">
-                현재 응답 수: <span className="font-semibold text-surbate">{survey.stats?.response_count || 0}명</span>
-              </p>
-              <p className="text-sm text-zinc-500 mb-4">
-                테스트용 응답 데이터를 자동으로 생성할 수 있습니다. 기존 응답은 모두 삭제됩니다.
-              </p>
-            </div>
-            <div className="flex gap-3">
-              <button
-                onClick={async () => {
-                  if (!window.confirm('기존 응답 데이터가 모두 삭제되고 100명의 테스트 데이터가 생성됩니다. 계속하시겠습니까?')) return;
-                  try {
-                    const response = await fetch('/api/admin/generate-test-data', {
-                      method: 'POST',
-                      headers: { 'Content-Type': 'application/json' },
-                      body: JSON.stringify({ surveyId, responseCount: 100 })
-                    });
-                    const result = await response.json();
-                    if (response.ok) {
-                      toast.success(result.message);
-                      window.location.reload();
-                    } else {
-                      toast.error(result.error || '데이터 생성에 실패했습니다.');
-                    }
-                  } catch (error) {
-                    toast.error('데이터 생성 중 오류가 발생했습니다.');
-                  }
-                }}
-                className="px-4 py-2 bg-zinc-800 text-zinc-100 rounded-lg hover:bg-zinc-700 transition-colors"
-              >
-                100명 생성
-              </button>
-              <button
-                onClick={async () => {
-                  if (!window.confirm('기존 응답 데이터가 모두 삭제되고 300명의 테스트 데이터가 생성됩니다. 계속하시겠습니까?')) return;
-                  try {
-                    const response = await fetch('/api/admin/generate-test-data', {
-                      method: 'POST',
-                      headers: { 'Content-Type': 'application/json' },
-                      body: JSON.stringify({ surveyId, responseCount: 300 })
-                    });
-                    const result = await response.json();
-                    if (response.ok) {
-                      toast.success(result.message);
-                      window.location.reload();
-                    } else {
-                      toast.error(result.error || '데이터 생성에 실패했습니다.');
-                    }
-                  } catch (error) {
-                    toast.error('데이터 생성 중 오류가 발생했습니다.');
-                  }
-                }}
-                className="px-4 py-2 bg-zinc-800 text-zinc-100 rounded-lg hover:bg-zinc-700 transition-colors"
-              >
-                300명 생성
-              </button>
-              <button
-                onClick={async () => {
-                  if (!window.confirm('기존 응답 데이터가 모두 삭제되고 500명의 테스트 데이터가 생성됩니다. 계속하시겠습니까?')) return;
-                  try {
-                    const response = await fetch('/api/admin/generate-test-data', {
-                      method: 'POST',
-                      headers: { 'Content-Type': 'application/json' },
-                      body: JSON.stringify({ surveyId, responseCount: 500 })
-                    });
-                    const result = await response.json();
-                    if (response.ok) {
-                      toast.success(result.message);
-                      window.location.reload();
-                    } else {
-                      toast.error(result.error || '데이터 생성에 실패했습니다.');
-                    }
-                  } catch (error) {
-                    toast.error('데이터 생성 중 오류가 발생했습니다.');
-                  }
-                }}
-                className="px-4 py-2 bg-gradient-to-r from-surbate to-brand-600 text-zinc-900 font-semibold rounded-lg hover:from-brand-400 hover:to-brand-600 transition-colors"
-              >
-                500명 생성
-              </button>
-            </div>
-            <div className="mt-4 p-4 bg-zinc-800/50 rounded-lg">
-              <p className="text-sm text-zinc-400">
-                <strong>생성되는 데이터 특징:</strong>
-              </p>
-              <ul className="text-sm text-zinc-400 mt-2 space-y-1 list-disc list-inside">
-                <li>연령대: 20-30대 70%, 40-60대 30%</li>
-                <li>거주 형태: 연령대별로 다른 분포</li>
-                <li>현실적인 응답 패턴 반영</li>
-                <li>다양한 의견과 피드백 포함</li>
-              </ul>
-            </div>
-          </div>
-        </div>
-
         {/* 공유 링크 */}
         <div className="bg-zinc-900/50 backdrop-blur-sm border border-zinc-800 rounded-xl p-6">
           <h2 className="text-lg font-semibold mb-4">공유 링크</h2>
@@ -388,10 +298,16 @@ export default function SurveyAdminPage() {
                   className="flex-1 px-4 py-2 bg-zinc-900 border border-zinc-800 rounded-lg text-zinc-100"
                 />
                 <button
-                  onClick={() => navigator.clipboard.writeText(`${process.env.NEXT_PUBLIC_APP_URL || window.location.origin}/surveys/${surveyId}`)}
-                  className="px-4 py-2 bg-zinc-800 text-zinc-100 rounded-lg hover:bg-zinc-700 transition-colors"
+                  onClick={() => {
+                    navigator.clipboard.writeText(`${process.env.NEXT_PUBLIC_APP_URL || window.location.origin}/surveys/${surveyId}`);
+                    toast.success('링크가 복사되었습니다.');
+                  }}
+                  className="p-2 bg-zinc-800 text-zinc-100 rounded-lg hover:bg-zinc-700 transition-colors"
+                  title="링크 복사"
                 >
-                  복사
+                  <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z" />
+                  </svg>
                 </button>
               </div>
               {/* QR 코드 표시 */}
@@ -424,10 +340,16 @@ export default function SurveyAdminPage() {
                   className="flex-1 px-4 py-2 bg-zinc-900 border border-zinc-800 rounded-lg text-zinc-100"
                 />
                 <button
-                  onClick={() => navigator.clipboard.writeText(`${process.env.NEXT_PUBLIC_APP_URL || window.location.origin}/surveys/${surveyId}/admin`)}
-                  className="px-4 py-2 bg-zinc-800 text-zinc-100 rounded-lg hover:bg-zinc-700 transition-colors"
+                  onClick={() => {
+                    navigator.clipboard.writeText(`${process.env.NEXT_PUBLIC_APP_URL || window.location.origin}/surveys/${surveyId}/admin`);
+                    toast.success('링크가 복사되었습니다.');
+                  }}
+                  className="p-2 bg-zinc-800 text-zinc-100 rounded-lg hover:bg-zinc-700 transition-colors"
+                  title="링크 복사"
                 >
-                  복사
+                  <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z" />
+                  </svg>
                 </button>
               </div>
             </div>
@@ -447,9 +369,12 @@ export default function SurveyAdminPage() {
             </div>
             <button
               onClick={handleDelete}
-              className="px-4 py-2 bg-red-500 text-white rounded-lg hover:bg-red-600 transition-colors"
+              className="p-2 bg-red-500 text-white rounded-lg hover:bg-red-600 transition-colors"
+              title="설문 삭제"
             >
-              삭제
+              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+              </svg>
             </button>
           </div>
         </div>

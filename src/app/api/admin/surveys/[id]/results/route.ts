@@ -13,7 +13,7 @@ export async function PUT(
   try {
     await connectDB();
     
-    // 관리자 인증 확인
+    // 슈퍼 관리자 인증 확인
     const authHeader = request.headers.get('authorization');
     if (!authHeader || !authHeader.startsWith('Bearer ')) {
       return NextResponse.json({ error: '인증이 필요합니다' }, { status: 401 });
@@ -21,7 +21,11 @@ export async function PUT(
     
     const token = authHeader.split(' ')[1];
     try {
-      jwt.verify(token, process.env.JWT_SECRET || 'your-secret-key');
+      const decoded = jwt.verify(token, process.env.JWT_SECRET || 'your-secret-key') as any;
+      // 슈퍼 관리자인지 확인
+      if (!decoded.isAdmin) {
+        return NextResponse.json({ error: '슈퍼 관리자 권한이 필요합니다' }, { status: 403 });
+      }
     } catch (error) {
       return NextResponse.json({ error: '유효하지 않은 토큰입니다' }, { status: 401 });
     }

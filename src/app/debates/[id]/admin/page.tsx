@@ -8,6 +8,7 @@ import { Debate } from '@/types/debate';
 import { formatDistanceToNow } from 'date-fns';
 import { ko } from 'date-fns/locale';
 import QRCode from 'qrcode';
+import toast from 'react-hot-toast';
 
 export default function DebateAdminPage() {
   const params = useParams();
@@ -290,13 +291,23 @@ export default function DebateAdminPage() {
             </div>
             <button
               onClick={handleStatusToggle}
-              className={`px-3 py-1.5 sm:px-4 sm:py-2 text-sm sm:text-base rounded-lg font-semibold transition-all duration-200 ${
+              className={`p-2 rounded-lg transition-all duration-200 ${
                 debate.status === 'active'
                   ? 'bg-red-500 text-white hover:bg-red-600'
-                  : 'bg-gradient-to-r from-surbate to-brand-600 text-zinc-900 hover:from-brand-400 hover:to-brand-600 shadow-sm hover:shadow-lg hover:shadow-surbate/20 transform hover:-translate-y-0.5'
+                  : 'bg-gradient-to-r from-surbate to-brand-600 text-zinc-900 hover:from-brand-400 hover:to-brand-600'
               }`}
+              title={debate.status === 'active' ? '투표 종료' : '투표 재개'}
             >
-              {debate.status === 'active' ? '종료' : '재개'}
+              {debate.status === 'active' ? (
+                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                </svg>
+              ) : (
+                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z" />
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                </svg>
+              )}
             </button>
           </div>
         </div>
@@ -329,10 +340,16 @@ export default function DebateAdminPage() {
                   className="flex-1 px-3 py-1.5 sm:px-4 sm:py-2 text-sm sm:text-base bg-zinc-900 border border-zinc-800 rounded-lg text-zinc-100"
                 />
                 <button
-                  onClick={() => navigator.clipboard.writeText(`${window.location.origin}/debates/${debateId}`)}
-                  className="px-3 py-1.5 sm:px-4 sm:py-2 text-sm sm:text-base bg-zinc-800 text-zinc-100 rounded-lg hover:bg-zinc-700 transition-colors"
+                  onClick={() => {
+                    navigator.clipboard.writeText(`${window.location.origin}/debates/${debateId}`);
+                    toast.success('링크가 복사되었습니다.');
+                  }}
+                  className="p-2 bg-zinc-800 text-zinc-100 rounded-lg hover:bg-zinc-700 transition-colors"
+                  title="링크 복사"
                 >
-                  복사
+                  <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z" />
+                  </svg>
                 </button>
               </div>
             </div>
@@ -348,10 +365,16 @@ export default function DebateAdminPage() {
                   className="flex-1 px-3 py-1.5 sm:px-4 sm:py-2 text-sm sm:text-base bg-zinc-900 border border-zinc-800 rounded-lg text-zinc-100"
                 />
                 <button
-                  onClick={() => navigator.clipboard.writeText(`${window.location.origin}/debates/${debateId}/admin`)}
-                  className="px-3 py-1.5 sm:px-4 sm:py-2 text-sm sm:text-base bg-zinc-800 text-zinc-100 rounded-lg hover:bg-zinc-700 transition-colors"
+                  onClick={() => {
+                    navigator.clipboard.writeText(`${window.location.origin}/debates/${debateId}/admin`);
+                    toast.success('링크가 복사되었습니다.');
+                  }}
+                  className="p-2 bg-zinc-800 text-zinc-100 rounded-lg hover:bg-zinc-700 transition-colors"
+                  title="링크 복사"
                 >
-                  복사
+                  <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z" />
+                  </svg>
                 </button>
               </div>
             </div>
@@ -399,9 +422,12 @@ export default function DebateAdminPage() {
             </div>
             <button
               onClick={handleDelete}
-              className="px-3 py-1.5 sm:px-4 sm:py-2 text-sm sm:text-base bg-red-500 text-white rounded-lg hover:bg-red-600 transition-colors"
+              className="p-2 bg-red-500 text-white rounded-lg hover:bg-red-600 transition-colors"
+              title="투표 삭제"
             >
-              삭제
+              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+              </svg>
             </button>
           </div>
         </div>

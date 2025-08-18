@@ -43,8 +43,14 @@ export default function EditSurveyResultsPage() {
   const [results, setResults] = useState<any>({});
 
   useEffect(() => {
+    // 관리자 인증 확인
+    const token = localStorage.getItem('admin_token');
+    if (!token) {
+      router.push('/admin');
+      return;
+    }
     fetchSurvey();
-  }, [surveyId]);
+  }, [surveyId, router]);
 
   const fetchSurvey = async () => {
     try {
