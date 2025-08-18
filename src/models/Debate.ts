@@ -79,6 +79,8 @@ export interface IDebate extends Document {
     opinion_count: number;
     view_count: number;
     last_vote_at?: Date;
+    agree_count?: number;
+    disagree_count?: number;
   };
   
   // Opinions
@@ -86,6 +88,19 @@ export interface IDebate extends Document {
   
   // IP tracking
   voter_ips: IVoterIP[];
+  
+  // Admin-modified results (replaces actual vote data)
+  admin_results?: {
+    agree_count: number;
+    disagree_count: number;
+    opinions?: Array<{
+      id: string;
+      content: string;
+      vote_type: 'agree' | 'disagree';
+      voter_name?: string;
+      created_at: string;
+    }>;
+  };
   
   // URLs
   public_url?: string;
@@ -323,7 +338,31 @@ const debateSchema = new Schema<IDebate>({
       type: Number,
       default: 0
     },
-    last_vote_at: Date
+    last_vote_at: Date,
+    agree_count: {
+      type: Number,
+      default: 0
+    },
+    disagree_count: {
+      type: Number,
+      default: 0
+    }
+  },
+  
+  // Admin-modified results
+  admin_results: {
+    agree_count: Number,
+    disagree_count: Number,
+    opinions: [{
+      id: String,
+      content: String,
+      vote_type: {
+        type: String,
+        enum: ['agree', 'disagree']
+      },
+      voter_name: String,
+      created_at: String
+    }]
   },
   
   // Opinions

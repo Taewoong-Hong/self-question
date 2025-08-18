@@ -248,7 +248,7 @@ export const surveyApi = {
 
   // 설문 상태 변경 (관리자)
   updateStatus: async (surveyId: string, status: 'open' | 'closed', adminToken: string) => {
-    const response = await api.patch(`/surveys/${surveyId}/status`, { status }, {
+    const response = await api.put(`/surveys/${surveyId}/status`, { status }, {
       headers: {
         Authorization: `Bearer ${adminToken}`,
       },
