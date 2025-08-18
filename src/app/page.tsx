@@ -23,7 +23,8 @@ export default function Home() {
   const [items, setItems] = useState<ContentItem[]>([]);
   const [loading, setLoading] = useState(true);
   const [filter, setFilter] = useState<'all' | 'debate' | 'survey'>('all');
-  const [sort, setSort] = useState<'latest' | 'oldest' | 'popular' | 'unpopular'>('latest');
+  const [sortBy, setSortBy] = useState<'date' | 'popular'>('date');
+  const [sortOrder, setSortOrder] = useState<'desc' | 'asc'>('desc');
   const [searchQuery, setSearchQuery] = useState('');
 
   useEffect(() => {
@@ -84,17 +85,12 @@ export default function Home() {
 
         // 정렬
         combinedItems.sort((a, b) => {
-          switch (sort) {
-            case 'latest':
-              return new Date(b.created_at).getTime() - new Date(a.created_at).getTime();
-            case 'oldest':
-              return new Date(a.created_at).getTime() - new Date(b.created_at).getTime();
-            case 'popular':
-              return b.participantCount - a.participantCount;
-            case 'unpopular':
-              return a.participantCount - b.participantCount;
-            default:
-              return 0;
+          if (sortBy === 'date') {
+            const diff = new Date(b.created_at).getTime() - new Date(a.created_at).getTime();
+            return sortOrder === 'desc' ? diff : -diff;
+          } else {
+            const diff = b.participantCount - a.participantCount;
+            return sortOrder === 'desc' ? diff : -diff;
           }
         });
 
@@ -107,7 +103,7 @@ export default function Home() {
     };
 
     fetchData();
-  }, [filter, sort, searchQuery]);
+  }, [filter, sortBy, sortOrder, searchQuery]);
 
   return (
     <div className="min-h-screen">
@@ -174,16 +170,22 @@ export default function Home() {
             <span className="ml-1 text-zinc-500">({items.filter(i => i.type === 'survey').length})</span>
           </button>
           
-          <div className="ml-auto">
+          <div className="ml-auto flex gap-1">
             <select
-              value={sort}
-              onChange={(e) => setSort(e.target.value as any)}
+              value={sortBy}
+              onChange={(e) => setSortBy(e.target.value as 'date' | 'popular')}
               className="px-3 py-1.5 bg-zinc-900 border border-zinc-800 rounded-lg text-xs text-zinc-100 focus:outline-none focus:ring-2 focus:ring-brand-500 focus:border-transparent"
             >
-              <option value="latest">최신순 ↓</option>
-              <option value="oldest">오래된순 ↑</option>
-              <option value="popular">인기순 ↓</option>
-              <option value="unpopular">인기낮은순 ↑</option>
+              <option value="date">기간순</option>
+              <option value="popular">인기순</option>
+            </select>
+            <select
+              value={sortOrder}
+              onChange={(e) => setSortOrder(e.target.value as 'desc' | 'asc')}
+              className="px-2 py-1.5 bg-zinc-900 border border-zinc-800 rounded-lg text-xs text-zinc-100 focus:outline-none focus:ring-2 focus:ring-brand-500 focus:border-transparent"
+            >
+              <option value="desc">↓</option>
+              <option value="asc">↑</option>
             </select>
           </div>
         </div>
