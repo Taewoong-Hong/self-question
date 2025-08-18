@@ -399,7 +399,9 @@ export default function AdminContentsPage() {
                     <td className="px-6 py-4">
                       <div className="text-sm">
                         <div className="text-zinc-100">{content.author_nickname || '익명'}</div>
-                        <div className="text-zinc-500">{content.author_ip}</div>
+                        <div className="text-zinc-500 text-xs truncate max-w-[150px]" title={content.author_ip}>
+                          {content.author_ip}
+                        </div>
                       </div>
                     </td>
                     <td className="px-6 py-4 text-zinc-400">
@@ -578,7 +580,11 @@ export default function AdminContentsPage() {
                       </div>
                     </div>
                     <div className="text-xs text-zinc-400 space-y-0.5">
-                      <div>{content.author_nickname || '익명'} • {content.author_ip}</div>
+                      <div className="flex items-center gap-1">
+                        <span>{content.author_nickname || '익명'}</span>
+                        <span>•</span>
+                        <span className="truncate max-w-[120px]" title={content.author_ip}>{content.author_ip}</span>
+                      </div>
                       <div>참여자 {content.participant_count}명 • {formatDistanceToNow(new Date(content.created_at), { addSuffix: true, locale: ko })}</div>
                     </div>
                   </div>
