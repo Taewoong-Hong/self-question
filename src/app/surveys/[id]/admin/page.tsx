@@ -43,9 +43,11 @@ export default function SurveyAdminPage() {
       // 서버에서 인증 상태 확인 (쿠키 기반)
       const data = await surveyApi.get(surveyId);
       setSurvey(data.survey);
-      // 관리자 권한이 있는지는 서버 응답에 따라 결정
-      // 일단 false로 설정하여 비밀번호 입력을 받도록 함
-      setIsAuthenticated(false);
+      // localStorage에 토큰이 있으면 인증된 것으로 유지
+      const savedToken = localStorage.getItem(`survey_admin_${surveyId}`);
+      if (!savedToken) {
+        setIsAuthenticated(false);
+      }
     } catch (error) {
       console.error('설문 조회 실패:', error);
     } finally {

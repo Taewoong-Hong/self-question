@@ -45,6 +45,7 @@ export default function EditSurveyResultsPage() {
   const [results, setResults] = useState<any>({});
   const [createdAt, setCreatedAt] = useState<string>('');
   const [firstResponseAt, setFirstResponseAt] = useState<string>('');
+  const [closeAt, setCloseAt] = useState<string>('');
 
   useEffect(() => {
     // 관리자 인증 확인
@@ -82,6 +83,9 @@ export default function EditSurveyResultsPage() {
       }
       if (data.first_response_at) {
         setFirstResponseAt(new Date(data.first_response_at).toISOString().slice(0, 16));
+      }
+      if (data.settings?.close_at) {
+        setCloseAt(new Date(data.settings.close_at).toISOString().slice(0, 16));
       }
       
       // Initialize results from existing admin_results or empty
@@ -232,7 +236,8 @@ export default function EditSurveyResultsPage() {
           admin_results: results,
           response_count: totalResponses,
           created_at: createdAt ? new Date(createdAt).toISOString() : undefined,
-          first_response_at: firstResponseAt ? new Date(firstResponseAt).toISOString() : undefined
+          first_response_at: firstResponseAt ? new Date(firstResponseAt).toISOString() : undefined,
+          close_at: closeAt ? new Date(closeAt).toISOString() : undefined
         })
       });
       
@@ -276,7 +281,7 @@ export default function EditSurveyResultsPage() {
         {/* 날짜 수정 섹션 */}
         <div className="bg-zinc-900/50 backdrop-blur-sm border border-zinc-800 rounded-xl p-6 mb-6">
           <h3 className="text-lg font-semibold text-zinc-100 mb-4">설문 날짜 정보</h3>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
             <div>
               <label className="block text-sm text-zinc-400 mb-2">생성일시</label>
               <input
@@ -292,6 +297,15 @@ export default function EditSurveyResultsPage() {
                 type="datetime-local"
                 value={firstResponseAt}
                 onChange={(e) => setFirstResponseAt(e.target.value)}
+                className="w-full px-3 py-1.5 bg-zinc-800 border border-zinc-700 rounded-lg text-zinc-100 focus:outline-none focus:ring-2 focus:ring-brand-500"
+              />
+            </div>
+            <div>
+              <label className="block text-sm text-zinc-400 mb-2">종료일시</label>
+              <input
+                type="datetime-local"
+                value={closeAt}
+                onChange={(e) => setCloseAt(e.target.value)}
                 className="w-full px-3 py-1.5 bg-zinc-800 border border-zinc-700 rounded-lg text-zinc-100 focus:outline-none focus:ring-2 focus:ring-brand-500"
               />
             </div>
