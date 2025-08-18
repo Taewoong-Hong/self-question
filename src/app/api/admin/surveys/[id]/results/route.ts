@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { connectDB } from '@/lib/db';
 import Survey from '@/models/Survey';
-import jwt from 'jsonwebtoken';
+import { verifyJwt } from '@/lib/jwt';
 
 export const dynamic = 'force-dynamic';
 
@@ -21,7 +21,7 @@ export async function PUT(
     
     const token = authHeader.split(' ')[1];
     try {
-      const decoded = jwt.verify(token, process.env.JWT_SECRET || 'your-secret-key') as any;
+      const decoded = verifyJwt(token) as any;
       // 슈퍼 관리자인지 확인
       if (!decoded.isAdmin) {
         return NextResponse.json({ error: '슈퍼 관리자 권한이 필요합니다' }, { status: 403 });

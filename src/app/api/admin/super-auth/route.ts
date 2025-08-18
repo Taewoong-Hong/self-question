@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import jwt from 'jsonwebtoken';
+import { signJwt } from '@/lib/jwt';
 
 export const dynamic = 'force-dynamic';
 
@@ -20,26 +20,12 @@ export async function POST(request: NextRequest) {
       );
     }
     
-    // JWT_SECRET 확인
-    const jwtSecret = process.env.JWT_SECRET;
-    if (!jwtSecret) {
-      console.error('JWT_SECRET is not set in environment variables');
-      return NextResponse.json(
-        { error: '서버 설정 오류가 발생했습니다' },
-        { status: 500 }
-      );
-    }
-    
     // JWT 토큰 생성
-    const token = jwt.sign(
-      { 
-        username: SUPER_ADMIN_USERNAME,
-        role: 'super_admin',
-        isAdmin: true 
-      },
-      jwtSecret,
-      { expiresIn: '24h' }
-    );
+    const token = signJwt({
+      username: SUPER_ADMIN_USERNAME,
+      role: 'super_admin',
+      isAdmin: true
+    });
     
     return NextResponse.json({
       message: '로그인 성공',
