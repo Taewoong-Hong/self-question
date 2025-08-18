@@ -3,6 +3,7 @@ import { connectDB } from '@/lib/db';
 import Survey from '@/models/Survey';
 import Response from '@/models/Response';
 import crypto from 'crypto';
+import { verifyJwt } from '@/lib/jwt';
 
 export const dynamic = 'force-dynamic';
 
@@ -10,9 +11,21 @@ export async function POST(request: NextRequest) {
   try {
     await connectDB();
     
+    // 슈퍼 관리자 인증 확인
     const authHeader = request.headers.get('authorization');
     if (!authHeader || !authHeader.startsWith('Bearer ')) {
       return NextResponse.json({ error: '인증이 필요합니다' }, { status: 401 });
+    }
+    
+    const token = authHeader.split(' ')[1];
+    try {
+      const decoded = verifyJwt(token) as any;
+      // 슈퍼 관리자인지 확인
+      if (!decoded.isAdmin) {
+        return NextResponse.json({ error: '슈퍼 관리자 권한이 필요합니다' }, { status: 403 });
+      }
+    } catch (error) {
+      return NextResponse.json({ error: '유효하지 않은 토큰입니다' }, { status: 401 });
     }
     
     const { surveyId, responseCount = 500 } = await request.json();
