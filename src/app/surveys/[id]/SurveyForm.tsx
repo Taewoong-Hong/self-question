@@ -245,7 +245,7 @@ export default function SurveyForm({ surveyId, questions, onComplete }: SurveyFo
           </div>
         );
 
-      case 'text':
+      case 'short_text':
         return (
           <input
             type="text"
@@ -256,7 +256,7 @@ export default function SurveyForm({ surveyId, questions, onComplete }: SurveyFo
           />
         );
 
-      case 'textarea':
+      case 'long_text':
         return (
           <textarea
             value={value || ''}
@@ -311,7 +311,7 @@ export default function SurveyForm({ surveyId, questions, onComplete }: SurveyFo
       {/* 현재 질문 */}
       <div className="mb-8">
         <h2 className="text-lg sm:text-xl font-semibold text-zinc-100 mb-2">
-          {currentQuestion.text}
+          {currentQuestion.title}
           {currentQuestion.required && <span className="text-red-400 ml-1">*</span>}
         </h2>
         {currentQuestion.description && (
