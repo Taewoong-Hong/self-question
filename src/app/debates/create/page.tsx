@@ -126,10 +126,16 @@ export default function CreateDebatePage() {
               <input
                 type="text"
                 value={formData.tags?.join(', ')}
-                onChange={(e) => setFormData({ 
-                  ...formData, 
-                  tags: e.target.value.split(',').map(tag => tag.trim()).filter(tag => tag) 
-                })}
+                onChange={(e) => {
+                  const value = e.target.value;
+                  // 마지막 문자가 쉼표인 경우를 처리하기 위해 빈 문자열도 유지
+                  const tags = value.split(',').map(tag => tag.trim());
+                  // 마지막 태그가 빈 문자열이 아니거나, 마지막 문자가 쉼표인 경우에만 필터링
+                  const filteredTags = value.endsWith(',') 
+                    ? tags.slice(0, -1).filter(tag => tag)
+                    : tags.filter(tag => tag);
+                  setFormData({ ...formData, tags: filteredTags });
+                }}
                 className="w-full px-4 py-2 bg-zinc-900 border border-zinc-800 rounded-lg text-zinc-100 placeholder-zinc-500 focus:outline-none focus:ring-2 ring-surbate focus:border-transparent"
                 placeholder="태그1, 태그2 (쉼표로 구분)"
               />
