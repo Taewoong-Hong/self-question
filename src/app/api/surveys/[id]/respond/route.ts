@@ -71,7 +71,7 @@ export async function POST(
       respondent_ip_hash: ipHash,
       user_agent: request.headers.get('user-agent') || '',
       answers: body.answers,
-      started_at: new Date(body.started_at),
+      started_at: body.started_at ? new Date(body.started_at) : new Date(),
       submitted_at: new Date(),
       referrer: request.headers.get('referer') || '',
       utm_source: body.utm_source,

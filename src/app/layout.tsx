@@ -4,6 +4,7 @@ import './globals.css';
 import { Inter } from 'next/font/google';
 import Link from 'next/link';
 import { useState, useEffect } from 'react';
+import { Toaster } from 'react-hot-toast';
 
 const inter = Inter({ subsets: ['latin'] });
 
@@ -201,6 +202,32 @@ export default function RootLayout({
             </div>
           </main>
         </div>
+        <Toaster 
+          position="top-center"
+          toastOptions={{
+            duration: 3000,
+            style: {
+              background: '#18181b',
+              color: '#fafafa',
+              border: '1px solid #27272a',
+              borderRadius: '0.5rem',
+              fontSize: '14px',
+              padding: '12px 16px',
+            },
+            success: {
+              iconTheme: {
+                primary: '#10b981',
+                secondary: '#fafafa',
+              },
+            },
+            error: {
+              iconTheme: {
+                primary: '#ef4444',
+                secondary: '#fafafa',
+              },
+            },
+          }}
+        />
       </body>
     </html>
   );

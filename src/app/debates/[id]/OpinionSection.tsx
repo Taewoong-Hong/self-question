@@ -65,7 +65,7 @@ export default function OpinionSection({ debateId }: OpinionSectionProps) {
                 })}
               </span>
             </div>
-            <p className="text-sm sm:text-base text-zinc-400">{opinion.content}</p>
+            <p className="text-sm sm:text-base text-zinc-400 whitespace-pre-wrap">{opinion.content}</p>
           </div>
         ))}
       </div>

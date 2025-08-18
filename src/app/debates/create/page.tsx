@@ -7,6 +7,7 @@ import { CreateDebateDto } from '@/types/debate';
 import DatePicker from 'react-datepicker';
 import 'react-datepicker/dist/react-datepicker.css';
 import { ko } from 'date-fns/locale';
+import toast from 'react-hot-toast';
 
 export default function CreateDebatePage() {
   const router = useRouter();
@@ -37,12 +38,12 @@ export default function CreateDebatePage() {
     e.preventDefault();
     
     if (!formData.title || !formData.admin_password || !formData.author_nickname) {
-      alert('제목, 작성자 닉네임, 비밀번호는 필수입니다.');
+      toast.error('제목, 작성자 닉네임, 비밀번호는 필수입니다.');
       return;
     }
 
     if (formData.admin_password.length < 8) {
-      alert('작성자 비밀번호는 8자 이상이어야 합니다.');
+      toast.error('작성자 비밀번호는 8자 이상이어야 합니다.');
       return;
     }
 
@@ -55,11 +56,11 @@ export default function CreateDebatePage() {
       };
       
       const result = await debateApi.create(submitData);
-      alert(`투표가 생성되었습니다!\n공개 URL: ${window.location.origin}/debates/${result.id}\n작성자 페이지: ${window.location.origin}/debates/${result.id}/admin`);
+      toast.success('투표가 성공적으로 생성되었습니다!');
       router.push(`/debates/${result.id}`);
     } catch (error: any) {
       console.error('투표 생성 실패:', error);
-      alert(error.message || '투표 생성에 실패했습니다.');
+      toast.error(error.message || '투표 생성에 실패했습니다.');
     } finally {
       setLoading(false);
     }

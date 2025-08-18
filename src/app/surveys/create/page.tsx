@@ -7,6 +7,7 @@ import { SurveyCreateData, QuestionType, Question } from '@/types/survey';
 import DatePicker from 'react-datepicker';
 import 'react-datepicker/dist/react-datepicker.css';
 import { ko } from 'date-fns/locale';
+import toast from 'react-hot-toast';
 
 export default function CreateSurveyPage() {
   const router = useRouter();
@@ -55,23 +56,23 @@ export default function CreateSurveyPage() {
     e.preventDefault();
     
     if (!formData.title || !formData.admin_password) {
-      alert('제목과 작성자 비밀번호는 필수입니다.');
+      toast.error('제목과 작성자 비밀번호는 필수입니다.');
       return;
     }
 
     if (formData.admin_password.length < 8) {
-      alert('작성자 비밀번호는 8자 이상이어야 합니다.');
+      toast.error('작성자 비밀번호는 8자 이상이어야 합니다.');
       return;
     }
 
     try {
       setLoading(true);
       const result = await surveyApi.create(formData);
-      alert(`설문이 생성되었습니다!\n공개 URL: ${window.location.origin}/surveys/${result.id}\n작성자 페이지: ${window.location.origin}/surveys/${result.id}/admin`);
+      toast.success('설문이 성공적으로 생성되었습니다!');
       router.push(`/surveys/${result.id}`);
     } catch (error) {
       console.error('설문 생성 실패:', error);
-      alert('설문 생성에 실패했습니다.');
+      toast.error('설문 생성에 실패했습니다.');
     } finally {
       setLoading(false);
     }

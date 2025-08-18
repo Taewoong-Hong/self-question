@@ -3,6 +3,7 @@
 import { useState } from 'react';
 import { surveyApi } from '@/lib/api';
 import { SurveyResponseData } from '@/types/survey';
+import toast from 'react-hot-toast';
 
 interface SurveyFormProps {
   surveyId: string;
@@ -113,7 +114,7 @@ export default function SurveyForm({ surveyId, questions, onComplete }: SurveyFo
     }
 
     if (!isValid) {
-      alert('필수 항목을 모두 입력해주세요.');
+      toast.error('필수 항목을 모두 입력해주세요.');
       return;
     }
 
@@ -160,14 +161,14 @@ export default function SurveyForm({ surveyId, questions, onComplete }: SurveyFo
       // 임시 저장 삭제
       localStorage.removeItem(`survey-${surveyId}-draft`);
       
-      alert('설문이 제출되었습니다. 감사합니다!');
+      toast.success('설문이 제출되었습니다. 감사합니다!');
       onComplete();
     } catch (error: any) {
       if (error.message?.includes('이미 응답')) {
-        alert('이미 응답한 설문입니다.');
+        toast.error('이미 응답한 설문입니다.');
         onComplete();
       } else {
-        alert('설문 제출 중 오류가 발생했습니다.');
+        toast.error('설문 제출 중 오류가 발생했습니다.');
       }
     } finally {
       setSubmitting(false);
@@ -315,7 +316,7 @@ export default function SurveyForm({ surveyId, questions, onComplete }: SurveyFo
           {currentQuestion.required && <span className="text-red-400 ml-1">*</span>}
         </h2>
         {currentQuestion.description && (
-          <p className="text-sm text-zinc-400 mb-4">{currentQuestion.description}</p>
+          <p className="text-sm text-zinc-400 mb-4 whitespace-pre-wrap">{currentQuestion.description}</p>
         )}
         
         {renderQuestionInput(currentQuestion)}

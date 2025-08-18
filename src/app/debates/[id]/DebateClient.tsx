@@ -39,7 +39,7 @@ export default function DebateClient({ debate }: DebateProps) {
           <div>
             <h1 className="text-xl sm:text-2xl lg:text-3xl font-bold mb-2">{debate.title}</h1>
             {debate.description && (
-              <p className="text-zinc-400 text-sm sm:text-base lg:text-lg">{debate.description}</p>
+              <p className="text-zinc-400 text-sm sm:text-base lg:text-lg whitespace-pre-wrap">{debate.description}</p>
             )}
             <div className="flex flex-wrap items-center gap-2 sm:gap-4 mt-3 text-xs sm:text-sm text-zinc-500">
               <span>작성자: {debate.author_nickname || '익명'}</span>

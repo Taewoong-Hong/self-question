@@ -73,7 +73,7 @@ export default function SurveyClient({ survey }: SurveyProps) {
         <div className="pr-12">
           <h1 className="text-xl sm:text-2xl lg:text-3xl font-bold mb-2">{survey.title}</h1>
           {survey.description && (
-            <p className="text-zinc-400 text-sm sm:text-base lg:text-lg">{survey.description}</p>
+            <p className="text-zinc-400 text-sm sm:text-base lg:text-lg whitespace-pre-wrap">{survey.description}</p>
           )}
           <div className="flex flex-wrap items-center gap-2 sm:gap-4 mt-3 text-xs sm:text-sm text-zinc-500">
             <span>작성자: {survey.author_nickname || '익명'}</span>
