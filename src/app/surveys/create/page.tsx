@@ -3,7 +3,7 @@
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { surveyApi } from '@/lib/api';
-import { SurveyCreateData, QuestionType } from '@/types/survey';
+import { SurveyCreateData, QuestionType, Question } from '@/types/survey';
 import DatePicker from 'react-datepicker';
 import 'react-datepicker/dist/react-datepicker.css';
 import { ko } from 'date-fns/locale';
@@ -78,23 +78,23 @@ export default function CreateSurveyPage() {
   };
 
   const addQuestion = () => {
+    const newQuestion: Question = {
+      id: Date.now().toString(),
+      title: '',
+      type: 'single_choice',
+      required: true,
+      properties: {
+        choices: [
+          { id: Date.now().toString() + '1', label: '' },
+          { id: Date.now().toString() + '2', label: '' }
+        ]
+      },
+      order: formData.questions.length
+    };
+    
     setFormData({
       ...formData,
-      questions: [
-        ...formData.questions,
-        {
-          title: '',
-          type: 'single_choice',
-          required: true,
-          properties: {
-            choices: [
-              { id: Date.now().toString() + '1', label: '' },
-              { id: Date.now().toString() + '2', label: '' }
-            ]
-          },
-          order: formData.questions.length
-        }
-      ]
+      questions: [...formData.questions, newQuestion]
     });
   };
 
@@ -361,10 +361,10 @@ export default function CreateSurveyPage() {
                         <div className="space-y-2 mt-2">
                           <div className="grid grid-cols-3 gap-2">
                             <select
-                              value={question.skip_logic.condition.question_id}
+                              value={question.skip_logic!.condition.question_id}
                               onChange={(e) => updateQuestion(qIndex, 'skip_logic', {
-                                ...question.skip_logic,
-                                condition: { ...question.skip_logic.condition, question_id: e.target.value }
+                                ...question.skip_logic!,
+                                condition: { ...question.skip_logic!.condition, question_id: e.target.value }
                               })}
                               className="px-2 py-1 bg-zinc-800 border border-zinc-700 rounded text-sm text-zinc-100"
                             >
@@ -376,10 +376,10 @@ export default function CreateSurveyPage() {
                             </select>
                             
                             <select
-                              value={question.skip_logic.condition.operator}
+                              value={question.skip_logic!.condition.operator}
                               onChange={(e) => updateQuestion(qIndex, 'skip_logic', {
-                                ...question.skip_logic,
-                                condition: { ...question.skip_logic.condition, operator: e.target.value as any }
+                                ...question.skip_logic!,
+                                condition: { ...question.skip_logic!.condition, operator: e.target.value as any }
                               })}
                               className="px-2 py-1 bg-zinc-800 border border-zinc-700 rounded text-sm text-zinc-100"
                             >
@@ -388,14 +388,14 @@ export default function CreateSurveyPage() {
                             </select>
                             
                             {(() => {
-                              const targetQuestion = formData.questions.find(q => q.id === question.skip_logic.condition.question_id);
+                              const targetQuestion = formData.questions.find(q => q.id === question.skip_logic!.condition.question_id);
                               if (targetQuestion && (targetQuestion.type === 'single_choice' || targetQuestion.type === 'multiple_choice')) {
                                 return (
                                   <select
-                                    value={question.skip_logic.condition.value}
+                                    value={question.skip_logic!.condition.value}
                                     onChange={(e) => updateQuestion(qIndex, 'skip_logic', {
-                                      ...question.skip_logic,
-                                      condition: { ...question.skip_logic.condition, value: e.target.value }
+                                      ...question.skip_logic!,
+                                      condition: { ...question.skip_logic!.condition, value: e.target.value }
                                     })}
                                     className="px-2 py-1 bg-zinc-800 border border-zinc-700 rounded text-sm text-zinc-100"
                                   >
@@ -411,10 +411,10 @@ export default function CreateSurveyPage() {
                                 return (
                                   <input
                                     type="text"
-                                    value={question.skip_logic.condition.value}
+                                    value={question.skip_logic!.condition.value}
                                     onChange={(e) => updateQuestion(qIndex, 'skip_logic', {
-                                      ...question.skip_logic,
-                                      condition: { ...question.skip_logic.condition, value: e.target.value }
+                                      ...question.skip_logic!,
+                                      condition: { ...question.skip_logic!.condition, value: e.target.value }
                                     })}
                                     placeholder="값"
                                     className="px-2 py-1 bg-zinc-800 border border-zinc-700 rounded text-sm text-zinc-100"
@@ -425,7 +425,7 @@ export default function CreateSurveyPage() {
                           </div>
                           
                           <p className="text-xs text-zinc-500">
-                            {question.skip_logic.action === 'skip' ? '이 조건이 맞으면 질문을 건너뜁니다' : '이 조건이 맞을 때만 표시됩니다'}
+                            {question.skip_logic!.action === 'skip' ? '이 조건이 맞으면 질문을 건너뜁니다' : '이 조건이 맞을 때만 표시됩니다'}
                           </p>
                         </div>
                       )}
