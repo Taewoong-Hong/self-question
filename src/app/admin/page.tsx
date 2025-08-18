@@ -22,28 +22,26 @@ export default function AdminLoginPage() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError('');
-    
-    // 하드코딩된 관리자 계정 확인
-    if (username !== 'admin' || password !== 'admin123!') {
-      setError('아이디 또는 비밀번호가 일치하지 않습니다');
-      return;
-    }
+    setLoading(true);
     
     try {
-      setLoading(true);
+      const response = await fetch('/api/admin/super-auth', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ username, password }),
+      });
       
-      // 간단한 토큰 생성 (실제로는 서버에서 JWT 생성해야 함)
-      const token = btoa(JSON.stringify({ 
-        username: 'admin', 
-        role: 'super_admin',
-        timestamp: Date.now() 
-      }));
+      const data = await response.json();
       
-      localStorage.setItem('admin_token', token);
-      localStorage.setItem('admin_user', JSON.stringify({
-        username: 'admin',
-        role: 'super_admin'
-      }));
+      if (!response.ok) {
+        setError(data.error || '로그인에 실패했습니다');
+        return;
+      }
+      
+      localStorage.setItem('admin_token', data.token);
+      localStorage.setItem('admin_user', JSON.stringify(data.user));
       
       router.push('/admin/dashboard');
     } catch (error) {
