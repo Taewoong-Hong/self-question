@@ -307,7 +307,7 @@ export default function EditSurveyResultsPage() {
                 <div className="space-y-3">
                   {question.properties?.choices?.map(choice => (
                     <div key={choice.id} className="flex items-center gap-4">
-                      <span className="text-zinc-300 flex-1">{choice.text}</span>
+                      <span className="text-zinc-300 flex-1">{(choice as any).label || (choice as any).text || '(선택지 텍스트 없음)'}</span>
                       <input
                         type="number"
                         min="0"

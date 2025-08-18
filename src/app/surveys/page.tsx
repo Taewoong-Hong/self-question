@@ -153,19 +153,34 @@ export default function SurveysPage() {
                   </p>
                 )}
                 
-                <div className="flex items-center justify-between text-sm text-zinc-500">
-                  <div className="flex items-center gap-4">
-                    <span>응답 {survey.stats?.response_count || 0}명</span>
-                    {survey.author_nickname && (
+                <div className="flex items-center gap-4 text-sm text-zinc-500">
+                  <span>응답 {survey.stats?.response_count || 0}명</span>
+                  {survey.author_nickname && (
+                    <>
+                      <span>•</span>
                       <span>작성자: {survey.author_nickname}</span>
-                    )}
-                  </div>
-                  <span>
-                    {formatDistanceToNow(new Date(survey.created_at), { 
-                      addSuffix: true, 
-                      locale: ko 
-                    })}
-                  </span>
+                    </>
+                  )}
+                  <span>•</span>
+                  <span>시작: {new Date(survey.created_at).toLocaleDateString('ko-KR', { 
+                    year: 'numeric',
+                    month: '2-digit',
+                    day: '2-digit',
+                    hour: '2-digit',
+                    minute: '2-digit'
+                  }).replace(/\. /g, '-').replace('.', '')}</span>
+                  {survey.settings?.close_at && (
+                    <>
+                      <span>•</span>
+                      <span>종료: {new Date(survey.settings.close_at).toLocaleDateString('ko-KR', { 
+                        year: 'numeric',
+                        month: '2-digit',
+                        day: '2-digit',
+                        hour: '2-digit',
+                        minute: '2-digit'
+                      }).replace(/\. /g, '-').replace('.', '')}</span>
+                    </>
+                  )}
                 </div>
                 
                 {survey.tags && survey.tags.length > 0 && (

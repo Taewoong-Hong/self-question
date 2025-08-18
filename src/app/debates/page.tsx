@@ -147,19 +147,38 @@ export default function DebatesPage() {
                     </p>
                   )}
                   
-                  <div className="flex items-center justify-between text-sm text-zinc-500">
-                    <div className="flex items-center gap-4">
-                      <span>참여 {debate.stats?.unique_voters || 0}명</span>
-                      {debate.author_nickname && (
+                  <div className="flex items-center gap-4 text-sm text-zinc-500">
+                    <span>참여 {debate.stats?.unique_voters || 0}명</span>
+                    {debate.author_nickname && (
+                      <>
+                        <span>•</span>
                         <span>작성자: {debate.author_nickname}</span>
-                      )}
-                    </div>
-                    <span>
-                      {formatDistanceToNow(new Date(debate.created_at), { 
-                        addSuffix: true, 
-                        locale: ko 
-                      })}
-                    </span>
+                      </>
+                    )}
+                    {debate.start_at && (
+                      <>
+                        <span>•</span>
+                        <span>시작: {new Date(debate.start_at).toLocaleDateString('ko-KR', { 
+                          year: 'numeric',
+                          month: '2-digit',
+                          day: '2-digit',
+                          hour: '2-digit',
+                          minute: '2-digit'
+                        }).replace(/\. /g, '-').replace('.', '')}</span>
+                      </>
+                    )}
+                    {debate.end_at && (
+                      <>
+                        <span>•</span>
+                        <span>종료: {new Date(debate.end_at).toLocaleDateString('ko-KR', { 
+                          year: 'numeric',
+                          month: '2-digit',
+                          day: '2-digit',
+                          hour: '2-digit',
+                          minute: '2-digit'
+                        }).replace(/\. /g, '-').replace('.', '')}</span>
+                      </>
+                    )}
                   </div>
                   
                   {debate.tags && debate.tags.length > 0 && (
