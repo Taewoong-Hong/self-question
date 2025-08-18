@@ -287,7 +287,7 @@ export default function RootLayout({
 
           {/* 메인 콘텐츠 */}
           <main className="flex-1 overflow-y-auto">
-            <div className="p-4 lg:p-8 lg:pt-8 pt-20">
+            <div className="p-4 lg:p-8 pt-20 lg:pt-8">
               {children}
             </div>
           </main>
