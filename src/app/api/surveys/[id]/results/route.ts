@@ -25,9 +25,15 @@ export async function GET(
     }
 
     // admin_results가 있으면 우선 사용
-    if (survey.admin_results && Object.keys(survey.admin_results).length > 0) {
+    const hasAdminResults = survey.admin_results && 
+      ((survey.admin_results instanceof Map && survey.admin_results.size > 0) ||
+       (typeof survey.admin_results === 'object' && Object.keys(survey.admin_results).length > 0));
+       
+    if (hasAdminResults) {
       const questionStats = survey.questions.map((question: any) => {
-        const adminResult = survey.admin_results.get(question.id);
+        const adminResult = survey.admin_results instanceof Map 
+          ? survey.admin_results.get(question.id)
+          : (survey.admin_results as any)[question.id];
         let results: any = {};
 
         if (!adminResult) {
