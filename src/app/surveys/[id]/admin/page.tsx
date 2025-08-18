@@ -8,6 +8,7 @@ import { Survey } from '@/types/survey';
 import { formatDistanceToNow } from 'date-fns';
 import { ko } from 'date-fns/locale';
 import QRCode from 'qrcode';
+import toast from 'react-hot-toast';
 
 export default function SurveyAdminPage() {
   const params = useParams();
@@ -71,7 +72,7 @@ export default function SurveyAdminPage() {
       const surveyData = await surveyApi.get(surveyId);
       setSurvey(surveyData.survey);
     } catch (error) {
-      alert('비밀번호가 올바르지 않습니다.');
+      toast.error('비밀번호가 올바르지 않습니다.');
     } finally {
       setVerifying(false);
     }
@@ -84,9 +85,9 @@ export default function SurveyAdminPage() {
       const newStatus = survey.status === 'open' ? 'closed' : 'open';
       await surveyApi.updateStatus(surveyId, newStatus, adminToken);
       setSurvey({ ...survey, status: newStatus });
-      alert(`설문이 ${newStatus === 'open' ? '열렸습니다' : '닫혔습니다'}.`);
+      toast.success(`설문이 ${newStatus === 'open' ? '열렸습니다' : '닫혔습니다'}.`);
     } catch (error) {
-      alert('상태 변경에 실패했습니다.');
+      toast.error('상태 변경에 실패했습니다.');
     }
   };
 
@@ -96,16 +97,16 @@ export default function SurveyAdminPage() {
     }
 
     if (!adminToken) {
-      alert('관리자 인증이 필요합니다.');
+      toast.error('관리자 인증이 필요합니다.');
       return;
     }
 
     try {
       await surveyApi.delete(surveyId, adminToken);
-      alert('설문이 삭제되었습니다.');
+      toast.success('설문이 삭제되었습니다.');
       router.push('/surveys');
     } catch (error) {
-      alert('설문 삭제에 실패했습니다.');
+      toast.error('설문 삭제에 실패했습니다.');
     }
   };
 
@@ -268,6 +269,106 @@ export default function SurveyAdminPage() {
               <span>응답 데이터 CSV 다운로드</span>
               <span className="text-zinc-400">↓</span>
             </button>
+          </div>
+        </div>
+
+        {/* 응답 데이터 조작 */}
+        <div className="bg-zinc-900/50 backdrop-blur-sm border border-zinc-800 rounded-xl p-6">
+          <h2 className="text-lg font-semibold mb-4">테스트 데이터 생성</h2>
+          <div className="space-y-4">
+            <div>
+              <p className="text-zinc-300 mb-2">
+                현재 응답 수: <span className="font-semibold text-surbate">{survey.stats?.response_count || 0}명</span>
+              </p>
+              <p className="text-sm text-zinc-500 mb-4">
+                테스트용 응답 데이터를 자동으로 생성할 수 있습니다. 기존 응답은 모두 삭제됩니다.
+              </p>
+            </div>
+            <div className="flex gap-3">
+              <button
+                onClick={async () => {
+                  if (!window.confirm('기존 응답 데이터가 모두 삭제되고 100명의 테스트 데이터가 생성됩니다. 계속하시겠습니까?')) return;
+                  try {
+                    const response = await fetch('/api/admin/generate-test-data', {
+                      method: 'POST',
+                      headers: { 'Content-Type': 'application/json' },
+                      body: JSON.stringify({ surveyId, responseCount: 100 })
+                    });
+                    const result = await response.json();
+                    if (response.ok) {
+                      toast.success(result.message);
+                      window.location.reload();
+                    } else {
+                      toast.error(result.error || '데이터 생성에 실패했습니다.');
+                    }
+                  } catch (error) {
+                    toast.error('데이터 생성 중 오류가 발생했습니다.');
+                  }
+                }}
+                className="px-4 py-2 bg-zinc-800 text-zinc-100 rounded-lg hover:bg-zinc-700 transition-colors"
+              >
+                100명 생성
+              </button>
+              <button
+                onClick={async () => {
+                  if (!window.confirm('기존 응답 데이터가 모두 삭제되고 300명의 테스트 데이터가 생성됩니다. 계속하시겠습니까?')) return;
+                  try {
+                    const response = await fetch('/api/admin/generate-test-data', {
+                      method: 'POST',
+                      headers: { 'Content-Type': 'application/json' },
+                      body: JSON.stringify({ surveyId, responseCount: 300 })
+                    });
+                    const result = await response.json();
+                    if (response.ok) {
+                      toast.success(result.message);
+                      window.location.reload();
+                    } else {
+                      toast.error(result.error || '데이터 생성에 실패했습니다.');
+                    }
+                  } catch (error) {
+                    toast.error('데이터 생성 중 오류가 발생했습니다.');
+                  }
+                }}
+                className="px-4 py-2 bg-zinc-800 text-zinc-100 rounded-lg hover:bg-zinc-700 transition-colors"
+              >
+                300명 생성
+              </button>
+              <button
+                onClick={async () => {
+                  if (!window.confirm('기존 응답 데이터가 모두 삭제되고 500명의 테스트 데이터가 생성됩니다. 계속하시겠습니까?')) return;
+                  try {
+                    const response = await fetch('/api/admin/generate-test-data', {
+                      method: 'POST',
+                      headers: { 'Content-Type': 'application/json' },
+                      body: JSON.stringify({ surveyId, responseCount: 500 })
+                    });
+                    const result = await response.json();
+                    if (response.ok) {
+                      toast.success(result.message);
+                      window.location.reload();
+                    } else {
+                      toast.error(result.error || '데이터 생성에 실패했습니다.');
+                    }
+                  } catch (error) {
+                    toast.error('데이터 생성 중 오류가 발생했습니다.');
+                  }
+                }}
+                className="px-4 py-2 bg-gradient-to-r from-surbate to-brand-600 text-zinc-900 font-semibold rounded-lg hover:from-brand-400 hover:to-brand-600 transition-colors"
+              >
+                500명 생성
+              </button>
+            </div>
+            <div className="mt-4 p-4 bg-zinc-800/50 rounded-lg">
+              <p className="text-sm text-zinc-400">
+                <strong>생성되는 데이터 특징:</strong>
+              </p>
+              <ul className="text-sm text-zinc-400 mt-2 space-y-1 list-disc list-inside">
+                <li>연령대: 20-30대 70%, 40-60대 30%</li>
+                <li>거주 형태: 연령대별로 다른 분포</li>
+                <li>현실적인 응답 패턴 반영</li>
+                <li>다양한 의견과 피드백 포함</li>
+              </ul>
+            </div>
           </div>
         </div>
 
