@@ -14,7 +14,7 @@ export async function GET(
     const debate = await Debate.findOne({ 
       id: params.id,
       is_deleted: false 
-    }).select('opinions allow_comments');
+    }).select('opinions settings.allow_opinion');
     
     if (!debate) {
       return NextResponse.json(
@@ -23,7 +23,7 @@ export async function GET(
       );
     }
 
-    if (!debate.allow_comments) {
+    if (!debate.settings?.allow_opinion) {
       return NextResponse.json({ opinions: [] });
     }
     

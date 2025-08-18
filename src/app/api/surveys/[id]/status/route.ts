@@ -67,16 +67,6 @@ export async function PUT(
     // Update status
     survey.status = status;
     
-    // If closing the survey, set end_at to now
-    if (status === 'closed' && (!survey.end_at || survey.end_at > new Date())) {
-      survey.end_at = new Date();
-    }
-    
-    // If opening the survey, ensure start_at is not in the future
-    if (status === 'open' && survey.start_at > new Date()) {
-      survey.start_at = new Date();
-    }
-    
     await survey.save();
     
     return NextResponse.json({
@@ -85,9 +75,7 @@ export async function PUT(
       survey: {
         id: survey.id,
         title: survey.title,
-        status: survey.status,
-        start_at: survey.start_at,
-        end_at: survey.end_at
+        status: survey.status
       }
     });
     

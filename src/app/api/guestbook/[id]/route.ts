@@ -52,7 +52,7 @@ export async function PATCH(
         .sort({ z_index: -1 })
         .select('z_index')
         .lean()
-        .exec();
+        .exec() as { z_index?: number } | null;
       
       guestbook.z_index = (highestNote?.z_index || 0) + 1;
     }

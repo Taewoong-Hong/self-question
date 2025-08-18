@@ -18,7 +18,7 @@ export async function GET(
     })
     .select('-password_hash -author_ip -is_deleted -__v')
     .lean()
-    .exec();
+    .exec() as any;
 
     if (!requestPost) {
       return NextResponse.json(
@@ -35,7 +35,7 @@ export async function GET(
 
     return NextResponse.json({
       ...requestPost,
-      views: requestPost.views + 1
+      views: (requestPost.views || 0) + 1
     });
   } catch (error) {
     console.error('요청 조회 실패:', error);

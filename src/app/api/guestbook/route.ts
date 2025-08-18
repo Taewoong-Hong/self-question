@@ -80,7 +80,7 @@ export async function POST(request: NextRequest) {
       .sort({ z_index: -1 })
       .select('z_index')
       .lean()
-      .exec();
+      .exec() as { z_index?: number } | null;
     
     const newZIndex = (highestNote?.z_index || 0) + 1;
 

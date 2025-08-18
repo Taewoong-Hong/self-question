@@ -6,6 +6,23 @@ import { checkAdminAuth } from '@/lib/adminAuth';
 
 export const dynamic = 'force-dynamic';
 
+// 콘텐츠 아이템 인터페이스
+interface ContentItem {
+  id: string;
+  _id: any;
+  title: string;
+  description?: string;
+  type: 'debate' | 'survey';
+  status: string;
+  created_at: Date;
+  author_ip?: string;
+  author_nickname?: string;
+  participant_count: number;
+  is_reported: boolean;
+  is_hidden: boolean;
+  tags?: string[];
+}
+
 // 콘텐츠 목록 조회
 export async function GET(request: NextRequest) {
   if (!checkAdminAuth(request)) {
@@ -39,7 +56,7 @@ export async function GET(request: NextRequest) {
       is_deleted: false
     };
     
-    let contents = [];
+    let contents: ContentItem[] = [];
     
     if (filter === 'all' || filter === 'debate') {
       // 투표 데이터 조회
@@ -54,13 +71,13 @@ export async function GET(request: NextRequest) {
         _id: debate._id,
         title: debate.title,
         description: debate.description,
-        type: 'debate',
+        type: 'debate' as const,
         status: debate.status,
         created_at: debate.created_at,
-        author_ip: debate.author_ip,
+        author_ip: debate.author_ip_hash,
         author_nickname: debate.author_nickname,
         participant_count: debate.stats?.unique_voters || 0,
-        is_reported: debate.is_reported || false,
+        is_reported: false, // Debate doesn't have is_reported field
         is_hidden: debate.is_hidden || false,
         tags: debate.tags
       }));
@@ -81,13 +98,13 @@ export async function GET(request: NextRequest) {
         _id: survey._id,
         title: survey.title,
         description: survey.description,
-        type: 'survey',
+        type: 'survey' as const,
         status: survey.status,
         created_at: survey.created_at,
-        author_ip: survey.author_ip,
+        author_ip: undefined, // Survey doesn't have author_ip
         author_nickname: survey.author_nickname,
         participant_count: survey.stats?.response_count || 0,
-        is_reported: survey.is_reported || false,
+        is_reported: false, // Survey doesn't have is_reported field
         is_hidden: survey.is_hidden || false,
         tags: survey.tags
       }));

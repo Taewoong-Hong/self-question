@@ -2,7 +2,7 @@
 
 import { useState } from 'react';
 import { surveyApi } from '@/lib/api';
-import { ResponseDto } from '@/types/survey';
+import { SurveyResponseData } from '@/types/survey';
 
 interface SurveyFormProps {
   surveyId: string;
@@ -86,14 +86,14 @@ export default function SurveyForm({ surveyId, questions, onComplete }: SurveyFo
     try {
       setSubmitting(true);
       
-      const responseData: ResponseDto = {
+      const responseData: SurveyResponseData = {
         answers: questions.map(q => ({
           question_id: q._id,
-          value: responses[q._id] || null
-        })).filter(a => a.value !== null)
+          answer: responses[q._id] || null
+        })).filter(a => a.answer !== null)
       };
 
-      await surveyApi.submitResponse(surveyId, responseData);
+      await surveyApi.respond(surveyId, responseData);
       
       // 임시 저장 삭제
       localStorage.removeItem(`survey-${surveyId}-draft`);
