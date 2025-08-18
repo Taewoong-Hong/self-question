@@ -7,7 +7,7 @@ export const dynamic = 'force-dynamic';
 
 // PUT /api/admin/surveys/[id]/results
 export async function PUT(
-  request: NextRequest,
+  request: Request,
   { params }: { params: { id: string } }
 ) {
   try {

@@ -20,5 +20,15 @@ export function signJwt(payload: any, expiresIn: string = '24h'): string {
 }
 
 export function verifyJwt(token: string): any {
-  return jwt.verify(token, getJwtSecret());
+  try {
+    return jwt.verify(token, getJwtSecret());
+  } catch (error) {
+    console.error('JWT Verification Failed:', {
+      error: error instanceof Error ? error.message : String(error),
+      hasSecret: !!process.env.JWT_SECRET,
+      secretLength: process.env.JWT_SECRET ? process.env.JWT_SECRET.length : 0,
+      defaultUsed: !process.env.JWT_SECRET
+    });
+    throw error;
+  }
 }
