@@ -146,7 +146,7 @@ export default function SurveyForm({ surveyId, questions, onComplete }: SurveyFo
                 answer.other_texts = otherChoices.map((c: any) => ({
                   choice_id: c.id,
                   text: otherTexts[`${q._id}_${c.id}`] || ''
-                })).filter(ot => ot.text);
+                })).filter((ot: any) => ot.text);
               }
             }
             
