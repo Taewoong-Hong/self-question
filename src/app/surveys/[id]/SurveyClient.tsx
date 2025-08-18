@@ -14,7 +14,7 @@ interface SurveyProps {
     title: string;
     description?: string;
     author_nickname?: string;
-    status: 'active' | 'ended' | 'scheduled';
+    status: 'draft' | 'open' | 'closed';
     created_at: string;
     start_at?: string;
     end_at?: string;
@@ -69,13 +69,13 @@ export default function SurveyClient({ survey }: SurveyProps) {
               </span>
               <span>•</span>
               <span className={`inline-flex items-center px-2 py-0.5 rounded text-xs font-medium ${
-                survey.status === 'active' 
+                survey.status === 'open' 
                   ? 'bg-surbate/10 text-surbate' 
-                  : survey.status === 'ended'
+                  : survey.status === 'closed'
                   ? 'bg-red-100/10 text-red-400'
                   : 'bg-yellow-100/10 text-yellow-400'
               }`}>
-                {survey.status === 'active' ? '진행중' : survey.status === 'ended' ? '종료' : '예정'}
+                {survey.status === 'open' ? '진행중' : survey.status === 'closed' ? '종료' : '준비중'}
               </span>
             </div>
             {survey.tags && survey.tags.length > 0 && (
@@ -94,10 +94,19 @@ export default function SurveyClient({ survey }: SurveyProps) {
           
           <Link
             href={`/surveys/${survey.id}/admin`}
-            className="self-start px-3 py-1.5 sm:px-4 sm:py-2 text-sm bg-zinc-800 text-zinc-100 rounded-lg hover:bg-zinc-700 transition-colors"
+            className="self-start p-2 bg-zinc-800 text-zinc-100 rounded-lg hover:bg-zinc-700 transition-colors"
+            title="설문 관리"
           >
-            <span className="sm:hidden">관리</span>
-            <span className="hidden sm:inline">작성자 페이지</span>
+            <svg 
+              xmlns="http://www.w3.org/2000/svg" 
+              fill="none" 
+              viewBox="0 0 24 24" 
+              strokeWidth={1.5} 
+              stroke="currentColor" 
+              className="w-5 h-5"
+            >
+              <path strokeLinecap="round" strokeLinejoin="round" d="m16.862 4.487 1.687-1.688a1.875 1.875 0 1 1 2.652 2.652L10.582 16.07a4.5 4.5 0 0 1-1.897 1.13L6 18l.8-2.685a4.5 4.5 0 0 1 1.13-1.897l9.932-9.931ZM19.5 7.125M18 14v4.75A2.25 2.25 0 0 1 15.75 21H5.25A2.25 2.25 0 0 1 3 18.75V8.25A2.25 2.25 0 0 1 5.25 6H10" />
+            </svg>
           </Link>
         </div>
       </div>
@@ -105,7 +114,7 @@ export default function SurveyClient({ survey }: SurveyProps) {
       {/* 설문 폼 또는 결과 - CSR로 처리 */}
       {!loading && (
         <>
-          {survey.status === 'active' && !hasResponded ? (
+          {survey.status === 'open' && !hasResponded ? (
             <SurveyForm 
               surveyId={survey.id} 
               questions={survey.questions}
@@ -115,7 +124,7 @@ export default function SurveyClient({ survey }: SurveyProps) {
             <SurveyResults surveyId={survey.id} />
           )}
 
-          {survey.status === 'ended' && (
+          {survey.status === 'closed' && (
             <div className="bg-zinc-900/50 backdrop-blur-sm border border-zinc-800 rounded-xl p-4 sm:p-6 mb-6">
               <p className="text-center text-sm sm:text-base text-zinc-400">
                 이 설문은 종료되었습니다.
@@ -123,7 +132,7 @@ export default function SurveyClient({ survey }: SurveyProps) {
             </div>
           )}
 
-          {survey.status === 'scheduled' && (
+          {survey.status === 'draft' && (
             <div className="bg-zinc-900/50 backdrop-blur-sm border border-zinc-800 rounded-xl p-4 sm:p-6 mb-6">
               <p className="text-center text-sm sm:text-base text-zinc-400">
                 이 설문은 아직 시작되지 않았습니다.

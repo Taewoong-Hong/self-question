@@ -121,7 +121,7 @@ export default function DebateAdminPage() {
       alert('투표가 삭제되었습니다.');
       router.push('/debates');
     } catch (error) {
-      alert('투표 삭제에 실패했습니다.');
+      alert('삭제에 실패했습니다.');
     }
   };
 
@@ -296,7 +296,7 @@ export default function DebateAdminPage() {
                   : 'bg-gradient-to-r from-surbate to-brand-600 text-zinc-900 hover:from-brand-400 hover:to-brand-600 shadow-sm hover:shadow-lg hover:shadow-surbate/20 transform hover:-translate-y-0.5'
               }`}
             >
-              {debate.status === 'active' ? '투표 종료' : '투표 재개'}
+              {debate.status === 'active' ? '종료' : '재개'}
             </button>
           </div>
         </div>
@@ -401,7 +401,7 @@ export default function DebateAdminPage() {
               onClick={handleDelete}
               className="px-3 py-1.5 sm:px-4 sm:py-2 text-sm sm:text-base bg-red-500 text-white rounded-lg hover:bg-red-600 transition-colors"
             >
-              투표 삭제
+              삭제
             </button>
           </div>
         </div>

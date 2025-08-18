@@ -152,7 +152,7 @@ export default function SurveysPage() {
                 </h3>
                 
                 {survey.description && (
-                  <p className="text-zinc-400 text-sm mb-3 line-clamp-2">
+                  <p className="text-zinc-400 text-sm mb-3 line-clamp-1">
                     {survey.description}
                   </p>
                 )}

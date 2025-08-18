@@ -16,6 +16,7 @@ export default function CreateSurveyPage() {
     description: '',
     questions: [
       {
+        id: '1',
         title: '',
         type: 'single_choice',
         required: true,
@@ -144,6 +145,18 @@ export default function CreateSurveyPage() {
     const newQuestions = [...formData.questions];
     if (newQuestions[questionIndex].properties?.choices) {
       newQuestions[questionIndex].properties!.choices![optionIndex].label = value;
+      setFormData({ ...formData, questions: newQuestions });
+    }
+  };
+
+  const toggleOtherOption = (questionIndex: number, optionIndex: number, isOther: boolean) => {
+    const newQuestions = [...formData.questions];
+    if (newQuestions[questionIndex].properties?.choices) {
+      newQuestions[questionIndex].properties!.choices![optionIndex].is_other = isOther;
+      if (isOther) {
+        // '기타' 옵션이 활성화되면 라벨을 '기타'로 설정
+        newQuestions[questionIndex].properties!.choices![optionIndex].label = '기타';
+      }
       setFormData({ ...formData, questions: newQuestions });
     }
   };
@@ -318,6 +331,107 @@ export default function CreateSurveyPage() {
                     </label>
                   </div>
 
+                  {/* 조건부 로직 설정 */}
+                  {qIndex > 0 && (
+                    <div className="mt-3 p-3 bg-zinc-900/50 rounded-lg">
+                      <label className="flex items-center gap-2 mb-2">
+                        <input
+                          type="checkbox"
+                          checked={!!question.skip_logic}
+                          onChange={(e) => {
+                            if (e.target.checked) {
+                              updateQuestion(qIndex, 'skip_logic', {
+                                condition: {
+                                  question_id: formData.questions[0].id || '1',
+                                  operator: 'equals',
+                                  value: ''
+                                },
+                                action: 'skip'
+                              });
+                            } else {
+                              updateQuestion(qIndex, 'skip_logic', undefined);
+                            }
+                          }}
+                          className="rounded bg-zinc-900 border-zinc-700 text-brand-500 focus:ring-brand-500"
+                        />
+                        <span className="text-sm text-zinc-300">조건부 표시</span>
+                      </label>
+                      
+                      {question.skip_logic && (
+                        <div className="space-y-2 mt-2">
+                          <div className="grid grid-cols-3 gap-2">
+                            <select
+                              value={question.skip_logic.condition.question_id}
+                              onChange={(e) => updateQuestion(qIndex, 'skip_logic', {
+                                ...question.skip_logic,
+                                condition: { ...question.skip_logic.condition, question_id: e.target.value }
+                              })}
+                              className="px-2 py-1 bg-zinc-800 border border-zinc-700 rounded text-sm text-zinc-100"
+                            >
+                              {formData.questions.slice(0, qIndex).map((q, i) => (
+                                <option key={i} value={q.id || i.toString()}>
+                                  질문 {i + 1}: {q.title || '(제목 없음)'}
+                                </option>
+                              ))}
+                            </select>
+                            
+                            <select
+                              value={question.skip_logic.condition.operator}
+                              onChange={(e) => updateQuestion(qIndex, 'skip_logic', {
+                                ...question.skip_logic,
+                                condition: { ...question.skip_logic.condition, operator: e.target.value as any }
+                              })}
+                              className="px-2 py-1 bg-zinc-800 border border-zinc-700 rounded text-sm text-zinc-100"
+                            >
+                              <option value="equals">같을 때</option>
+                              <option value="not_equals">다를 때</option>
+                            </select>
+                            
+                            {(() => {
+                              const targetQuestion = formData.questions.find(q => q.id === question.skip_logic.condition.question_id);
+                              if (targetQuestion && (targetQuestion.type === 'single_choice' || targetQuestion.type === 'multiple_choice')) {
+                                return (
+                                  <select
+                                    value={question.skip_logic.condition.value}
+                                    onChange={(e) => updateQuestion(qIndex, 'skip_logic', {
+                                      ...question.skip_logic,
+                                      condition: { ...question.skip_logic.condition, value: e.target.value }
+                                    })}
+                                    className="px-2 py-1 bg-zinc-800 border border-zinc-700 rounded text-sm text-zinc-100"
+                                  >
+                                    <option value="">선택하세요</option>
+                                    {targetQuestion.properties?.choices?.map((choice) => (
+                                      <option key={choice.id} value={choice.id}>
+                                        {choice.label || '(라벨 없음)'}
+                                      </option>
+                                    ))}
+                                  </select>
+                                );
+                              } else {
+                                return (
+                                  <input
+                                    type="text"
+                                    value={question.skip_logic.condition.value}
+                                    onChange={(e) => updateQuestion(qIndex, 'skip_logic', {
+                                      ...question.skip_logic,
+                                      condition: { ...question.skip_logic.condition, value: e.target.value }
+                                    })}
+                                    placeholder="값"
+                                    className="px-2 py-1 bg-zinc-800 border border-zinc-700 rounded text-sm text-zinc-100"
+                                  />
+                                );
+                              }
+                            })()}
+                          </div>
+                          
+                          <p className="text-xs text-zinc-500">
+                            {question.skip_logic.action === 'skip' ? '이 조건이 맞으면 질문을 건너뜁니다' : '이 조건이 맞을 때만 표시됩니다'}
+                          </p>
+                        </div>
+                      )}
+                    </div>
+                  )}
+
                   {(question.type === 'single_choice' || question.type === 'multiple_choice') && (
                     <div className="space-y-2">
                       {question.properties?.choices?.map((choice, oIndex) => (
@@ -330,6 +444,15 @@ export default function CreateSurveyPage() {
                             className="flex-1 px-3 py-2 bg-zinc-900 border border-zinc-700 rounded-lg text-zinc-100 placeholder-zinc-500 focus:outline-none focus:ring-2 focus:ring-brand-500 focus:border-transparent"
                             placeholder={`옵션 ${oIndex + 1}`}
                           />
+                          <label className="flex items-center gap-1 text-sm text-zinc-400">
+                            <input
+                              type="checkbox"
+                              checked={choice.is_other || false}
+                              onChange={(e) => toggleOtherOption(qIndex, oIndex, e.target.checked)}
+                              className="rounded bg-zinc-900 border-zinc-700 text-brand-500 focus:ring-brand-500"
+                            />
+                            기타
+                          </label>
                           {question.properties!.choices!.length > 2 && (
                             <button
                               type="button"

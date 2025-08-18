@@ -46,10 +46,19 @@ export interface Question {
   title: string;  // 백엔드와 일치하도록 수정
   type: QuestionType;
   required: boolean;
+  skip_logic?: {  // 조건부 로직
+    condition: {
+      question_id: string;  // 조건이 되는 질문 ID
+      operator: 'equals' | 'not_equals' | 'contains';
+      value: string | string[];  // 조건 값
+    };
+    action: 'skip' | 'show';  // skip: 건너뛰기, show: 보여주기
+  };
   properties?: {
     choices?: {
       id: string;
       label: string;
+      is_other?: boolean;  // '기타' 옵션 여부
       attachment?: {
         type: 'image';
         href: string;
@@ -92,6 +101,7 @@ export interface Answer {
   choice_id?: string; // single_choice
   choice_ids?: string[]; // multiple_choice
   text?: string; // short_text, long_text
+  other_text?: string; // '기타' 선택 시 추가 텍스트
   rating?: number; // rating
   answered_at?: string;
   time_spent?: number;
@@ -103,7 +113,7 @@ export interface SurveyCreateData {
   tags?: string[];
   author_nickname?: string;
   admin_password: string;
-  questions: Omit<Question, 'id'>[];
+  questions: Question[];
   welcome_screen?: {
     title?: string;
     description?: string;

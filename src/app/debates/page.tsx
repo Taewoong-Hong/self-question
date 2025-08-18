@@ -141,7 +141,7 @@ export default function DebatesPage() {
                   </h3>
                   
                   {debate.description && (
-                    <p className="text-zinc-400 text-sm mb-3 line-clamp-2">
+                    <p className="text-zinc-400 text-sm mb-3 line-clamp-1">
                       {debate.description}
                     </p>
                   )}

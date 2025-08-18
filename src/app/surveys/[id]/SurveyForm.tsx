@@ -12,12 +12,46 @@ interface SurveyFormProps {
 
 export default function SurveyForm({ surveyId, questions, onComplete }: SurveyFormProps) {
   const [responses, setResponses] = useState<Record<string, any>>({});
+  const [otherTexts, setOtherTexts] = useState<Record<string, string>>({});
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
   const [submitting, setSubmitting] = useState(false);
   const [errors, setErrors] = useState<Record<string, string>>({});
+  const [skippedQuestions, setSkippedQuestions] = useState<Set<string>>(new Set());
 
-  const currentQuestion = questions[currentQuestionIndex];
-  const progress = ((currentQuestionIndex + 1) / questions.length) * 100;
+  // 조건부 로직에 따라 건너뛸 질문 확인
+  const checkSkipLogic = (question: any) => {
+    if (!question.skip_logic) return false;
+    
+    const { condition, action } = question.skip_logic;
+    const targetResponse = responses[condition.question_id];
+    
+    if (!targetResponse) return action === 'skip';
+    
+    let conditionMet = false;
+    
+    switch (condition.operator) {
+      case 'equals':
+        conditionMet = targetResponse === condition.value;
+        break;
+      case 'not_equals':
+        conditionMet = targetResponse !== condition.value;
+        break;
+      case 'contains':
+        if (Array.isArray(targetResponse)) {
+          conditionMet = targetResponse.includes(condition.value);
+        } else {
+          conditionMet = targetResponse?.toString().includes(condition.value);
+        }
+        break;
+    }
+    
+    return action === 'skip' ? conditionMet : !conditionMet;
+  };
+  
+  // 표시할 질문들만 필터링
+  const visibleQuestions = questions.filter(q => !checkSkipLogic(q));
+  const currentQuestion = visibleQuestions[currentQuestionIndex];
+  const progress = ((currentQuestionIndex + 1) / visibleQuestions.length) * 100;
 
   const validateResponse = (questionId: string, value: any): boolean => {
     const question = questions.find(q => q._id === questionId);
@@ -58,7 +92,7 @@ export default function SurveyForm({ surveyId, questions, onComplete }: SurveyFo
       return;
     }
 
-    if (currentQuestionIndex < questions.length - 1) {
+    if (currentQuestionIndex < visibleQuestions.length - 1) {
       setCurrentQuestionIndex(currentQuestionIndex + 1);
     }
   };
@@ -70,9 +104,9 @@ export default function SurveyForm({ surveyId, questions, onComplete }: SurveyFo
   };
 
   const handleSubmit = async () => {
-    // 모든 필수 질문 검증
+    // 표시된 필수 질문만 검증
     let isValid = true;
-    for (const question of questions) {
+    for (const question of visibleQuestions) {
       if (!validateResponse(question._id, responses[question._id])) {
         isValid = false;
       }
@@ -87,10 +121,38 @@ export default function SurveyForm({ surveyId, questions, onComplete }: SurveyFo
       setSubmitting(true);
       
       const responseData: SurveyResponseData = {
-        answers: questions.map(q => ({
-          question_id: q._id,
-          answer: responses[q._id] || null
-        })).filter(a => a.answer !== null)
+        answers: questions
+          .filter(q => !checkSkipLogic(q)) // 건너뛴 질문은 제외
+          .map(q => {
+            const answer: any = {
+              question_id: q._id,
+              answer: responses[q._id] || null
+            };
+            
+            // 단일 선택에서 '기타' 옵션이 선택된 경우
+            if (q.type === 'single_choice' && responses[q._id]) {
+              const selectedChoice = q.properties?.choices?.find((c: any) => c.id === responses[q._id]);
+              if (selectedChoice?.is_other && otherTexts[q._id]) {
+                answer.other_text = otherTexts[q._id];
+              }
+            }
+            
+            // 다중 선택에서 '기타' 옵션이 포함된 경우
+            if (q.type === 'multiple_choice' && Array.isArray(responses[q._id])) {
+              const otherChoices = q.properties?.choices?.filter((c: any) => 
+                c.is_other && responses[q._id].includes(c.id)
+              );
+              if (otherChoices?.length > 0) {
+                answer.other_texts = otherChoices.map((c: any) => ({
+                  choice_id: c.id,
+                  text: otherTexts[`${q._id}_${c.id}`] || ''
+                })).filter(ot => ot.text);
+              }
+            }
+            
+            return answer;
+          })
+          .filter(a => a.answer !== null)
       };
 
       await surveyApi.respond(surveyId, responseData);
@@ -120,18 +182,29 @@ export default function SurveyForm({ surveyId, questions, onComplete }: SurveyFo
       case 'single_choice':
         return (
           <div className="space-y-2">
-            {question.options.map((option: string, index: number) => (
-              <label key={index} className="flex items-center gap-3 p-3 bg-zinc-800/50 rounded-lg cursor-pointer hover:bg-zinc-800">
-                <input
-                  type="radio"
-                  name={question._id}
-                  value={option}
-                  checked={value === option}
-                  onChange={(e) => handleResponseChange(question._id, e.target.value)}
-                  className="text-surbate focus:ring-surbate"
-                />
-                <span className="text-zinc-100">{option}</span>
-              </label>
+            {question.properties?.choices?.map((choice: any, index: number) => (
+              <div key={choice.id || index}>
+                <label className="flex items-center gap-3 p-3 bg-zinc-800/50 rounded-lg cursor-pointer hover:bg-zinc-800">
+                  <input
+                    type="radio"
+                    name={question._id}
+                    value={choice.id}
+                    checked={value === choice.id}
+                    onChange={(e) => handleResponseChange(question._id, e.target.value)}
+                    className="text-surbate focus:ring-surbate"
+                  />
+                  <span className="text-zinc-100">{choice.label}</span>
+                </label>
+                {choice.is_other && value === choice.id && (
+                  <input
+                    type="text"
+                    value={otherTexts[question._id] || ''}
+                    onChange={(e) => setOtherTexts({ ...otherTexts, [question._id]: e.target.value })}
+                    placeholder="기타 내용을 입력해주세요"
+                    className="mt-2 ml-8 w-full px-3 py-2 bg-zinc-900 border border-zinc-800 rounded-lg text-zinc-100 placeholder-zinc-500 focus:outline-none focus:ring-2 focus:ring-surbate focus:border-transparent"
+                  />
+                )}
+              </div>
             ))}
           </div>
         );
@@ -139,24 +212,35 @@ export default function SurveyForm({ surveyId, questions, onComplete }: SurveyFo
       case 'multiple_choice':
         return (
           <div className="space-y-2">
-            {question.options.map((option: string, index: number) => (
-              <label key={index} className="flex items-center gap-3 p-3 bg-zinc-800/50 rounded-lg cursor-pointer hover:bg-zinc-800">
-                <input
-                  type="checkbox"
-                  value={option}
-                  checked={Array.isArray(value) && value.includes(option)}
-                  onChange={(e) => {
-                    const currentValues = Array.isArray(value) ? value : [];
-                    if (e.target.checked) {
-                      handleResponseChange(question._id, [...currentValues, option]);
-                    } else {
-                      handleResponseChange(question._id, currentValues.filter(v => v !== option));
-                    }
-                  }}
-                  className="text-surbate focus:ring-surbate"
-                />
-                <span className="text-zinc-100">{option}</span>
-              </label>
+            {question.properties?.choices?.map((choice: any, index: number) => (
+              <div key={choice.id || index}>
+                <label className="flex items-center gap-3 p-3 bg-zinc-800/50 rounded-lg cursor-pointer hover:bg-zinc-800">
+                  <input
+                    type="checkbox"
+                    value={choice.id}
+                    checked={Array.isArray(value) && value.includes(choice.id)}
+                    onChange={(e) => {
+                      const currentValues = Array.isArray(value) ? value : [];
+                      if (e.target.checked) {
+                        handleResponseChange(question._id, [...currentValues, choice.id]);
+                      } else {
+                        handleResponseChange(question._id, currentValues.filter(v => v !== choice.id));
+                      }
+                    }}
+                    className="text-surbate focus:ring-surbate"
+                  />
+                  <span className="text-zinc-100">{choice.label}</span>
+                </label>
+                {choice.is_other && Array.isArray(value) && value.includes(choice.id) && (
+                  <input
+                    type="text"
+                    value={otherTexts[`${question._id}_${choice.id}`] || ''}
+                    onChange={(e) => setOtherTexts({ ...otherTexts, [`${question._id}_${choice.id}`]: e.target.value })}
+                    placeholder="기타 내용을 입력해주세요"
+                    className="mt-2 ml-8 w-full px-3 py-2 bg-zinc-900 border border-zinc-800 rounded-lg text-zinc-100 placeholder-zinc-500 focus:outline-none focus:ring-2 focus:ring-surbate focus:border-transparent"
+                  />
+                )}
+              </div>
             ))}
           </div>
         );
@@ -213,7 +297,7 @@ export default function SurveyForm({ surveyId, questions, onComplete }: SurveyFo
       {/* 진행률 표시 */}
       <div className="mb-6">
         <div className="flex justify-between text-sm text-zinc-400 mb-2">
-          <span>질문 {currentQuestionIndex + 1} / {questions.length}</span>
+          <span>질문 {currentQuestionIndex + 1} / {visibleQuestions.length}</span>
           <span>{Math.round(progress)}% 완료</span>
         </div>
         <div className="w-full bg-zinc-800 rounded-full h-2">
@@ -252,7 +336,7 @@ export default function SurveyForm({ surveyId, questions, onComplete }: SurveyFo
           이전
         </button>
 
-        {currentQuestionIndex === questions.length - 1 ? (
+        {currentQuestionIndex === visibleQuestions.length - 1 ? (
           <button
             type="button"
             onClick={handleSubmit}

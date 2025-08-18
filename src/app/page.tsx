@@ -215,7 +215,7 @@ export default function Home() {
                       <span className={`inline-flex items-center px-2.5 py-0.5 rounded text-xs font-medium ${
                         item.type === 'debate' 
                           ? 'bg-blue-100/10 text-blue-400' 
-                          : 'bg-brand-100/10 text-brand-400'
+                          : 'bg-red-500/10 text-red-500'
                       }`}>
                         {item.type === 'debate' ? '📊 투표' : '📝 설문'}
                       </span>
