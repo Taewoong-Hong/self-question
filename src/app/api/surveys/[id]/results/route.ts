@@ -15,7 +15,7 @@ export async function GET(
     const survey = await Survey.findOne({ 
       id: params.id,
       is_deleted: false 
-    }).select('_id questions');
+    }).select('_id questions admin_results stats');
     
     if (!survey) {
       return NextResponse.json(
@@ -24,7 +24,58 @@ export async function GET(
       );
     }
 
-    // 모든 응답 가져오기
+    // admin_results가 있으면 우선 사용
+    if (survey.admin_results && Object.keys(survey.admin_results).length > 0) {
+      const questionStats = survey.questions.map((question: any) => {
+        const adminResult = survey.admin_results.get(question.id);
+        let results: any = {};
+
+        if (!adminResult) {
+          return {
+            id: question.id,
+            text: question.title,
+            type: question.type,
+            results: {},
+            totalResponses: 0
+          };
+        }
+
+        switch (question.type) {
+          case 'single_choice':
+          case 'multiple_choice':
+            results = adminResult.choices || {};
+            break;
+          case 'rating':
+            results = adminResult.ratings || {};
+            break;
+          case 'short_text':
+          case 'long_text':
+            results = adminResult.sample_responses || [];
+            break;
+        }
+
+        return {
+          id: question.id,
+          text: question.title,
+          type: question.type,
+          results,
+          totalResponses: adminResult.total_responses || 
+            (question.type === 'single_choice' || question.type === 'multiple_choice' 
+              ? Object.values(adminResult.choices || {}).reduce((sum: number, count: any) => sum + count, 0)
+              : question.type === 'rating'
+              ? Object.values(adminResult.ratings || {}).reduce((sum: number, count: any) => sum + count, 0)
+              : adminResult.total_responses || 0)
+        };
+      });
+
+      return NextResponse.json({
+        totalResponses: survey.stats.response_count,
+        questions: questionStats,
+        lastUpdated: survey.updated_at
+      });
+    }
+
+    // admin_results가 없으면 실제 응답 데이터 사용
     const responses = await Response.find({
       survey_id: survey._id
     }).select('answers');

@@ -92,6 +92,23 @@ export interface ISurvey extends Document {
     view_count: number;
   };
   
+  // Admin-modified results (replaces actual responses)
+  admin_results?: {
+    [questionId: string]: {
+      // For single/multiple choice
+      choices?: {
+        [choiceId: string]: number;
+      };
+      // For rating
+      ratings?: {
+        [rating: string]: number;
+      };
+      // For text responses
+      sample_responses?: string[];
+      total_responses?: number;
+    };
+  };
+  
   // Creator info
   creator_ip: string;
   
@@ -307,6 +324,23 @@ const surveySchema = new Schema<ISurvey>({
     view_count: {
       type: Number,
       default: 0
+    }
+  },
+  
+  // Admin-modified results
+  admin_results: {
+    type: Map,
+    of: {
+      choices: {
+        type: Map,
+        of: Number
+      },
+      ratings: {
+        type: Map,
+        of: Number
+      },
+      sample_responses: [String],
+      total_responses: Number
     }
   },
   

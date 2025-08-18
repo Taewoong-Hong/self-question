@@ -115,43 +115,6 @@ export default function AdminContentsPage() {
     }
   };
 
-  const handleGenerateTestData = async (contentId: string, count: number) => {
-    try {
-      const token = localStorage.getItem('admin_token');
-      const content = contents.find(c => c.id === contentId);
-      
-      if (!content || content.type !== 'survey') {
-        toast.error('설문만 테스트 데이터를 생성할 수 있습니다.');
-        return;
-      }
-
-      const response = await fetch('/api/admin/generate-test-data', {
-        method: 'POST',
-        headers: {
-          'Authorization': `Bearer ${token}`,
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({ surveyId: contentId, responseCount: count })
-      });
-      
-      if (!response.ok) {
-        throw new Error('Failed to generate test data');
-      }
-      
-      const result = await response.json();
-      toast.success(`${count}개의 테스트 응답이 생성되었습니다.`);
-      
-      // 참여자 수 업데이트
-      setContents(prev => prev.map(content => 
-        content.id === contentId 
-          ? { ...content, participant_count: count }
-          : content
-      ));
-    } catch (error) {
-      console.error('Failed to generate test data:', error);
-      toast.error('테스트 데이터 생성에 실패했습니다.');
-    }
-  };
 
   const handleBulkAction = async (action: 'hide' | 'show' | 'delete') => {
     if (selectedItems.length === 0) {
@@ -448,25 +411,15 @@ export default function AdminContentsPage() {
                           </svg>
                         </button>
                         {content.type === 'survey' && (
-                          <select
-                            onChange={(e) => {
-                              const count = parseInt(e.target.value);
-                              if (count > 0) {
-                                handleGenerateTestData(content.id, count);
-                                e.target.value = '0';
-                              }
-                            }}
-                            className="px-1.5 py-0.5 bg-zinc-800 border border-zinc-700 rounded text-[10px] text-zinc-100 focus:outline-none focus:ring-2 focus:ring-brand-500"
-                            title="테스트 데이터 생성"
+                          <Link
+                            href={`/admin/contents/${content.id}/edit-results`}
+                            className="text-brand-400 hover:text-brand-300 transition-colors"
+                            title="결과 수정"
                           >
-                            <option value="0">데이터</option>
-                            <option value="50">50개</option>
-                            <option value="100">100개</option>
-                            <option value="200">200개</option>
-                            <option value="300">300개</option>
-                            <option value="500">500개</option>
-                            <option value="1000">1000개</option>
-                          </select>
+                            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+                            </svg>
+                          </Link>
                         )}
                       </div>
                     </td>
@@ -557,25 +510,15 @@ export default function AdminContentsPage() {
                           </svg>
                         </button>
                         {content.type === 'survey' && (
-                          <select
-                            onChange={(e) => {
-                              const count = parseInt(e.target.value);
-                              if (count > 0) {
-                                handleGenerateTestData(content.id, count);
-                                e.target.value = '0';
-                              }
-                            }}
-                            className="px-1 py-0.5 bg-zinc-800 border border-zinc-700 rounded text-[10px] text-zinc-100 focus:outline-none focus:ring-2 focus:ring-brand-500"
-                            title="테스트 데이터 생성"
+                          <Link
+                            href={`/admin/contents/${content.id}/edit-results`}
+                            className="p-1.5 text-brand-400 hover:text-brand-300 transition-colors"
+                            title="결과 수정"
                           >
-                            <option value="0">데이터</option>
-                            <option value="50">50개</option>
-                            <option value="100">100개</option>
-                            <option value="200">200개</option>
-                            <option value="300">300개</option>
-                            <option value="500">500개</option>
-                            <option value="1000">1000개</option>
-                          </select>
+                            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+                            </svg>
+                          </Link>
                         )}
                       </div>
                     </div>
