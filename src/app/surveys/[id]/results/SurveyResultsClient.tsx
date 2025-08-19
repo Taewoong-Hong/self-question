@@ -7,20 +7,18 @@ import { ko } from 'date-fns/locale';
 import { BarChart, Bar, PieChart, Pie, Cell, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
 import toast from 'react-hot-toast';
 
-// 차트 색상 팔레트 (브랜드 그린을 중심으로 다양한 색상)
+// 차트 색상 팔레트 (사용자 지정 색상)
 const COLORS = [
-  '#39FF14', // 브랜드 그린 (밝은 형광)
-  '#00FF00', // 밝은 초록
-  '#00CC00', // 중간 초록
-  '#009900', // 다크 그린
-  '#006600', // 진한 다크 그린
-  '#003300', // 매우 진한 다크 그린
-  '#66FF33', // 라임 그린
-  '#99FF66', // 연한 라임
-  '#CCFF99', // 매우 연한 라임
-  '#33CC33', // 중간 톤 그린
-  '#339966', // 청록빛 그린
-  '#336633'  // 어두운 청록빛 그린
+  '#DEF6E2', // 매우 연한 녹색
+  '#C5F0CD', // 연한 녹색
+  '#A5E8B0', // 연녹색
+  '#84E093', // 중간 연녹색
+  '#5BD670', // 밝은 녹색
+  '#32CC4C', // 녹색
+  '#28A33D', // 중간 녹색
+  '#208230', // 진한 녹색
+  '#186124', // 매우 진한 녹색
+  '#39FF14'  // 브랜드 컬러 (최후의 보루)
 ];
 
 interface SurveyResultsClientProps {
