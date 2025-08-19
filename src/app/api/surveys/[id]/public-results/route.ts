@@ -36,20 +36,31 @@ export async function GET(
       survey.admin_results = adminResultsObj;
     }
     
-    console.log('[API] Survey basic info:', {
-      id: survey.id,
-      hasAdminResults: !!survey.admin_results,
-      adminResultsKeys: survey.admin_results ? Object.keys(survey.admin_results) : [],
-      questionsCount: survey.questions?.length,
-      statsResponseCount: survey.stats?.response_count
-    });
+    // admin_results 내부의 각 질문별 데이터도 Map에서 객체로 변환
+    if (survey.admin_results && typeof survey.admin_results === 'object') {
+      Object.keys(survey.admin_results).forEach(questionId => {
+        const adminResult = survey.admin_results![questionId];
+        if (adminResult) {
+          // choices가 Map인 경우 변환
+          if (adminResult.choices && adminResult.choices instanceof Map) {
+            const choicesObj: any = {};
+            adminResult.choices.forEach((value: any, key: string) => {
+              choicesObj[key] = value;
+            });
+            adminResult.choices = choicesObj;
+          }
+          // ratings가 Map인 경우 변환
+          if (adminResult.ratings && adminResult.ratings instanceof Map) {
+            const ratingsObj: any = {};
+            adminResult.ratings.forEach((value: any, key: string) => {
+              ratingsObj[key] = value;
+            });
+            adminResult.ratings = ratingsObj;
+          }
+        }
+      });
+    }
     
-    // 디버깅: questions의 ID 확인
-    console.log('[API] Questions IDs:', survey.questions.map((q: any) => ({
-      id: q.id,
-      _id: q._id?.toString(),
-      title: q.title?.substring(0, 30)
-    })));
     
     // public_results가 false인 경우 접근 불가
     if (survey.public_results === false) {
@@ -75,13 +86,6 @@ export async function GET(
         // question.id 우선, 없으면 _id 사용
         const questionId = question.id || question._id?.toString() || '';
         
-        console.log(`[API] Processing question:`, {
-          id: question.id,
-          _id: question._id?.toString(),
-          usedId: questionId,
-          type: question.type,
-          title: question.title?.substring(0, 50)
-        });
         
         // admin_results에서 다양한 ID 형식으로 시도
         let adminResult = survey.admin_results![questionId];
@@ -101,27 +105,6 @@ export async function GET(
         }
         
         if (adminResult) {
-          // adminResult 내부의 Map 타입 변환
-          if (adminResult.choices && adminResult.choices instanceof Map) {
-            const choicesObj: any = {};
-            adminResult.choices.forEach((value: any, key: string) => {
-              choicesObj[key] = value;
-            });
-            adminResult.choices = choicesObj;
-          }
-          
-          if (adminResult.ratings && adminResult.ratings instanceof Map) {
-            const ratingsObj: any = {};
-            adminResult.ratings.forEach((value: any, key: string) => {
-              ratingsObj[key] = value;
-            });
-            adminResult.ratings = ratingsObj;
-          }
-          console.log(`[API] Found admin result for question ${questionId}:`, {
-            choices: adminResult.choices,
-            total_responses: adminResult.total_responses,
-            hasId: '_id' in adminResult
-          });
           
           // _id 제거하고 필요한 필드만 복사
           const cleanAdminResult = {
@@ -146,10 +129,13 @@ export async function GET(
             case 'single_choice':
             case 'multiple_choice':
               if (cleanAdminResult.choices) {
+                
                 // adminResult.choices에서 직접 선택지 정보 가져오기
                 Object.entries(cleanAdminResult.choices).forEach(([choiceId, count]) => {
                   // question.properties에서 label 찾기
-                  const choiceLabel = question.properties?.choices?.find((c: any) => c.id === choiceId)?.label || `선택지 ${choiceId}`;
+                  const choice = question.properties?.choices?.find((c: any) => c.id === choiceId);
+                  const choiceLabel = choice?.label || `선택지 ${choiceId}`;
+                  
                   
                   questionStats[questionId].options[choiceId] = {
                     count: typeof count === 'number' ? count : 0,
@@ -184,18 +170,12 @@ export async function GET(
               questionStats[questionId].text_response_count = cleanAdminResult.total_responses || 0;
               break;
           }
-        } else {
-          console.log(`[API] No admin result for question ${questionId}`);
         }
       });
       
       // stats의 response_count를 우선 사용
       const finalTotalResponses = survey.stats?.response_count || totalResponses;
       
-      console.log('[API] Final response data:', {
-        questionStatsKeys: Object.keys(questionStats),
-        totalResponses: finalTotalResponses
-      });
       
       return NextResponse.json({
         question_stats: questionStats,
