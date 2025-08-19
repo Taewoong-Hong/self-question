@@ -58,13 +58,6 @@ export default async function PublicResultsPage({ params }: PageProps) {
 
     const results = await resultsResponse.json();
     
-    console.log('Page server data:', {
-      surveyId: params.id,
-      hasQuestions: !!survey.questions,
-      questionsCount: survey.questions?.length,
-      resultsData: results
-    });
-
     return <PublicResultsClient 
       survey={JSON.parse(JSON.stringify(survey))} 
       results={results}

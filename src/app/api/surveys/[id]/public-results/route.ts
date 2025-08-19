@@ -32,17 +32,6 @@ export async function GET(
       );
     }
 
-    // 디버깅을 위한 로그
-    console.log('Survey data:', {
-      id: survey.id,
-      hasAdminResults: !!survey.admin_results,
-      adminResultsType: typeof survey.admin_results,
-      adminResultsIsMap: survey.admin_results instanceof Map,
-      questionsCount: survey.questions.length,
-      questionIds: survey.questions.map((q: any) => ({ id: q.id, _id: q._id })),
-      statsResponseCount: survey.stats?.response_count
-    });
-
     // admin_results가 있으면 그것을 우선 사용 (슈퍼관리자가 수정한 데이터)
     // Mongoose Map은 toObject()로 변환되어 있을 수 있음
     const hasAdminResults = survey.admin_results && 
@@ -63,11 +52,6 @@ export async function GET(
           ? survey.admin_results.get(questionId)
           : survey.admin_results![questionId];
         
-        console.log(`Question ${questionId}:`, {
-          hasAdminResult: !!adminResult,
-          adminResult
-        });
-        
         if (adminResult) {
           questionStats[questionId] = {
             response_count: adminResult.total_responses || 0,
@@ -83,12 +67,15 @@ export async function GET(
           switch (question.type) {
             case 'single_choice':
             case 'multiple_choice':
-              if (adminResult.choices && question.properties?.choices) {
-                question.properties.choices.forEach((choice: any) => {
-                  const count = adminResult.choices![choice.id] || 0;
-                  questionStats[questionId].options[choice.id] = {
-                    count: count,
-                    label: choice.label
+              if (adminResult.choices) {
+                // adminResult.choices에서 직접 선택지 정보 가져오기
+                Object.entries(adminResult.choices).forEach(([choiceId, count]) => {
+                  // question.properties에서 label 찾기
+                  const choiceLabel = question.properties?.choices?.find((c: any) => c.id === choiceId)?.label || `선택지 ${choiceId}`;
+                  
+                  questionStats[questionId].options[choiceId] = {
+                    count: count as number,
+                    label: choiceLabel
                   };
                 });
               }
