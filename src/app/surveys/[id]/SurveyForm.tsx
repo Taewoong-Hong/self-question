@@ -182,11 +182,21 @@ export default function SurveyForm({ surveyId, questions, onComplete }: SurveyFo
       toast.success('설문이 제출되었습니다. 감사합니다!');
       onComplete();
     } catch (error: any) {
-      if (error.message?.includes('이미 응답')) {
+      console.error('Survey submission error:', error);
+      
+      // 서버에서 반환한 에러 메시지 우선 사용
+      const errorData = error.response?.data || error.data;
+      const errorMessage = errorData?.error || error.message;
+      
+      if (errorData?.code === 'ALREADY_RESPONDED' || error.message?.includes('이미 응답')) {
         toast.error('이미 응답한 설문입니다.');
         onComplete();
+      } else if (errorData?.code === 'SURVEY_CLOSED') {
+        toast.error('종료된 설문입니다.');
+      } else if (errorData?.code === 'VALIDATION_ERROR') {
+        toast.error(errorMessage || '입력값을 확인해주세요.');
       } else {
-        toast.error('설문 제출 중 오류가 발생했습니다.');
+        toast.error(errorMessage || '설문 제출 중 오류가 발생했습니다.');
       }
     } finally {
       setSubmitting(false);

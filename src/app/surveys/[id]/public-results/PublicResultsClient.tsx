@@ -96,14 +96,28 @@ export default function PublicResultsClient({ survey, results }: PublicResultsCl
   };
 
   return (
-    <div className="min-h-screen max-w-6xl mx-auto px-4 py-8">
+    <div className="min-h-screen max-w-6xl mx-auto px-4 py-8 relative">
+      {/* 우측 상단 뒤로가기 버튼 */}
+      <Link
+        href={`/surveys/${survey.id}`}
+        className="absolute right-4 top-8 p-2 bg-zinc-800 text-zinc-100 rounded-lg hover:bg-zinc-700 transition-colors"
+        title="설문으로 돌아가기"
+      >
+        <svg 
+          xmlns="http://www.w3.org/2000/svg" 
+          fill="none" 
+          viewBox="0 0 24 24" 
+          strokeWidth={1.5} 
+          stroke="currentColor" 
+          className="w-5 h-5"
+        >
+          <path strokeLinecap="round" strokeLinejoin="round" d="M9 15L3 9m0 0l6-6M3 9h12a6 6 0 010 12h-3" />
+        </svg>
+      </Link>
+      
       {/* 헤더 */}
       <div className="mb-6">
-        <Link href={`/surveys/${survey.id}`} className="text-zinc-400 hover:text-zinc-100 text-sm mb-3 inline-block">
-          ← 설문으로 돌아가기
-        </Link>
-        
-        <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-4">
+        <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-4 pr-12">
           <div>
             <h1 className="text-xl sm:text-2xl lg:text-3xl font-bold mb-2">{survey.title} - 결과 통계</h1>
             <div className="flex items-center gap-3 text-xs sm:text-sm text-zinc-500">

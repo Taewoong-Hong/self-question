@@ -1,9 +1,11 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { connectDB } from '@/lib/db';
 import Survey from '@/models/Survey';
-export const dynamic = 'force-dynamic';
 import Response from '@/models/Response';
 import crypto from 'crypto';
+
+export const runtime = 'nodejs';         // mongoose 사용을 위해 edge 금지
+export const dynamic = 'force-dynamic';  // 캐싱/정적화 방지
 
 export async function POST(
   request: NextRequest,
@@ -119,33 +121,55 @@ export async function POST(
       response_code: response.response_code
     });
     
-  } catch (error: any) {
-    console.error('Response submission error:', {
+  } catch (err: any) {
+    console.error('[respond] error:', {
       surveyId: params.id,
-      error: error.message,
-      stack: error.stack,
-      code: error.code,
-      name: error.name
+      message: err?.message,
+      code: err?.code,
+      name: err?.name
     });
     
-    // Handle duplicate key error
-    if (error.code === 11000) {
+    // 중복 키 에러 (이미 응답한 경우)
+    if (err.code === 11000) {
       return NextResponse.json(
-        { error: '이미 응답하셨습니다' },
-        { status: 403 }
+        { error: '이미 응답하셨습니다', code: 'ALREADY_RESPONDED' },
+        { status: 409 }  // Conflict
       );
     }
     
-    // Handle validation errors
-    if (error.name === 'ValidationError') {
+    // 유효성 검증 에러
+    if (err.name === 'ValidationError') {
+      const messages = Object.values(err.errors || {})
+        .map((e: any) => e.message)
+        .join(', ');
       return NextResponse.json(
-        { error: '입력값이 올바르지 않습니다: ' + error.message },
+        { error: messages || '입력값이 올바르지 않습니다', code: 'VALIDATION_ERROR' },
         { status: 400 }
       );
     }
     
+    // 설문을 찾을 수 없음
+    if (err.message?.includes('찾을 수 없습니다')) {
+      return NextResponse.json(
+        { error: err.message, code: 'NOT_FOUND' },
+        { status: 404 }
+      );
+    }
+    
+    // 설문 응답 거부 (종료된 설문 등)
+    if (err.message?.includes('응답을 받지 않습니다')) {
+      return NextResponse.json(
+        { error: err.message, code: 'SURVEY_CLOSED' },
+        { status: 403 }
+      );
+    }
+    
+    // 기타 서버 에러
     return NextResponse.json(
-      { error: '서버 오류가 발생했습니다. 잠시 후 다시 시도해주세요.' },
+      { 
+        error: err?.message || '서버 오류가 발생했습니다. 잠시 후 다시 시도해주세요.',
+        code: 'SERVER_ERROR'
+      },
       { status: 500 }
     );
   }

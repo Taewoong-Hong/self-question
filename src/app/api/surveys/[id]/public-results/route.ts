@@ -72,16 +72,37 @@ export async function GET(
     }
 
     // admin_results가 있으면 그것을 우선 사용 (슈퍼관리자가 수정한 데이터)
-    // toObject()로 변환된 경우 Map이 일반 객체가 됨
+    // 단, 시간 수정만 있고 실제 데이터 수정이 없거나 0이면 실제 응답 사용
     const hasAdminResults = survey.admin_results && 
        typeof survey.admin_results === 'object' && 
        Object.keys(survey.admin_results).length > 0;
     
+    let useAdminResults = false;
+    let adminTotalResponses = 0;
+    
     if (hasAdminResults) {
-      console.log('[API] Processing admin results...');
+      // admin_results에서 실제 응답 데이터가 있는지 확인
+      for (const questionId in survey.admin_results) {
+        const adminResult = survey.admin_results[questionId];
+        if (adminResult) {
+          // 실제 응답 수가 있는지 확인
+          const responseCount = adminResult.total_responses || 0;
+          const hasChoices = adminResult.choices && Object.keys(adminResult.choices).length > 0;
+          const hasRatings = adminResult.ratings && Object.keys(adminResult.ratings).length > 0;
+          const hasSamples = adminResult.sample_responses && adminResult.sample_responses.length > 0;
+          
+          if (responseCount > 0 || hasChoices || hasRatings || hasSamples) {
+            useAdminResults = true;
+            adminTotalResponses = Math.max(adminTotalResponses, responseCount);
+          }
+        }
+      }
+    }
+    
+    if (useAdminResults && adminTotalResponses > 0) {
       // admin_results 데이터를 API 응답 형식으로 변환
       const questionStats: any = {};
-      let totalResponses = 0;
+      let totalResponses = adminTotalResponses;
       
       survey.questions.forEach((question: any) => {
         // question.id 우선, 없으면 _id 사용

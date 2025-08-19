@@ -217,13 +217,27 @@ export default function DebateAdminPage() {
 
   // 인증된 경우 관리자 페이지 표시
   return (
-    <div className="min-h-screen max-w-4xl mx-auto">
+    <div className="min-h-screen max-w-4xl mx-auto relative">
+      {/* 우측 상단 뒤로가기 버튼 */}
+      <Link
+        href={`/debates/${debateId}`}
+        className="absolute right-0 top-0 p-2 bg-zinc-800 text-zinc-100 rounded-lg hover:bg-zinc-700 transition-colors"
+        title="투표로 돌아가기"
+      >
+        <svg 
+          xmlns="http://www.w3.org/2000/svg" 
+          fill="none" 
+          viewBox="0 0 24 24" 
+          strokeWidth={1.5} 
+          stroke="currentColor" 
+          className="w-5 h-5"
+        >
+          <path strokeLinecap="round" strokeLinejoin="round" d="M9 15L3 9m0 0l6-6M3 9h12a6 6 0 010 12h-3" />
+        </svg>
+      </Link>
+      
       {/* 헤더 */}
-      <div className="mb-8">
-        <Link href={`/debates/${debateId}`} className="text-zinc-400 hover:text-zinc-100 mb-4 inline-block">
-          ← 투표로 돌아가기
-        </Link>
-        
+      <div className="mb-8 pr-12">
         <div className="flex items-start justify-between">
           <div>
             <h1 className="text-xl sm:text-2xl lg:text-3xl font-bold mb-2">{debate.title} - 관리</h1>
