@@ -268,7 +268,7 @@ export default function SurveyAdminPage() {
           <h2 className="text-lg font-semibold mb-4">결과 및 데이터</h2>
           <div className="space-y-3">
             <Link
-              href={`/surveys/${surveyId}/results`}
+              href={`/surveys/${surveyId}/public-results`}
               className="flex items-center justify-between p-3 bg-zinc-800/50 rounded-lg hover:bg-zinc-800 transition-colors"
             >
               <span>결과 통계 보기</span>

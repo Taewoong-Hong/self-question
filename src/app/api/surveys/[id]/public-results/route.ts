@@ -15,7 +15,7 @@ export async function GET(
     const survey = await Survey.findOne({ 
       id: params.id,
       is_deleted: false 
-    }).select('_id questions admin_results stats public_results');
+    }).select('_id questions admin_results stats public_results').lean();
     
     if (!survey) {
       return NextResponse.json(
@@ -32,7 +32,78 @@ export async function GET(
       );
     }
 
-    // 응답 데이터 가져오기
+    // admin_results가 있으면 그것을 사용하고, 없으면 실제 응답 데이터 사용
+    if (survey.admin_results && Object.keys(survey.admin_results).length > 0) {
+      // admin_results 데이터를 API 응답 형식으로 변환
+      const questionStats: any = {};
+      let totalResponses = 0;
+      
+      survey.questions.forEach((question: any) => {
+        const questionId = question._id.toString();
+        const adminResult = survey.admin_results![questionId];
+        
+        if (adminResult) {
+          questionStats[questionId] = {
+            response_count: adminResult.total_responses || 0,
+            options: {},
+            responses: adminResult.sample_responses || [],
+            average: 0,
+            question_type: question.type,
+            question_title: question.title
+          };
+          
+          totalResponses = Math.max(totalResponses, adminResult.total_responses || 0);
+          
+          switch (question.type) {
+            case 'single_choice':
+            case 'multiple_choice':
+              if (adminResult.choices && question.properties?.choices) {
+                question.properties.choices.forEach((choice: any) => {
+                  const count = adminResult.choices![choice.id] || 0;
+                  questionStats[questionId].options[choice.id] = {
+                    count: count,
+                    label: choice.label
+                  };
+                });
+              }
+              break;
+              
+            case 'rating':
+              if (adminResult.ratings) {
+                let sum = 0;
+                let count = 0;
+                const ratingDistribution: any = {};
+                
+                Object.entries(adminResult.ratings).forEach(([rating, ratingCount]: [string, any]) => {
+                  const ratingNum = parseInt(rating);
+                  ratingDistribution[ratingNum] = ratingCount;
+                  sum += ratingNum * ratingCount;
+                  count += ratingCount;
+                });
+                
+                questionStats[questionId].average = count > 0 ? sum / count : 0;
+                questionStats[questionId].rating_distribution = ratingDistribution;
+                questionStats[questionId].response_count = count;
+              }
+              break;
+              
+            case 'short_text':
+            case 'long_text':
+              questionStats[questionId].text_response_count = adminResult.total_responses || 0;
+              break;
+          }
+        }
+      });
+      
+      return NextResponse.json({
+        question_stats: questionStats,
+        total_responses: totalResponses,
+        last_updated: new Date(),
+        data_source: 'admin_modified'
+      });
+    }
+    
+    // admin_results가 없으면 실제 응답 데이터 사용
     const responses = await Response.find({
       survey_id: survey._id
     }).select('answers');
