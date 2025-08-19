@@ -46,7 +46,8 @@ export default function PublicResultsClient({ survey, results }: PublicResultsCl
     const data: any[] = [];
     
     Object.entries(questionStats.options || {}).forEach(([choiceId, choice]: any) => {
-      if (choice.label && choice.count !== undefined) {
+      // choice가 객체가 아닌 경우 처리
+      if (typeof choice === 'object' && choice.label && typeof choice.count === 'number' && !isNaN(choice.count)) {
         data.push({
           x: choice.label,
           y: choice.count,
@@ -63,13 +64,15 @@ export default function PublicResultsClient({ survey, results }: PublicResultsCl
     const data: any[] = [];
     
     // 전체 응답 수 계산
-    const totalCount = Object.values(questionStats.options || {}).reduce((sum: number, opt: any) => sum + (opt.count || 0), 0);
+    const totalCount = Object.values(questionStats.options || {})
+      .filter((opt: any) => typeof opt === 'object' && typeof opt.count === 'number')
+      .reduce((sum: number, opt: any) => sum + (opt.count || 0), 0);
     
     Object.entries(questionStats.options || {}).forEach(([choiceId, choice]: any, index) => {
-      if (choice.label && choice.count !== undefined && choice.count > 0) {
+      if (typeof choice === 'object' && choice.label && typeof choice.count === 'number' && !isNaN(choice.count) && choice.count > 0) {
         const percentage = totalCount > 0 
           ? ((choice.count / totalCount) * 100).toFixed(1)
-          : 0;
+          : '0';
         data.push({
           x: `${choice.label} (${percentage}%)`,
           y: choice.count
@@ -246,9 +249,14 @@ export default function PublicResultsClient({ survey, results }: PublicResultsCl
                       {/* 기존 목록 형태도 유지 */}
                       <div className="space-y-3 mt-4">
                         {Object.entries(questionStats.options || {}).map(([choiceId, choice]: any) => {
+                          // choice가 객체인지 확인
+                          if (typeof choice !== 'object' || !choice.label) return null;
+                          
                           // 전체 응답 수 계산 (각 선택지의 count 합계)
-                          const totalCount = Object.values(questionStats.options || {}).reduce((sum: number, opt: any) => sum + (opt.count || 0), 0);
-                          const percentage = totalCount > 0 
+                          const totalCount = Object.values(questionStats.options || {})
+                            .filter((opt: any) => typeof opt === 'object' && typeof opt.count === 'number')
+                            .reduce((sum: number, opt: any) => sum + (opt.count || 0), 0);
+                          const percentage = totalCount > 0 && typeof choice.count === 'number'
                             ? (choice.count / totalCount) * 100 
                             : 0;
                           return (
@@ -256,7 +264,7 @@ export default function PublicResultsClient({ survey, results }: PublicResultsCl
                               <div className="flex justify-between items-center mb-1">
                                 <span className="text-sm">{choice.label}</span>
                                 <span className="text-sm text-zinc-400">
-                                  {choice.count}명 ({percentage.toFixed(1)}%)
+                                  {choice.count || 0}명 ({percentage.toFixed(1)}%)
                                 </span>
                               </div>
                               <div className="w-full bg-zinc-800 rounded-full h-3 overflow-hidden">
@@ -267,7 +275,7 @@ export default function PublicResultsClient({ survey, results }: PublicResultsCl
                               </div>
                             </div>
                           );
-                        })}
+                        }).filter(Boolean)}
                       </div>
                     </>
                   )}

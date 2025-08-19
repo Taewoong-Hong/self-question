@@ -117,11 +117,24 @@ export async function GET(
             });
             adminResult.ratings = ratingsObj;
           }
-          console.log(`[API] Found admin result for question ${questionId}:`, adminResult);
+          console.log(`[API] Found admin result for question ${questionId}:`, {
+            choices: adminResult.choices,
+            total_responses: adminResult.total_responses,
+            hasId: '_id' in adminResult
+          });
+          
+          // _id 제거하고 필요한 필드만 복사
+          const cleanAdminResult = {
+            choices: adminResult.choices,
+            ratings: adminResult.ratings,
+            sample_responses: adminResult.sample_responses,
+            total_responses: adminResult.total_responses
+          };
+          
           questionStats[questionId] = {
-            response_count: adminResult.total_responses || 0,
+            response_count: cleanAdminResult.total_responses || 0,
             options: {},
-            responses: adminResult.sample_responses || [],
+            responses: cleanAdminResult.sample_responses || [],
             average: 0,
             question_type: question.type,
             question_title: question.title
@@ -132,14 +145,14 @@ export async function GET(
           switch (question.type) {
             case 'single_choice':
             case 'multiple_choice':
-              if (adminResult.choices) {
+              if (cleanAdminResult.choices) {
                 // adminResult.choices에서 직접 선택지 정보 가져오기
-                Object.entries(adminResult.choices).forEach(([choiceId, count]) => {
+                Object.entries(cleanAdminResult.choices).forEach(([choiceId, count]) => {
                   // question.properties에서 label 찾기
                   const choiceLabel = question.properties?.choices?.find((c: any) => c.id === choiceId)?.label || `선택지 ${choiceId}`;
                   
                   questionStats[questionId].options[choiceId] = {
-                    count: count as number,
+                    count: typeof count === 'number' ? count : 0,
                     label: choiceLabel
                   };
                 });
@@ -147,16 +160,17 @@ export async function GET(
               break;
               
             case 'rating':
-              if (adminResult.ratings) {
+              if (cleanAdminResult.ratings) {
                 let sum = 0;
                 let count = 0;
                 const ratingDistribution: any = {};
                 
-                Object.entries(adminResult.ratings).forEach(([rating, ratingCount]: [string, any]) => {
+                Object.entries(cleanAdminResult.ratings).forEach(([rating, ratingCount]: [string, any]) => {
                   const ratingNum = parseInt(rating);
-                  ratingDistribution[ratingNum] = ratingCount;
-                  sum += ratingNum * ratingCount;
-                  count += ratingCount;
+                  const countNum = typeof ratingCount === 'number' ? ratingCount : 0;
+                  ratingDistribution[ratingNum] = countNum;
+                  sum += ratingNum * countNum;
+                  count += countNum;
                 });
                 
                 questionStats[questionId].average = count > 0 ? sum / count : 0;
@@ -167,7 +181,7 @@ export async function GET(
               
             case 'short_text':
             case 'long_text':
-              questionStats[questionId].text_response_count = adminResult.total_responses || 0;
+              questionStats[questionId].text_response_count = cleanAdminResult.total_responses || 0;
               break;
           }
         } else {
