@@ -153,34 +153,37 @@ export default function SurveysPage() {
                   </p>
                 )}
                 
-                <div className="flex items-center gap-4 text-sm text-zinc-500">
-                  <span>응답 {survey.stats?.response_count || 0}명</span>
-                  {survey.author_nickname && (
-                    <>
-                      <span>•</span>
+                <div className="grid grid-cols-2 gap-x-4 gap-y-1 text-sm text-zinc-500">
+                  <div>
+                    <span>응답 {survey.stats?.response_count || 0}명</span>
+                  </div>
+                  <div>
+                    {survey.author_nickname && (
                       <span>작성자: {survey.author_nickname}</span>
-                    </>
-                  )}
-                  <span>•</span>
-                  <span>시작: {new Date(survey.created_at).toLocaleDateString('ko-KR', { 
-                    year: 'numeric',
-                    month: '2-digit',
-                    day: '2-digit',
-                    hour: '2-digit',
-                    minute: '2-digit'
-                  }).replace(/\. /g, '-').replace('.', '')}</span>
-                  {survey.settings?.close_at && (
-                    <>
-                      <span>•</span>
-                      <span>종료: {new Date(survey.settings.close_at).toLocaleDateString('ko-KR', { 
+                    )}
+                  </div>
+                  <div>
+                    <span>시작: {new Date(survey.start_at || survey.created_at).toLocaleDateString('ko-KR', { 
+                      year: 'numeric',
+                      month: '2-digit',
+                      day: '2-digit',
+                      hour: '2-digit',
+                      minute: '2-digit'
+                    }).replace(/\. /g, '-').replace('.', '')}</span>
+                  </div>
+                  <div>
+                    {survey.end_at || survey.settings?.close_at ? (
+                      <span>종료: {new Date(survey.end_at || survey.settings?.close_at || '').toLocaleDateString('ko-KR', { 
                         year: 'numeric',
                         month: '2-digit',
                         day: '2-digit',
                         hour: '2-digit',
                         minute: '2-digit'
                       }).replace(/\. /g, '-').replace('.', '')}</span>
-                    </>
-                  )}
+                    ) : (
+                      <span>종료: 미정</span>
+                    )}
+                  </div>
                 </div>
                 
                 {survey.tags && survey.tags.length > 0 && (

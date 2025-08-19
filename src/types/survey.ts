@@ -9,6 +9,8 @@ export interface Survey {
   status: 'draft' | 'open' | 'closed';
   created_at: string;
   updated_at: string;
+  start_at?: string;  // 시작 시간
+  end_at?: string;    // 종료 시간
   stats: {
     response_count: number;
     completion_rate: number;
