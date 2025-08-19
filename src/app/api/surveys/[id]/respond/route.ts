@@ -64,6 +64,10 @@ export async function POST(
     }
     
     // Create response
+    const startedAt = body.started_at ? new Date(body.started_at) : new Date();
+    const submittedAt = new Date();
+    const completionTime = Math.round((submittedAt.getTime() - startedAt.getTime()) / 1000);
+    
     const response = new Response({
       survey_id: survey.id,
       survey_ref: survey._id,
@@ -71,15 +75,17 @@ export async function POST(
       respondent_ip_hash: ipHash,
       user_agent: request.headers.get('user-agent') || '',
       answers: body.answers,
-      started_at: body.started_at ? new Date(body.started_at) : new Date(),
-      submitted_at: new Date(),
+      started_at: startedAt,
+      submitted_at: submittedAt,
+      completion_time: completionTime,
+      quality_flags: [], // Initialize empty array
       referrer: request.headers.get('referer') || '',
       utm_source: body.utm_source,
       utm_medium: body.utm_medium,
       utm_campaign: body.utm_campaign
     });
     
-    // Calculate quality score
+    // Calculate quality score after creation
     response.calculateQualityScore();
     
     await response.save();
@@ -108,7 +114,13 @@ export async function POST(
     });
     
   } catch (error: any) {
-    console.error('Response submission error:', error);
+    console.error('Response submission error:', {
+      surveyId: params.id,
+      error: error.message,
+      stack: error.stack,
+      code: error.code,
+      name: error.name
+    });
     
     // Handle duplicate key error
     if (error.code === 11000) {
@@ -118,8 +130,16 @@ export async function POST(
       );
     }
     
+    // Handle validation errors
+    if (error.name === 'ValidationError') {
+      return NextResponse.json(
+        { error: '입력값이 올바르지 않습니다: ' + error.message },
+        { status: 400 }
+      );
+    }
+    
     return NextResponse.json(
-      { error: error.message || 'Internal server error' },
+      { error: '서버 오류가 발생했습니다. 잠시 후 다시 시도해주세요.' },
       { status: 500 }
     );
   }

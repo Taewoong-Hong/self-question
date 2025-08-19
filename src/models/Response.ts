@@ -230,11 +230,16 @@ responseSchema.pre('save', function(next) {
 // Quality score calculation
 responseSchema.methods.calculateQualityScore = function(): number {
   let score = 100;
-  const completionTime = this.completion_time;
-  const answerCount = this.answers.length;
+  const completionTime = this.completion_time || 0;
+  const answerCount = this.answers?.length || 0;
+  
+  // Initialize quality_flags array if not exists
+  if (!this.quality_flags || !Array.isArray(this.quality_flags)) {
+    this.quality_flags = [];
+  }
   
   // Check for too fast responses (less than 2 seconds per question average)
-  if (completionTime < answerCount * 2) {
+  if (answerCount > 0 && completionTime < answerCount * 2) {
     score -= 30;
     if (!this.quality_flags.includes('too_fast')) {
       this.quality_flags.push('too_fast');
@@ -242,15 +247,16 @@ responseSchema.methods.calculateQualityScore = function(): number {
   }
   
   // Check if all multiple choice answers are the same
-  const choiceAnswers = this.answers.filter((a: IAnswer) => 
+  const choiceAnswers = this.answers?.filter((a: IAnswer) => 
     a.question_type === 'single_choice' || a.question_type === 'multiple_choice'
-  );
+  ) || [];
+  
   if (choiceAnswers.length > 3) {
     const firstChoice = choiceAnswers[0].choice_id || choiceAnswers[0].choice_ids?.[0];
     const allSame = choiceAnswers.every((a: IAnswer) => 
       a.choice_id === firstChoice || a.choice_ids?.[0] === firstChoice
     );
-    if (allSame) {
+    if (allSame && firstChoice) {
       score -= 20;
       if (!this.quality_flags.includes('all_same_answers')) {
         this.quality_flags.push('all_same_answers');

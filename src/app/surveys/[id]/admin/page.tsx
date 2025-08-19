@@ -81,14 +81,22 @@ export default function SurveyAdminPage() {
   };
 
   const handleStatusToggle = async () => {
-    if (!survey || !adminToken) return;
+    if (!survey) return;
+    
+    // localStorage에서 토큰 직접 가져오기
+    const token = adminToken || localStorage.getItem(`survey_admin_${surveyId}`);
+    if (!token) {
+      toast.error('관리자 인증이 필요합니다.');
+      return;
+    }
     
     try {
       const newStatus = survey.status === 'open' ? 'closed' : 'open';
-      await surveyApi.updateStatus(surveyId, newStatus, adminToken);
+      await surveyApi.updateStatus(surveyId, newStatus, token);
       setSurvey({ ...survey, status: newStatus });
       toast.success(`설문이 ${newStatus === 'open' ? '열렸습니다' : '닫혔습니다'}.`);
     } catch (error) {
+      console.error('상태 변경 오류:', error);
       toast.error('상태 변경에 실패했습니다.');
     }
   };
@@ -98,16 +106,19 @@ export default function SurveyAdminPage() {
       return;
     }
 
-    if (!adminToken) {
+    // localStorage에서 토큰 직접 가져오기
+    const token = adminToken || localStorage.getItem(`survey_admin_${surveyId}`);
+    if (!token) {
       toast.error('관리자 인증이 필요합니다.');
       return;
     }
 
     try {
-      await surveyApi.delete(surveyId, adminToken);
+      await surveyApi.delete(surveyId, token);
       toast.success('설문이 삭제되었습니다.');
       router.push('/surveys');
     } catch (error) {
+      console.error('삭제 오류:', error);
       toast.error('설문 삭제에 실패했습니다.');
     }
   };

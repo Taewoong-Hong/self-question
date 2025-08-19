@@ -95,14 +95,22 @@ export default function DebateAdminPage() {
   };
 
   const handleStatusToggle = async () => {
-    if (!debate || !adminToken) return;
+    if (!debate) return;
+    
+    // localStorage에서 토큰 직접 가져오기
+    const token = adminToken || localStorage.getItem(`debate_admin_${debateId}`);
+    if (!token) {
+      alert('관리자 인증이 필요합니다.');
+      return;
+    }
     
     try {
       const newStatus = debate.status === 'active' ? 'ended' : 'active';
-      await debateApi.updateStatus(debateId, newStatus, adminToken);
+      await debateApi.updateStatus(debateId, newStatus, token);
       setDebate({ ...debate, status: newStatus });
       alert(`투표가 ${newStatus === 'active' ? '시작되었습니다' : '종료되었습니다'}.`);
     } catch (error) {
+      console.error('상태 변경 오류:', error);
       alert('상태 변경에 실패했습니다.');
     }
   };
@@ -112,16 +120,19 @@ export default function DebateAdminPage() {
       return;
     }
 
-    if (!adminToken) {
+    // localStorage에서 토큰 직접 가져오기
+    const token = adminToken || localStorage.getItem(`debate_admin_${debateId}`);
+    if (!token) {
       alert('관리자 인증이 필요합니다.');
       return;
     }
 
     try {
-      await debateApi.delete(debateId, adminToken);
+      await debateApi.delete(debateId, token);
       alert('투표가 삭제되었습니다.');
       router.push('/debates');
     } catch (error) {
+      console.error('삭제 오류:', error);
       alert('삭제에 실패했습니다.');
     }
   };
