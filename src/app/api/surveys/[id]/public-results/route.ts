@@ -15,7 +15,7 @@ export async function GET(
     const survey = await Survey.findOne({ 
       id: params.id,
       is_deleted: false 
-    }).select('_id questions admin_results stats public_results').lean();
+    }).select('_id questions admin_results stats public_results');
     
     if (!survey) {
       return NextResponse.json(
@@ -36,13 +36,20 @@ export async function GET(
     console.log('Survey data:', {
       id: survey.id,
       hasAdminResults: !!survey.admin_results,
-      adminResultsKeys: survey.admin_results ? Object.keys(survey.admin_results) : [],
+      adminResultsType: typeof survey.admin_results,
+      adminResultsIsMap: survey.admin_results instanceof Map,
       questionsCount: survey.questions.length,
-      questionIds: survey.questions.map((q: any) => ({ id: q.id, _id: q._id }))
+      questionIds: survey.questions.map((q: any) => ({ id: q.id, _id: q._id })),
+      statsResponseCount: survey.stats?.response_count
     });
 
-    // admin_results가 있으면 그것을 사용하고, 없으면 실제 응답 데이터 사용
-    if (survey.admin_results && Object.keys(survey.admin_results).length > 0) {
+    // admin_results가 있으면 그것을 우선 사용 (슈퍼관리자가 수정한 데이터)
+    // Mongoose Map은 toObject()로 변환되어 있을 수 있음
+    const hasAdminResults = survey.admin_results && 
+      ((survey.admin_results instanceof Map && survey.admin_results.size > 0) ||
+       (typeof survey.admin_results === 'object' && Object.keys(survey.admin_results).length > 0));
+    
+    if (hasAdminResults) {
       // admin_results 데이터를 API 응답 형식으로 변환
       const questionStats: any = {};
       let totalResponses = 0;
@@ -50,7 +57,11 @@ export async function GET(
       survey.questions.forEach((question: any) => {
         // question.id 또는 question._id 둘 다 시도
         const questionId = (question.id || question._id || '').toString();
-        const adminResult = survey.admin_results![questionId];
+        
+        // Map이면 get 메서드 사용, 아니면 객체 접근
+        const adminResult = survey.admin_results instanceof Map 
+          ? survey.admin_results.get(questionId)
+          : survey.admin_results![questionId];
         
         console.log(`Question ${questionId}:`, {
           hasAdminResult: !!adminResult,
@@ -110,9 +121,12 @@ export async function GET(
         }
       });
       
+      // stats의 response_count를 우선 사용
+      const finalTotalResponses = survey.stats?.response_count || totalResponses;
+      
       return NextResponse.json({
         question_stats: questionStats,
-        total_responses: totalResponses,
+        total_responses: finalTotalResponses,
         last_updated: new Date(),
         data_source: 'admin_modified'
       });
@@ -205,10 +219,14 @@ export async function GET(
       }
     });
 
+    // stats의 response_count를 우선 사용
+    const finalTotalResponses = survey.stats?.response_count || responses.length;
+    
     return NextResponse.json({
       question_stats: questionStats,
-      total_responses: responses.length,
-      last_updated: new Date()
+      total_responses: finalTotalResponses,
+      last_updated: new Date(),
+      data_source: 'actual_responses'
     });
     
   } catch (error: any) {
