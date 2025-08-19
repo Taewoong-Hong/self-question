@@ -17,8 +17,8 @@ import {
   VictoryArea
 } from 'victory';
 
-// 차트 색상 팔레트 (브랜드 그린 계열 - 명도 조절)
-const COLORS = ['#39FF14', '#2EE60C', '#24CC09', '#1AB306', '#109903', '#068000'];
+// 차트 색상 팔레트 (브랜드 그린에서 화이트까지 그라데이션)
+const COLORS = ['#39FF14', '#66FF33', '#99FF66', '#CCFF99', '#E6FFCC', '#F5FFF5'];
 
 interface PublicResultsClientProps {
   survey: any;
@@ -85,7 +85,7 @@ export default function PublicResultsClient({ survey, results }: PublicResultsCl
   };
 
   return (
-    <div className="min-h-screen max-w-4xl mx-auto px-4 py-8">
+    <div className="min-h-screen max-w-6xl mx-auto px-4 py-8">
       {/* 헤더 */}
       <div className="mb-6">
         <Link href={`/surveys/${survey.id}`} className="text-zinc-400 hover:text-zinc-100 text-sm mb-3 inline-block">
@@ -114,7 +114,7 @@ export default function PublicResultsClient({ survey, results }: PublicResultsCl
       </div>
 
       {/* 결과 표시 */}
-      <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4">
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
         {survey.questions.map((question: any, index: number) => {
           // question.id와 question._id 둘 다 시도
           const questionId = question.id || question._id;
@@ -161,14 +161,14 @@ export default function PublicResultsClient({ survey, results }: PublicResultsCl
 
                       {/* Victory 차트 렌더링 */}
                       {prepareVictoryData(questionStats).length > 0 && (
-                        <div className="w-full h-48 sm:h-56">
+                        <div className="w-full h-40 sm:h-48">
                           {chartType === 'bar' ? (
                             <VictoryChart
                             theme={VictoryTheme.material}
-                            domainPadding={{ x: prepareVictoryData(questionStats).length <= 2 ? 80 : 30 }}
-                            padding={{ left: 50, right: 30, top: 30, bottom: 40 }}
-                            height={220}
-                            width={prepareVictoryData(questionStats).length <= 2 ? 300 : 400}
+                            domainPadding={{ x: prepareVictoryData(questionStats).length <= 2 ? 100 : 40 }}
+                            padding={{ left: 50, right: 30, top: 20, bottom: 20 }}
+                            height={200}
+                            width={prepareVictoryData(questionStats).length <= 2 ? 350 : 500}
                             containerComponent={
                               <VictoryContainer 
                                 responsive={true}
@@ -206,13 +206,13 @@ export default function PublicResultsClient({ survey, results }: PublicResultsCl
                           <div className="flex justify-center items-center h-full">
                             <VictoryPie
                               data={preparePieData(questionStats)}
-                              width={300}
-                              height={220}
+                              width={350}
+                              height={200}
                               innerRadius={0}
                               padAngle={3}
                               cornerRadius={3}
                               colorScale={COLORS}
-                              labelRadius={({ innerRadius }: any) => 120 }
+                              labelRadius={({ innerRadius }: any) => 100 }
                               labelComponent={
                                 <VictoryLabel
                                   style={{
@@ -332,13 +332,13 @@ export default function PublicResultsClient({ survey, results }: PublicResultsCl
 
                       {/* 평점 분포 차트 */}
                       {questionStats.rating_distribution && (
-                        <div className="w-full h-48">
+                        <div className="w-full h-40">
                           <VictoryChart
                             theme={VictoryTheme.material}
-                            domainPadding={{ x: 30 }}
-                            padding={{ left: 50, right: 30, top: 30, bottom: 40 }}
-                            height={200}
-                            width={350}
+                            domainPadding={{ x: 40 }}
+                            padding={{ left: 50, right: 30, top: 20, bottom: 20 }}
+                            height={160}
+                            width={400}
                             containerComponent={
                               <VictoryContainer 
                                 responsive={true}
