@@ -134,41 +134,43 @@ export default function PublicResultsClient({ survey, results }: PublicResultsCl
                 <>
                   {/* 단일/다중 선택 결과 */}
                   {(question.type === 'single_choice' || question.type === 'multiple_choice') && (
-                    <>
-                      {/* 차트 유형 선택 버튼 */}
-                      <div className="flex gap-1.5 mb-2">
-                        <button
-                          onClick={() => setChartType('bar')}
-                          className={`px-2 py-0.5 rounded text-xs transition-colors ${
-                            chartType === 'bar' 
-                              ? 'bg-zinc-700 text-zinc-100' 
-                              : 'bg-zinc-800 text-zinc-400 hover:bg-zinc-700'
-                          }`}
-                        >
-                          막대
-                        </button>
-                        <button
-                          onClick={() => setChartType('pie')}
-                          className={`px-2 py-0.5 rounded text-xs transition-colors ${
-                            chartType === 'pie' 
-                              ? 'bg-zinc-700 text-zinc-100' 
-                              : 'bg-zinc-800 text-zinc-400 hover:bg-zinc-700'
-                          }`}
-                        >
-                          원형
-                        </button>
-                      </div>
+                    <div className="space-y-3">
+                      {/* 차트 섹션 */}
+                      <div>
+                        {/* 차트 유형 선택 버튼 */}
+                        <div className="flex gap-1.5 mb-2">
+                          <button
+                            onClick={() => setChartType('bar')}
+                            className={`px-2 py-0.5 rounded text-xs transition-colors ${
+                              chartType === 'bar' 
+                                ? 'bg-zinc-700 text-zinc-100' 
+                                : 'bg-zinc-800 text-zinc-400 hover:bg-zinc-700'
+                            }`}
+                          >
+                            막대
+                          </button>
+                          <button
+                            onClick={() => setChartType('pie')}
+                            className={`px-2 py-0.5 rounded text-xs transition-colors ${
+                              chartType === 'pie' 
+                                ? 'bg-zinc-700 text-zinc-100' 
+                                : 'bg-zinc-800 text-zinc-400 hover:bg-zinc-700'
+                            }`}
+                          >
+                            원형
+                          </button>
+                        </div>
 
-                      {/* Victory 차트 렌더링 */}
-                      {prepareVictoryData(questionStats).length > 0 && (
-                        <div className="w-full h-36 sm:h-44 lg:h-52">
+                        {/* Victory 차트 렌더링 */}
+                        {prepareVictoryData(questionStats).length > 0 && (
+                          <div className="w-full h-36 sm:h-40 lg:h-44">
                           {chartType === 'bar' ? (
                             <VictoryChart
                             theme={VictoryTheme.material}
-                            domainPadding={{ x: prepareVictoryData(questionStats).length <= 2 ? 100 : 40 }}
-                            padding={{ left: 50, right: 30, top: 20, bottom: 30 }}
-                            height={250}
-                            width={prepareVictoryData(questionStats).length <= 2 ? 350 : 500}
+                            domainPadding={{ x: prepareVictoryData(questionStats).length <= 2 ? 60 : 30 }}
+                            padding={{ left: 45, right: 25, top: 20, bottom: 25 }}
+                            height={180}
+                            width={280}
                             containerComponent={
                               <VictoryContainer 
                                 responsive={true}
@@ -206,13 +208,13 @@ export default function PublicResultsClient({ survey, results }: PublicResultsCl
                           <div className="flex justify-center items-center h-full">
                             <VictoryPie
                               data={preparePieData(questionStats)}
-                              width={400}
-                              height={250}
+                              width={280}
+                              height={180}
                               innerRadius={0}
                               padAngle={3}
                               cornerRadius={3}
                               colorScale={COLORS}
-                              labelRadius={({ innerRadius }: any) => 120 }
+                              labelRadius={({ innerRadius }: any) => 85 }
                               labelComponent={
                                 <VictoryLabel
                                   style={{
@@ -231,13 +233,16 @@ export default function PublicResultsClient({ survey, results }: PublicResultsCl
                             </div>
                           )}
                         </div>
-                      )}
+                        )}
+                      </div>
                       
-                      {/* 차트 범례 - 선택지가 4개 이상일 때만 표시 */}
-                      {prepareVictoryData(questionStats).length > 3 && (
-                        <div className="mt-2">
-                          <p className="text-xs font-medium text-zinc-400 mb-1">선택지:</p>
-                          <div className="grid grid-cols-2 lg:grid-cols-3 gap-1">
+                      {/* 범례 및 프로그레스 바 섹션 */}
+                      <div>
+                        {/* 차트 범례 - 선택지가 4개 이상일 때만 표시 */}
+                        {prepareVictoryData(questionStats).length > 3 && (
+                          <div className="mb-2">
+                            <p className="text-xs font-medium text-zinc-400 mb-1">선택지:</p>
+                            <div className="grid grid-cols-2 lg:grid-cols-3 gap-1">
                             {prepareVictoryData(questionStats).map((item, index) => (
                               <div key={index} className="flex items-center gap-1.5 text-xs">
                                 <div 
@@ -290,8 +295,9 @@ export default function PublicResultsClient({ survey, results }: PublicResultsCl
                             </div>
                           );
                         }).filter(Boolean)}
+                        </div>
                       </div>
-                    </>
+                    </div>
                   )}
 
                   {/* 텍스트 응답 결과 (공개 페이지에서는 개수만) */}
@@ -332,13 +338,13 @@ export default function PublicResultsClient({ survey, results }: PublicResultsCl
 
                       {/* 평점 분포 차트 */}
                       {questionStats.rating_distribution && (
-                        <div className="w-full h-36 sm:h-44">
+                        <div className="w-full h-36 sm:h-40">
                           <VictoryChart
                             theme={VictoryTheme.material}
-                            domainPadding={{ x: 40 }}
-                            padding={{ left: 50, right: 30, top: 20, bottom: 30 }}
-                            height={200}
-                            width={400}
+                            domainPadding={{ x: 30 }}
+                            padding={{ left: 45, right: 25, top: 20, bottom: 25 }}
+                            height={160}
+                            width={280}
                             containerComponent={
                               <VictoryContainer 
                                 responsive={true}
