@@ -15,6 +15,8 @@ interface ContentItem {
   type: 'debate' | 'survey';
   status: string;
   created_at: Date;
+  start_at?: Date;
+  end_at?: Date;
   author_ip?: string;
   author_nickname?: string;
   participant_count: number;
@@ -84,6 +86,8 @@ export async function GET(request: NextRequest) {
         type: 'debate' as const,
         status: debate.status,
         created_at: debate.created_at,
+        start_at: debate.start_at,
+        end_at: debate.end_at,
         author_ip: debate.author_ip_hash,
         author_nickname: debate.author_nickname,
         participant_count: debate.stats?.unique_voters || 0,
@@ -111,6 +115,8 @@ export async function GET(request: NextRequest) {
         type: 'survey' as const,
         status: survey.status,
         created_at: survey.created_at,
+        start_at: survey.start_at,
+        end_at: survey.end_at,
         author_ip: undefined, // Survey doesn't have author_ip
         author_nickname: survey.author_nickname,
         participant_count: survey.stats?.response_count || 0,

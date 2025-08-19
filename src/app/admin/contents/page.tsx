@@ -13,6 +13,8 @@ interface ContentItem {
   type: 'debate' | 'survey';
   status: 'open' | 'closed' | 'scheduled';
   created_at: string;
+  start_at?: string;
+  end_at?: string;
   author_ip: string;
   author_nickname?: string;
   participant_count: number;
@@ -371,10 +373,32 @@ export default function AdminContentsPage() {
                       {content.participant_count}명
                     </td>
                     <td className="px-3 py-2 text-zinc-400 text-xs">
-                      {formatDistanceToNow(new Date(content.created_at), { 
-                        addSuffix: true, 
-                        locale: ko 
-                      })}
+                      <div>
+                        {formatDistanceToNow(new Date(content.created_at), { 
+                          addSuffix: true, 
+                          locale: ko 
+                        })}
+                      </div>
+                      {content.start_at && (
+                        <div className="text-[10px] text-zinc-500 mt-0.5">
+                          시작: {new Date(content.start_at).toLocaleDateString('ko-KR', { 
+                            month: '2-digit',
+                            day: '2-digit',
+                            hour: '2-digit',
+                            minute: '2-digit'
+                          }).replace(/\. /g, '-').replace('.', ' ')}
+                        </div>
+                      )}
+                      {content.end_at && (
+                        <div className="text-[10px] text-zinc-500">
+                          종료: {new Date(content.end_at).toLocaleDateString('ko-KR', { 
+                            month: '2-digit',
+                            day: '2-digit',
+                            hour: '2-digit',
+                            minute: '2-digit'
+                          }).replace(/\. /g, '-').replace('.', ' ')}
+                        </div>
+                      )}
                     </td>
                     <td className="px-3 py-2">
                       <div className="flex gap-2">
@@ -551,6 +575,27 @@ export default function AdminContentsPage() {
                         <span className="truncate max-w-[120px]" title={content.author_ip}>{content.author_ip}</span>
                       </div>
                       <div>참여자 {content.participant_count}명 • {formatDistanceToNow(new Date(content.created_at), { addSuffix: true, locale: ko })}</div>
+                      {(content.start_at || content.end_at) && (
+                        <div className="text-[10px] text-zinc-500 mt-1">
+                          {content.start_at && (
+                            <span>시작: {new Date(content.start_at).toLocaleDateString('ko-KR', { 
+                              month: '2-digit',
+                              day: '2-digit',
+                              hour: '2-digit',
+                              minute: '2-digit'
+                            }).replace(/\. /g, '-').replace('.', ' ')}</span>
+                          )}
+                          {content.start_at && content.end_at && <span> • </span>}
+                          {content.end_at && (
+                            <span>종료: {new Date(content.end_at).toLocaleDateString('ko-KR', { 
+                              month: '2-digit',
+                              day: '2-digit',
+                              hour: '2-digit',
+                              minute: '2-digit'
+                            }).replace(/\. /g, '-').replace('.', ' ')}</span>
+                          )}
+                        </div>
+                      )}
                     </div>
                   </div>
                 </div>

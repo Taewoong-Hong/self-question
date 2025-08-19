@@ -80,7 +80,7 @@ export async function PUT(
     }
     
     // Update allowed fields
-    const allowedFields = ['title', 'description', 'tags', 'questions', 'settings', 'welcome_screen', 'thankyou_screen'];
+    const allowedFields = ['title', 'description', 'tags', 'questions', 'settings', 'welcome_screen', 'thankyou_screen', 'start_at', 'end_at'];
     allowedFields.forEach(field => {
       if (body[field] !== undefined) {
         (survey as any)[field] = body[field];

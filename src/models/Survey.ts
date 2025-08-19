@@ -123,6 +123,8 @@ export interface ISurvey extends Document {
   // Timestamps
   created_at: Date;
   updated_at: Date;
+  start_at?: Date;
+  end_at?: Date;
   
   // Virtual fields
   is_closed: boolean;
@@ -359,7 +361,11 @@ const surveySchema = new Schema<ISurvey>({
   is_editable: {
     type: Boolean,
     default: true
-  }
+  },
+  
+  // Scheduling
+  start_at: Date,
+  end_at: Date
 }, {
   timestamps: {
     createdAt: 'created_at',
