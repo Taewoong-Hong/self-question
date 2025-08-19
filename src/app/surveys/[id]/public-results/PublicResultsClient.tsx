@@ -17,8 +17,8 @@ import {
   VictoryArea
 } from 'victory';
 
-// 차트 색상 팔레트 (브랜드 컬러 제외)
-const COLORS = ['#3B82F6', '#8B5CF6', '#F59E0B', '#EF4444', '#10B981', '#06B6D4'];
+// 차트 색상 팔레트 (브랜드 그린 계열 - 명도 조절)
+const COLORS = ['#39FF14', '#2EE60C', '#24CC09', '#1AB306', '#109903', '#068000'];
 
 interface PublicResultsClientProps {
   survey: any;
@@ -114,7 +114,7 @@ export default function PublicResultsClient({ survey, results }: PublicResultsCl
       </div>
 
       {/* 결과 표시 */}
-      <div className="space-y-4">
+      <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4">
         {survey.questions.map((question: any, index: number) => {
           // question.id와 question._id 둘 다 시도
           const questionId = question.id || question._id;
@@ -122,8 +122,8 @@ export default function PublicResultsClient({ survey, results }: PublicResultsCl
           
           
           return (
-            <div key={questionId} className="bg-zinc-900/50 backdrop-blur-sm border border-zinc-800 rounded-xl p-4 sm:p-6">
-              <h3 className="text-base sm:text-lg font-medium mb-3">
+            <div key={questionId} className="bg-zinc-900/50 backdrop-blur-sm border border-zinc-800 rounded-xl p-4">
+              <h3 className="text-sm sm:text-base font-medium mb-2">
                 {index + 1}. {question.title}
               </h3>
 
@@ -136,39 +136,39 @@ export default function PublicResultsClient({ survey, results }: PublicResultsCl
                   {(question.type === 'single_choice' || question.type === 'multiple_choice') && (
                     <>
                       {/* 차트 유형 선택 버튼 */}
-                      <div className="flex gap-2 mb-3">
+                      <div className="flex gap-1.5 mb-2">
                         <button
                           onClick={() => setChartType('bar')}
-                          className={`px-2.5 py-1 rounded-lg text-xs sm:text-sm transition-colors ${
+                          className={`px-2 py-0.5 rounded text-xs transition-colors ${
                             chartType === 'bar' 
                               ? 'bg-zinc-700 text-zinc-100' 
                               : 'bg-zinc-800 text-zinc-400 hover:bg-zinc-700'
                           }`}
                         >
-                          막대 차트
+                          막대
                         </button>
                         <button
                           onClick={() => setChartType('pie')}
-                          className={`px-2.5 py-1 rounded-lg text-xs sm:text-sm transition-colors ${
+                          className={`px-2 py-0.5 rounded text-xs transition-colors ${
                             chartType === 'pie' 
                               ? 'bg-zinc-700 text-zinc-100' 
                               : 'bg-zinc-800 text-zinc-400 hover:bg-zinc-700'
                           }`}
                         >
-                          원형 차트
+                          원형
                         </button>
                       </div>
 
                       {/* Victory 차트 렌더링 */}
                       {prepareVictoryData(questionStats).length > 0 && (
-                        <div className="w-full h-64 sm:h-80 mb-4">
+                        <div className="w-full h-48 sm:h-56">
                           {chartType === 'bar' ? (
                             <VictoryChart
                             theme={VictoryTheme.material}
-                            domainPadding={{ x: prepareVictoryData(questionStats).length <= 2 ? 120 : 40 }}
-                            padding={{ left: 60, right: 40, top: 40, bottom: 60 }}
-                            height={300}
-                            width={prepareVictoryData(questionStats).length <= 2 ? 400 : 600}
+                            domainPadding={{ x: prepareVictoryData(questionStats).length <= 2 ? 80 : 30 }}
+                            padding={{ left: 50, right: 30, top: 30, bottom: 40 }}
+                            height={220}
+                            width={prepareVictoryData(questionStats).length <= 2 ? 300 : 400}
                             containerComponent={
                               <VictoryContainer 
                                 responsive={true}
@@ -179,7 +179,7 @@ export default function PublicResultsClient({ survey, results }: PublicResultsCl
                             <VictoryAxis
                               style={{
                                 axis: { stroke: "#a1a1aa" },
-                                tickLabels: { fill: "#a1a1aa", fontSize: 12 },
+                                tickLabels: { fill: "#a1a1aa", fontSize: 10 },
                                 grid: { stroke: "#3f3f46" }
                               }}
                               dependentAxis
@@ -189,7 +189,7 @@ export default function PublicResultsClient({ survey, results }: PublicResultsCl
                                 axis: { stroke: "#a1a1aa" },
                                 tickLabels: { 
                                   fill: prepareVictoryData(questionStats).length <= 3 ? "#a1a1aa" : "transparent",
-                                  fontSize: 12
+                                  fontSize: 10
                                 }
                               }}
                             />
@@ -206,8 +206,8 @@ export default function PublicResultsClient({ survey, results }: PublicResultsCl
                           <div className="flex justify-center items-center h-full">
                             <VictoryPie
                               data={preparePieData(questionStats)}
-                              width={400}
-                              height={300}
+                              width={300}
+                              height={220}
                               innerRadius={0}
                               padAngle={3}
                               cornerRadius={3}
@@ -235,13 +235,13 @@ export default function PublicResultsClient({ survey, results }: PublicResultsCl
                       
                       {/* 차트 범례 - 선택지가 4개 이상일 때만 표시 */}
                       {prepareVictoryData(questionStats).length > 3 && (
-                        <div className="mt-4 space-y-2">
-                          <p className="text-sm font-medium text-zinc-400 mb-2">선택지 범례:</p>
-                          <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                        <div className="mt-2">
+                          <p className="text-xs font-medium text-zinc-400 mb-1">선택지:</p>
+                          <div className="grid grid-cols-2 lg:grid-cols-3 gap-1">
                             {prepareVictoryData(questionStats).map((item, index) => (
-                              <div key={index} className="flex items-center gap-2 text-sm">
+                              <div key={index} className="flex items-center gap-1.5 text-xs">
                                 <div 
-                                  className="w-4 h-4 rounded" 
+                                  className="w-3 h-3 rounded" 
                                   style={{ backgroundColor: item.fill }}
                                 />
                                 <span className="text-zinc-300">
@@ -254,7 +254,7 @@ export default function PublicResultsClient({ survey, results }: PublicResultsCl
                       )}
 
                       {/* 기존 목록 형태도 유지 */}
-                      <div className="space-y-3 mt-4">
+                      <div className="space-y-2 mt-2">
                         {Object.entries(questionStats.options || {}).map(([choiceId, choice]: any, index) => {
                           // choice가 객체인지 확인
                           if (typeof choice !== 'object' || !choice.label) return null;
@@ -278,7 +278,7 @@ export default function PublicResultsClient({ survey, results }: PublicResultsCl
                                   {choice.count || 0}명 ({percentage.toFixed(1)}%)
                                 </span>
                               </div>
-                              <div className="w-full bg-zinc-800 rounded-full h-3 overflow-hidden">
+                              <div className="w-full bg-zinc-800 rounded-full h-2 overflow-hidden">
                                 <div 
                                   className="h-full transition-all duration-500"
                                   style={{ 
@@ -296,28 +296,28 @@ export default function PublicResultsClient({ survey, results }: PublicResultsCl
 
                   {/* 텍스트 응답 결과 (공개 페이지에서는 개수만) */}
                   {(question.type === 'short_text' || question.type === 'long_text') && (
-                    <div className="text-center py-8 bg-zinc-800/50 rounded-lg">
-                      <p className="text-2xl font-bold text-surbate mb-2">
+                    <div className="text-center py-6 bg-zinc-800/50 rounded-lg">
+                      <p className="text-xl font-bold text-surbate mb-1">
                         {questionStats.text_response_count || 0}개
                       </p>
-                      <p className="text-sm text-zinc-400">텍스트 응답</p>
+                      <p className="text-xs text-zinc-400">텍스트 응답</p>
                     </div>
                   )}
 
                   {/* 평점 결과 */}
                   {question.type === 'rating' && questionStats.average !== undefined && (
                     <>
-                      <div className="text-center mb-6">
-                        <div className="text-3xl sm:text-4xl font-bold text-surbate mb-2">
+                      <div className="text-center mb-4">
+                        <div className="text-2xl font-bold text-surbate mb-1">
                           {questionStats.average.toFixed(1)}
                         </div>
-                        <div className="flex justify-center gap-0.5 mb-2">
+                        <div className="flex justify-center gap-0.5 mb-1">
                           {[1, 2, 3, 4, 5].map((star) => (
                             <span
                               key={star}
-                              className={`text-xl sm:text-2xl ${
+                              className={`text-lg ${
                                 star <= Math.round(questionStats.average)
-                                  ? 'text-yellow-400'
+                                  ? 'text-surbate'
                                   : 'text-zinc-600'
                               }`}
                             >
@@ -325,19 +325,20 @@ export default function PublicResultsClient({ survey, results }: PublicResultsCl
                             </span>
                           ))}
                         </div>
-                        <p className="text-xs sm:text-sm text-zinc-500">
+                        <p className="text-xs text-zinc-500">
                           총 {questionStats.response_count || 0}명 응답
                         </p>
                       </div>
 
                       {/* 평점 분포 차트 */}
                       {questionStats.rating_distribution && (
-                        <div className="w-full h-48 sm:h-64">
+                        <div className="w-full h-48">
                           <VictoryChart
                             theme={VictoryTheme.material}
-                            domainPadding={{ x: 40 }}
-                            height={250}
-                            width={500}
+                            domainPadding={{ x: 30 }}
+                            padding={{ left: 50, right: 30, top: 30, bottom: 40 }}
+                            height={200}
+                            width={350}
                             containerComponent={
                               <VictoryContainer 
                                 responsive={true}
@@ -348,7 +349,7 @@ export default function PublicResultsClient({ survey, results }: PublicResultsCl
                             <VictoryAxis
                               style={{
                                 axis: { stroke: "#a1a1aa" },
-                                tickLabels: { fill: "#a1a1aa", fontSize: 12 },
+                                tickLabels: { fill: "#a1a1aa", fontSize: 10 },
                                 grid: { stroke: "#3f3f46" }
                               }}
                               dependentAxis
@@ -356,13 +357,13 @@ export default function PublicResultsClient({ survey, results }: PublicResultsCl
                             <VictoryAxis
                               style={{
                                 axis: { stroke: "#a1a1aa" },
-                                tickLabels: { fill: "#a1a1aa", fontSize: 12 }
+                                tickLabels: { fill: "#a1a1aa", fontSize: 10 }
                               }}
                             />
                             <VictoryBar
                               data={prepareRatingData(questionStats.rating_distribution)}
                               style={{
-                                data: { fill: "#FFD700" }
+                                data: { fill: "#39FF14" }
                               }}
                               barRatio={0.8}
                             />
