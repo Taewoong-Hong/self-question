@@ -15,7 +15,7 @@ export default async function PublicResultsPage({ params }: PageProps) {
     is_deleted: false 
   })
   .select('id title description tags author_nickname created_at status start_at end_at questions stats public_results')
-  .lean()
+  .lean() // 이미 lean() 사용 중 - POJO로 변환됨
   .exec();
     
   if (!survey) {
@@ -57,6 +57,9 @@ export default async function PublicResultsPage({ params }: PageProps) {
     }
 
     const results = await resultsResponse.json();
+    
+    // 디버깅: results 구조 확인
+    console.log('Results from API:', JSON.stringify(results, null, 2));
     
     return <PublicResultsClient 
       survey={JSON.parse(JSON.stringify(survey))} 

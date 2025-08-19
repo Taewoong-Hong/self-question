@@ -15,7 +15,8 @@ export async function GET(
     const surveyDoc = await Survey.findOne({ 
       id: params.id,
       is_deleted: false 
-    }).select('_id questions admin_results stats public_results');
+    }).select('_id questions admin_results stats public_results')
+    .lean(); // POJO로 변환
     
     if (!surveyDoc) {
       return NextResponse.json(
@@ -24,8 +25,8 @@ export async function GET(
       );
     }
     
-    // Mongoose document를 plain object로 변환
-    const survey = surveyDoc.toObject();
+    // lean()으로 이미 POJO이므로 바로 사용
+    const survey = surveyDoc;
     
     // admin_results가 Map인 경우 일반 객체로 변환
     if (survey.admin_results && survey.admin_results instanceof Map) {
@@ -188,7 +189,7 @@ export async function GET(
     // admin_results가 없으면 실제 응답 데이터 사용
     const responses = await Response.find({
       survey_id: survey._id
-    }).select('answers');
+    }).select('answers').lean();
 
     // 질문별 통계 계산
     const questionStats: any = {};
