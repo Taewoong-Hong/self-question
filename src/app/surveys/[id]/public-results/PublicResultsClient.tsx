@@ -27,6 +27,14 @@ interface PublicResultsClientProps {
 
 export default function PublicResultsClient({ survey, results }: PublicResultsClientProps) {
   const [chartType, setChartType] = useState<'bar' | 'pie'>('bar');
+  
+  // 디버깅을 위한 로그
+  console.log('PublicResultsClient data:', {
+    survey,
+    results,
+    questionsCount: survey.questions?.length,
+    questionStats: results.question_stats
+  });
 
   // Victory 차트용 데이터 준비 함수
   const prepareVictoryData = (questionStats: any) => {
@@ -104,18 +112,24 @@ export default function PublicResultsClient({ survey, results }: PublicResultsCl
       {/* 결과 표시 */}
       <div className="space-y-4">
         {survey.questions.map((question: any, index: number) => {
-          const questionStats = results.question_stats?.[question._id || question.id];
+          // question.id와 question._id 둘 다 시도
+          const questionId = question.id || question._id;
+          const questionStats = results.question_stats?.[questionId];
           
-          if (!questionStats) return null;
+          console.log(`Rendering question ${index}:`, {
+            questionId,
+            hasStats: !!questionStats,
+            questionType: question.type
+          });
           
           return (
-            <div key={question._id || question.id} className="bg-zinc-900/50 backdrop-blur-sm border border-zinc-800 rounded-xl p-4 sm:p-6">
+            <div key={questionId} className="bg-zinc-900/50 backdrop-blur-sm border border-zinc-800 rounded-xl p-4 sm:p-6">
               <h3 className="text-base sm:text-lg font-medium mb-3">
                 {index + 1}. {question.title}
               </h3>
 
               {/* 응답이 없는 경우 */}
-              {questionStats.response_count === 0 ? (
+              {!questionStats || questionStats.response_count === 0 ? (
                 <p className="text-zinc-500 text-center py-8">아직 응답이 없습니다</p>
               ) : (
                 <>

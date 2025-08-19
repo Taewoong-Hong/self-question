@@ -32,6 +32,15 @@ export async function GET(
       );
     }
 
+    // 디버깅을 위한 로그
+    console.log('Survey data:', {
+      id: survey.id,
+      hasAdminResults: !!survey.admin_results,
+      adminResultsKeys: survey.admin_results ? Object.keys(survey.admin_results) : [],
+      questionsCount: survey.questions.length,
+      questionIds: survey.questions.map((q: any) => ({ id: q.id, _id: q._id }))
+    });
+
     // admin_results가 있으면 그것을 사용하고, 없으면 실제 응답 데이터 사용
     if (survey.admin_results && Object.keys(survey.admin_results).length > 0) {
       // admin_results 데이터를 API 응답 형식으로 변환
@@ -39,8 +48,14 @@ export async function GET(
       let totalResponses = 0;
       
       survey.questions.forEach((question: any) => {
-        const questionId = question._id.toString();
+        // question.id 또는 question._id 둘 다 시도
+        const questionId = (question.id || question._id || '').toString();
         const adminResult = survey.admin_results![questionId];
+        
+        console.log(`Question ${questionId}:`, {
+          hasAdminResult: !!adminResult,
+          adminResult
+        });
         
         if (adminResult) {
           questionStats[questionId] = {
