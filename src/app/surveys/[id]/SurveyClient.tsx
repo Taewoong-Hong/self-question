@@ -127,7 +127,33 @@ export default function SurveyClient({ survey }: SurveyProps) {
       {/* 설문 폼 또는 결과 - CSR로 처리 */}
       {!loading && (
         <>
-          {survey.status === 'open' && !hasResponded ? (
+          {survey.status === 'closed' ? (
+            <>
+              <div className="bg-red-900/20 border border-red-800/50 rounded-xl p-6 mb-6">
+                <h2 className="text-xl font-semibold text-red-400 mb-2 text-center">종료된 설문입니다</h2>
+                <p className="text-center text-zinc-400">
+                  이 설문은 종료되어 더 이상 응답할 수 없습니다.
+                </p>
+              </div>
+              <div className="relative">
+                <div className="absolute inset-0 bg-zinc-950/50 backdrop-blur-sm z-10 rounded-xl" />
+                <div className="opacity-50 pointer-events-none">
+                  <SurveyForm 
+                    surveyId={survey.id} 
+                    questions={survey.questions}
+                    onComplete={() => {}}
+                  />
+                </div>
+              </div>
+            </>
+          ) : survey.status === 'draft' ? (
+            <div className="bg-yellow-900/20 border border-yellow-800/50 rounded-xl p-6 mb-6">
+              <h2 className="text-xl font-semibold text-yellow-400 mb-2 text-center">준비중인 설문입니다</h2>
+              <p className="text-center text-zinc-400">
+                이 설문은 아직 시작되지 않았습니다.
+              </p>
+            </div>
+          ) : survey.status === 'open' && !hasResponded ? (
             <SurveyForm 
               surveyId={survey.id} 
               questions={survey.questions}
@@ -135,22 +161,6 @@ export default function SurveyClient({ survey }: SurveyProps) {
             />
           ) : (
             <SurveyResults surveyId={survey.id} />
-          )}
-
-          {survey.status === 'closed' && (
-            <div className="bg-zinc-900/50 backdrop-blur-sm border border-zinc-800 rounded-xl p-4 sm:p-6 mb-6">
-              <p className="text-center text-sm sm:text-base text-zinc-400">
-                이 설문은 종료되었습니다.
-              </p>
-            </div>
-          )}
-
-          {survey.status === 'draft' && (
-            <div className="bg-zinc-900/50 backdrop-blur-sm border border-zinc-800 rounded-xl p-4 sm:p-6 mb-6">
-              <p className="text-center text-sm sm:text-base text-zinc-400">
-                이 설문은 아직 시작되지 않았습니다.
-              </p>
-            </div>
           )}
         </>
       )}
