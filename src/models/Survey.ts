@@ -51,7 +51,7 @@ export interface ISurvey extends Document {
   admin_token_expires?: Date;
   
   // Status
-  status: 'draft' | 'open' | 'closed';
+  status: 'draft' | 'open' | 'closed' | 'scheduled';
   is_hidden: boolean;
   is_deleted: boolean;
   
@@ -238,7 +238,7 @@ const surveySchema = new Schema<ISurvey>({
   // Status
   status: {
     type: String,
-    enum: ['draft', 'open', 'closed'],
+    enum: ['draft', 'open', 'closed', 'scheduled'],
     default: 'open',
     index: true
   },
@@ -406,10 +406,17 @@ surveySchema.methods.validateAdminToken = function(token: string): boolean {
 };
 
 surveySchema.methods.canReceiveResponse = function(): boolean {
-  if (this.status !== 'open') return false;
   if (this.is_hidden || this.is_deleted) return false;
   if (this.settings.response_limit && this.stats.response_count >= this.settings.response_limit) return false;
-  if (this.settings.close_at && new Date() > this.settings.close_at) return false;
+  
+  const now = new Date();
+  // 우선순위: end_at > settings.close_at
+  const endDate = this.end_at || this.settings.close_at;
+  if (endDate && now > endDate) return false;
+  
+  // 시작 시간 체크
+  if (this.start_at && now < this.start_at) return false;
+  
   return true;
 };
 
@@ -419,7 +426,32 @@ surveySchema.methods.canEdit = function(): boolean {
 
 // Virtual fields
 surveySchema.virtual('is_closed').get(function() {
-  return this.status === 'closed' || !this.canReceiveResponse();
+  return !this.canReceiveResponse();
+});
+
+// 동적 상태 계산
+surveySchema.virtual('computed_status').get(function() {
+  const now = new Date();
+  const endDate = this.end_at || this.settings?.close_at;
+  const startDate = this.start_at;
+  
+  if (this.is_hidden || this.is_deleted) {
+    return 'closed';
+  }
+  
+  if (endDate && now > endDate) {
+    return 'closed';
+  }
+  
+  if (startDate && now < startDate) {
+    return 'scheduled';
+  }
+  
+  if (this.settings?.response_limit && this.stats.response_count >= this.settings.response_limit) {
+    return 'closed';
+  }
+  
+  return 'open';
 });
 
 // Export model

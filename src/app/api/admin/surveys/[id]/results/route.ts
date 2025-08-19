@@ -30,7 +30,7 @@ export async function PUT(
       return NextResponse.json({ error: '유효하지 않은 토큰입니다' }, { status: 401 });
     }
     
-    const { admin_results, response_count, created_at, first_response_at, close_at } = await request.json();
+    const { admin_results, response_count, created_at, first_response_at, close_at, start_at, end_at } = await request.json();
     
     const survey = await Survey.findOne({ id: params.id });
     
@@ -56,12 +56,24 @@ export async function PUT(
       }
       survey.settings.close_at = close_at ? new Date(close_at) : undefined;
     }
+    if (start_at !== undefined) {
+      survey.start_at = start_at ? new Date(start_at) : undefined;
+    }
+    if (end_at !== undefined) {
+      survey.end_at = end_at ? new Date(end_at) : undefined;
+    }
     
     // 설문 종료 날짜 확인 및 상태 자동 업데이트
-    if (survey.settings?.close_at && new Date() > new Date(survey.settings.close_at)) {
+    // 우선순위: end_at > close_at
+    const now = new Date();
+    const endDate = survey.end_at || survey.settings?.close_at;
+    const startDate = survey.start_at;
+    
+    if (endDate && now > new Date(endDate)) {
       survey.status = 'closed';
-    } else if (!survey.settings?.close_at || new Date() <= new Date(survey.settings.close_at)) {
-      // 종료 날짜가 없거나 아직 종료되지 않았으면 open 상태로 변경
+    } else if (startDate && now < new Date(startDate)) {
+      survey.status = 'scheduled';
+    } else {
       survey.status = 'open';
     }
     
