@@ -28,11 +28,26 @@ export default function SurveyResults({ surveyId }: SurveyResultsProps) {
 
   const fetchResults = async () => {
     try {
-      const response = await fetch(`/api/surveys/${surveyId}/results`);
+      const response = await fetch(`/api/surveys/${surveyId}/public-results`);
       if (!response.ok) throw new Error('Failed to fetch results');
       const data = await response.json();
-      setResults(data.questions || []);
-      setTotalResponses(data.totalResponses || 0);
+      
+      // public-results API의 응답 형식에 맞게 데이터 변환
+      const questions: QuestionResult[] = [];
+      if (data.question_stats) {
+        Object.entries(data.question_stats).forEach(([questionId, stats]: [string, any]) => {
+          questions.push({
+            id: questionId,
+            text: stats.question_title || `질문 ${questionId}`,
+            type: stats.question_type || 'unknown',
+            results: stats.options || stats.responses || stats.rating_distribution || {},
+            totalResponses: stats.response_count || 0
+          });
+        });
+      }
+      
+      setResults(questions);
+      setTotalResponses(data.total_responses || 0);
     } catch (error) {
       console.error('Error fetching results:', error);
     } finally {
@@ -50,17 +65,23 @@ export default function SurveyResults({ surveyId }: SurveyResultsProps) {
       case 'multiple_choice':
         return (
           <div className="space-y-2">
-            {Object.entries(question.results).map(([option, count]) => {
-              const percentage = totalResponses > 0 
-                ? ((count as number) / totalResponses) * 100 
+            {Object.entries(question.results).map(([optionId, optionData]: [string, any]) => {
+              const count = typeof optionData === 'object' && optionData !== null && optionData.count !== undefined
+                ? optionData.count
+                : typeof optionData === 'number' ? optionData : 0;
+              const label = typeof optionData === 'object' && optionData !== null && optionData.label
+                ? optionData.label
+                : `선택지 ${optionId}`;
+              const percentage = question.totalResponses > 0 
+                ? (count / question.totalResponses) * 100 
                 : 0;
               
               return (
-                <div key={option}>
+                <div key={optionId}>
                   <div className="flex justify-between text-sm mb-1">
-                    <span className="text-zinc-300">{option}</span>
+                    <span className="text-zinc-300">{label}</span>
                     <span className="text-zinc-500">
-                      {count as number}명 ({percentage.toFixed(1)}%)
+                      {count}명 ({percentage.toFixed(1)}%)
                     </span>
                   </div>
                   <div className="w-full bg-zinc-800 rounded-full h-2">
@@ -113,21 +134,14 @@ export default function SurveyResults({ surveyId }: SurveyResultsProps) {
           </div>
         );
 
-      case 'text':
-      case 'textarea':
-        const textResponses = question.results as string[];
+      case 'short_text':
+      case 'long_text':
+        // public-results API에서는 text_response_count만 제공
+        const textResponseCount = question.totalResponses || 0;
         return (
-          <div className="space-y-2 max-h-60 overflow-y-auto">
-            {textResponses.slice(0, 5).map((response, index) => (
-              <div key={index} className="bg-zinc-800/50 rounded-lg p-3">
-                <p className="text-sm text-zinc-300">{response}</p>
-              </div>
-            ))}
-            {textResponses.length > 5 && (
-              <p className="text-sm text-zinc-500 text-center">
-                외 {textResponses.length - 5}개의 응답이 더 있습니다.
-              </p>
-            )}
+          <div className="bg-zinc-800/50 rounded-lg p-4 text-center">
+            <p className="text-2xl font-bold text-surbate">{textResponseCount}개</p>
+            <p className="text-sm text-zinc-400 mt-1">텍스트 응답</p>
           </div>
         );
 

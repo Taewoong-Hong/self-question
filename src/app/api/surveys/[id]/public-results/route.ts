@@ -204,7 +204,7 @@ export async function GET(
     
     // admin_results가 없으면 실제 응답 데이터 사용
     const responses = await Response.find({
-      survey_id: survey._id
+      survey_id: survey.id  // survey.id를 사용해야 함 (survey._id가 아님)
     }).select('answers').lean();
 
     // 질문별 통계 계산
