@@ -153,7 +153,7 @@ export default function SurveysPage() {
                   </p>
                 )}
                 
-                <div className="grid grid-cols-2 gap-x-4 gap-y-1 text-sm text-zinc-500">
+                <div className="grid grid-cols-2 gap-x-4 gap-y-1 text-xs text-zinc-500">
                   <div>
                     <span>응답 {survey.stats?.response_count || 0}명</span>
                   </div>

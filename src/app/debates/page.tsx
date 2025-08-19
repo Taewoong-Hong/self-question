@@ -147,17 +147,17 @@ export default function DebatesPage() {
                     </p>
                   )}
                   
-                  <div className="flex items-center gap-4 text-sm text-zinc-500">
-                    <span>참여 {debate.stats?.unique_voters || 0}명</span>
-                    {debate.author_nickname && (
-                      <>
-                        <span>•</span>
+                  <div className="grid grid-cols-2 gap-x-4 gap-y-1 text-xs text-zinc-500">
+                    <div>
+                      <span>참여 {debate.stats?.unique_voters || 0}명</span>
+                    </div>
+                    <div>
+                      {debate.author_nickname && (
                         <span>작성자: {debate.author_nickname}</span>
-                      </>
-                    )}
-                    {debate.start_at && (
-                      <>
-                        <span>•</span>
+                      )}
+                    </div>
+                    <div>
+                      {debate.start_at ? (
                         <span>시작: {new Date(debate.start_at).toLocaleDateString('ko-KR', { 
                           year: 'numeric',
                           month: '2-digit',
@@ -165,11 +165,12 @@ export default function DebatesPage() {
                           hour: '2-digit',
                           minute: '2-digit'
                         }).replace(/\. /g, '-').replace('.', '')}</span>
-                      </>
-                    )}
-                    {debate.end_at && (
-                      <>
-                        <span>•</span>
+                      ) : (
+                        <span>시작: -</span>
+                      )}
+                    </div>
+                    <div>
+                      {debate.end_at ? (
                         <span>종료: {new Date(debate.end_at).toLocaleDateString('ko-KR', { 
                           year: 'numeric',
                           month: '2-digit',
@@ -177,8 +178,10 @@ export default function DebatesPage() {
                           hour: '2-digit',
                           minute: '2-digit'
                         }).replace(/\. /g, '-').replace('.', '')}</span>
-                      </>
-                    )}
+                      ) : (
+                        <span>종료: 미정</span>
+                      )}
+                    </div>
                   </div>
                   
                   {debate.tags && debate.tags.length > 0 && (

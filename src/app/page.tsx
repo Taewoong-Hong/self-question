@@ -239,17 +239,17 @@ export default function Home() {
                     </p>
                   )}
                   
-                  <div className="flex items-center gap-4 text-sm text-zinc-500">
-                    <span>참여 {item.participantCount}명</span>
-                    {item.author_nickname && (
-                      <>
-                        <span>•</span>
+                  <div className="grid grid-cols-2 gap-x-4 gap-y-1 text-xs text-zinc-500">
+                    <div>
+                      <span>참여 {item.participantCount}명</span>
+                    </div>
+                    <div>
+                      {item.author_nickname && (
                         <span>작성자: {item.author_nickname}</span>
-                      </>
-                    )}
-                    {item.start_at && (
-                      <>
-                        <span>•</span>
+                      )}
+                    </div>
+                    <div>
+                      {item.start_at ? (
                         <span>시작: {new Date(item.start_at).toLocaleDateString('ko-KR', { 
                           year: 'numeric',
                           month: '2-digit',
@@ -257,11 +257,12 @@ export default function Home() {
                           hour: '2-digit',
                           minute: '2-digit'
                         }).replace(/\. /g, '-').replace('.', '')}</span>
-                      </>
-                    )}
-                    {item.end_at && (
-                      <>
-                        <span>•</span>
+                      ) : (
+                        <span>시작: -</span>
+                      )}
+                    </div>
+                    <div>
+                      {item.end_at ? (
                         <span>종료: {new Date(item.end_at).toLocaleDateString('ko-KR', { 
                           year: 'numeric',
                           month: '2-digit',
@@ -269,8 +270,10 @@ export default function Home() {
                           hour: '2-digit',
                           minute: '2-digit'
                         }).replace(/\. /g, '-').replace('.', '')}</span>
-                      </>
-                    )}
+                      ) : (
+                        <span>종료: 미정</span>
+                      )}
+                    </div>
                   </div>
                   
                   {item.tags && item.tags.length > 0 && (
