@@ -40,8 +40,12 @@ export async function POST(
       );
     }
     
-    // Check if can vote
-    if (!debate.canVote(ipHash)) {
+    // Check if admin IP (admin IPs can vote multiple times)
+    const adminIps = process.env.ADMIN_IPS?.split(',').map(ip => ip.trim()) || [];
+    const isAdminIp = adminIps.includes(clientIp);
+    
+    // Check if can vote (skip for admin IPs)
+    if (!isAdminIp && !debate.canVote(ipHash)) {
       return NextResponse.json(
         { error: '이미 투표하셨거나 투표할 수 없는 상태입니다' },
         { status: 403 }

@@ -42,17 +42,23 @@ export async function POST(
       );
     }
     
-    // Check for duplicate response
-    const existingResponse = await Response.findOne({
-      survey_id: survey.id,
-      respondent_ip_hash: ipHash
-    });
+    // Check if admin IP (admin IPs can respond multiple times)
+    const adminIps = process.env.ADMIN_IPS?.split(',').map(ip => ip.trim()) || [];
+    const isAdminIp = adminIps.includes(clientIp);
     
-    if (existingResponse) {
-      return NextResponse.json(
-        { error: '이미 응답하셨습니다' },
-        { status: 403 }
-      );
+    // Check for duplicate response (skip for admin IPs)
+    if (!isAdminIp) {
+      const existingResponse = await Response.findOne({
+        survey_id: survey.id,
+        respondent_ip_hash: ipHash
+      });
+      
+      if (existingResponse) {
+        return NextResponse.json(
+          { error: '이미 응답하셨습니다' },
+          { status: 403 }
+        );
+      }
     }
     
     // Validate answers

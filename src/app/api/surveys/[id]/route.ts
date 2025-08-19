@@ -1,6 +1,8 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { connectDB } from '@/lib/db';
 import Survey from '@/models/Survey';
+import Response from '@/models/Response';
+import crypto from 'crypto';
 export const dynamic = 'force-dynamic';
 
 export async function GET(
@@ -26,7 +28,33 @@ export async function GET(
     survey.stats.view_count += 1;
     await survey.save();
     
-    return NextResponse.json(survey);
+    // Check if user has already responded
+    const clientIp = request.headers.get('x-forwarded-for')?.split(',')[0] || 
+                     request.headers.get('x-real-ip') || 
+                     'unknown';
+    
+    let hasResponded = false;
+    if (clientIp && clientIp !== 'unknown') {
+      const ipHash = crypto
+        .createHash('sha256')
+        .update(clientIp + (process.env.IP_SALT || 'default-salt'))
+        .digest('hex');
+      
+      const existingResponse = await Response.findOne({
+        survey_id: survey.id,
+        respondent_ip_hash: ipHash
+      });
+      
+      hasResponded = !!existingResponse;
+    }
+    
+    // Convert to plain object
+    const surveyData = survey.toObject();
+    
+    return NextResponse.json({
+      ...surveyData,
+      has_responded: hasResponded
+    });
     
   } catch (error: any) {
     console.error('Survey fetch error:', error);

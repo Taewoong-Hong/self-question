@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { connectDB } from '@/lib/db';
 import Debate from '@/models/Debate';
+import crypto from 'crypto';
 export const dynamic = 'force-dynamic';
 
 export async function GET(
@@ -29,10 +30,27 @@ export async function GET(
     debate.stats.view_count += 1;
     await debate.save();
     
+    // Check if user has already voted
+    const clientIp = request.headers.get('x-forwarded-for')?.split(',')[0] || 
+                     request.headers.get('x-real-ip') || 
+                     'unknown';
+    
+    let hasVoted = false;
+    if (clientIp && clientIp !== 'unknown') {
+      const ipHash = crypto
+        .createHash('sha256')
+        .update(clientIp + (process.env.IP_SALT || 'default-salt'))
+        .digest('hex');
+      
+      hasVoted = debate.voter_ips.some((voter: any) => voter.ip_hash === ipHash);
+    }
+    
     // Check if user can see results
     const showResults = debate.settings.show_results_before_end || debate.status === 'ended';
     
     const response: any = debate.toObject();
+    response.has_voted = hasVoted;
+    
     if (!showResults) {
       // Hide vote counts if results are not shown
       response.vote_options = response.vote_options.map((opt: any) => ({

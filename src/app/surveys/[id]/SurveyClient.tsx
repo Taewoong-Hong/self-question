@@ -29,14 +29,15 @@ export default function SurveyClient({ survey }: SurveyProps) {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
+    // API에서 응답 여부 확인
     checkResponseStatus();
   }, [survey.id]);
 
   const checkResponseStatus = async () => {
     try {
-      const response = await fetch(`/api/surveys/${survey.id}/check-response`);
+      const response = await fetch(`/api/surveys/${survey.id}`);
       const data = await response.json();
-      setHasResponded(data.hasResponded);
+      setHasResponded(data.has_responded || false);
     } catch (error) {
       console.error('Error checking response status:', error);
     } finally {
@@ -159,6 +160,25 @@ export default function SurveyClient({ survey }: SurveyProps) {
               questions={survey.questions}
               onComplete={() => setHasResponded(true)}
             />
+          ) : survey.status === 'open' && hasResponded ? (
+            <>
+              <div className="bg-zinc-900/50 backdrop-blur-sm border border-zinc-800 rounded-xl p-6 mb-6">
+                <h2 className="text-xl font-semibold text-surbate mb-2 text-center">이미 응답하신 설문입니다</h2>
+                <p className="text-center text-zinc-400">
+                  귀하의 응답이 저장되었습니다. 감사합니다!
+                </p>
+              </div>
+              <div className="relative">
+                <div className="absolute inset-0 bg-zinc-950/50 backdrop-blur-sm z-10 rounded-xl" />
+                <div className="opacity-50 pointer-events-none">
+                  <SurveyForm 
+                    surveyId={survey.id} 
+                    questions={survey.questions}
+                    onComplete={() => {}}
+                  />
+                </div>
+              </div>
+            </>
           ) : (
             <SurveyResults surveyId={survey.id} />
           )}
