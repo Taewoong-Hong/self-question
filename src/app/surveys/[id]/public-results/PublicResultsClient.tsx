@@ -32,15 +32,20 @@ export default function PublicResultsClient({ survey, results }: PublicResultsCl
   // Victory 차트용 데이터 준비 함수
   const prepareVictoryData = (questionStats: any) => {
     const data: any[] = [];
+    let index = 0;
+    const totalOptions = Object.keys(questionStats.options || {}).length;
     
     Object.entries(questionStats.options || {}).forEach(([choiceId, choice]: any) => {
       // choice가 객체가 아닌 경우 처리
       if (typeof choice === 'object' && choice.label && typeof choice.count === 'number' && !isNaN(choice.count)) {
         data.push({
-          x: choice.label,
+          x: totalOptions <= 3 ? choice.label : `${index + 1}`, // 3개 이하면 레이블, 아니면 번호
           y: choice.count,
-          label: `${choice.count}명`
+          label: `${choice.count}명`,
+          fill: COLORS[index % COLORS.length],
+          originalLabel: choice.label
         });
+        index++;
       }
     });
     
@@ -156,13 +161,14 @@ export default function PublicResultsClient({ survey, results }: PublicResultsCl
 
                       {/* Victory 차트 렌더링 */}
                       {prepareVictoryData(questionStats).length > 0 && (
-                        <div className="w-full h-64 sm:h-80">
+                        <div className="w-full h-64 sm:h-80 mb-4">
                           {chartType === 'bar' ? (
                             <VictoryChart
                             theme={VictoryTheme.material}
-                            domainPadding={{ x: 20 }}
+                            domainPadding={{ x: prepareVictoryData(questionStats).length <= 2 ? 120 : 40 }}
+                            padding={{ left: 60, right: 40, top: 40, bottom: 80 }}
                             height={300}
-                            width={600}
+                            width={prepareVictoryData(questionStats).length <= 2 ? 400 : 600}
                             containerComponent={
                               <VictoryContainer 
                                 responsive={true}
@@ -182,18 +188,17 @@ export default function PublicResultsClient({ survey, results }: PublicResultsCl
                               style={{
                                 axis: { stroke: "#a1a1aa" },
                                 tickLabels: { 
-                                  fill: "#a1a1aa", 
-                                  fontSize: 12,
-                                  angle: -45,
-                                  textAnchor: 'end'
+                                  fill: prepareVictoryData(questionStats).length <= 3 ? "#a1a1aa" : "transparent",
+                                  fontSize: 12
                                 }
                               }}
                             />
                             <VictoryBar
                               data={prepareVictoryData(questionStats)}
                               style={{
-                                data: { fill: "#39FF14" }
+                                data: { fill: ({ datum }) => datum.fill }
                               }}
+                              barRatio={prepareVictoryData(questionStats).length <= 2 ? 0.5 : 0.8}
                               labelComponent={<VictoryTooltip />}
                             />
                           </VictoryChart>
@@ -225,6 +230,26 @@ export default function PublicResultsClient({ survey, results }: PublicResultsCl
                             />
                             </div>
                           )}
+                        </div>
+                      )}
+                      
+                      {/* 차트 범례 - 선택지가 4개 이상일 때만 표시 */}
+                      {prepareVictoryData(questionStats).length > 3 && (
+                        <div className="mt-4 space-y-2">
+                          <p className="text-sm font-medium text-zinc-400 mb-2">선택지 범례:</p>
+                          <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                            {prepareVictoryData(questionStats).map((item, index) => (
+                              <div key={index} className="flex items-center gap-2 text-sm">
+                                <div 
+                                  className="w-4 h-4 rounded" 
+                                  style={{ backgroundColor: item.fill }}
+                                />
+                                <span className="text-zinc-300">
+                                  {item.x}. {item.originalLabel}
+                                </span>
+                              </div>
+                            ))}
+                          </div>
                         </div>
                       )}
 

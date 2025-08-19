@@ -190,14 +190,10 @@ export default function SurveyAdminPage() {
     <div className="min-h-screen max-w-4xl mx-auto">
       {/* 헤더 */}
       <div className="mb-8">
-        <Link href={`/surveys/${surveyId}`} className="text-zinc-400 hover:text-zinc-100 mb-4 inline-block">
-          ← 설문으로 돌아가기
-        </Link>
-        
-        <div className="flex items-start justify-between">
-          <div>
-            <h1 className="text-3xl font-bold mb-2">{survey.title} - 관리</h1>
-            <div className="flex items-center gap-4 mt-4 text-sm text-zinc-500">
+        <div className="flex items-start justify-between mb-4">
+          <div className="flex-1">
+            <h1 className="text-xl font-bold mb-2">{survey.title} - 관리</h1>
+            <div className="flex items-center gap-4 text-sm text-zinc-500">
               <span>작성자: {survey.author_nickname || '익명'}</span>
               {survey.created_at && (
                 <>
@@ -214,6 +210,15 @@ export default function SurveyAdminPage() {
               <span>응답 {survey.stats?.response_count || 0}명</span>
             </div>
           </div>
+          <Link 
+            href={`/surveys/${surveyId}`} 
+            className="p-2 bg-zinc-800 hover:bg-zinc-700 rounded-lg transition-colors"
+            title="설문으로 돌아가기"
+          >
+            <svg className="w-5 h-5 text-zinc-100" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 19l-7-7m0 0l7-7m-7 7h18" />
+            </svg>
+          </Link>
         </div>
       </div>
 
