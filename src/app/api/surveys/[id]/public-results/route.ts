@@ -27,6 +27,15 @@ export async function GET(
     // Mongoose document를 plain object로 변환
     const survey = surveyDoc.toObject();
     
+    // admin_results가 Map인 경우 일반 객체로 변환
+    if (survey.admin_results && survey.admin_results instanceof Map) {
+      const adminResultsObj: any = {};
+      survey.admin_results.forEach((value: any, key: string) => {
+        adminResultsObj[key] = value;
+      });
+      survey.admin_results = adminResultsObj;
+    }
+    
     console.log('[API] Survey basic info:', {
       id: survey.id,
       hasAdminResults: !!survey.admin_results,
@@ -34,6 +43,13 @@ export async function GET(
       questionsCount: survey.questions?.length,
       statsResponseCount: survey.stats?.response_count
     });
+    
+    // 디버깅: questions의 ID 확인
+    console.log('[API] Questions IDs:', survey.questions.map((q: any) => ({
+      id: q.id,
+      _id: q._id?.toString(),
+      title: q.title?.substring(0, 30)
+    })));
     
     // public_results가 false인 경우 접근 불가
     if (survey.public_results === false) {
@@ -56,18 +72,51 @@ export async function GET(
       let totalResponses = 0;
       
       survey.questions.forEach((question: any) => {
-        // question.id 또는 question._id 둘 다 시도
-        const questionId = (question.id || question._id || '').toString();
+        // question.id 우선, 없으면 _id 사용
+        const questionId = question.id || question._id?.toString() || '';
         
-        console.log(`[API] Processing question ${questionId}:`, {
+        console.log(`[API] Processing question:`, {
+          id: question.id,
+          _id: question._id?.toString(),
+          usedId: questionId,
           type: question.type,
           title: question.title?.substring(0, 50)
         });
         
-        // toObject()로 변환된 경우 일반 객체로 접근
-        const adminResult = survey.admin_results![questionId];
+        // admin_results에서 다양한 ID 형식으로 시도
+        let adminResult = survey.admin_results![questionId];
+        
+        // 만약 못 찾았다면 _id로 시도
+        if (!adminResult && question._id) {
+          adminResult = survey.admin_results![question._id.toString()];
+        }
+        
+        // 그래도 못 찾았다면 모든 키를 순회하며 찾기
+        if (!adminResult) {
+          Object.keys(survey.admin_results!).forEach(key => {
+            if (key === questionId || key === question._id?.toString()) {
+              adminResult = survey.admin_results![key];
+            }
+          });
+        }
         
         if (adminResult) {
+          // adminResult 내부의 Map 타입 변환
+          if (adminResult.choices && adminResult.choices instanceof Map) {
+            const choicesObj: any = {};
+            adminResult.choices.forEach((value: any, key: string) => {
+              choicesObj[key] = value;
+            });
+            adminResult.choices = choicesObj;
+          }
+          
+          if (adminResult.ratings && adminResult.ratings instanceof Map) {
+            const ratingsObj: any = {};
+            adminResult.ratings.forEach((value: any, key: string) => {
+              ratingsObj[key] = value;
+            });
+            adminResult.ratings = ratingsObj;
+          }
           console.log(`[API] Found admin result for question ${questionId}:`, adminResult);
           questionStats[questionId] = {
             response_count: adminResult.total_responses || 0,
@@ -151,7 +200,8 @@ export async function GET(
     const questionStats: any = {};
     
     survey.questions.forEach((question: any) => {
-      const questionId = question._id.toString();
+      // question.id 우선, 없으면 _id 사용 (admin_results와 동일한 로직)
+      const questionId = question.id || question._id?.toString() || '';
       questionStats[questionId] = {
         response_count: 0,
         options: {},
@@ -161,9 +211,12 @@ export async function GET(
         question_title: question.title
       };
 
-      // 해당 질문에 대한 응답들 필터링
+      // 해당 질문에 대한 응답들 필터링 (question_id와 questionId 비교)
       const questionResponses = responses
-        .map(r => r.answers.find((a: any) => a.question_id.toString() === questionId))
+        .map(r => r.answers.find((a: any) => {
+          const answerQuestionId = a.question_id?.toString() || '';
+          return answerQuestionId === questionId || answerQuestionId === question._id?.toString();
+        }))
         .filter(Boolean);
 
       questionStats[questionId].response_count = questionResponses.length;
