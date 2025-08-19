@@ -12,17 +12,20 @@ export async function GET(
   try {
     await connectDB();
     
-    const survey = await Survey.findOne({ 
+    const surveyDoc = await Survey.findOne({ 
       id: params.id,
       is_deleted: false 
     }).select('_id questions admin_results stats public_results');
     
-    if (!survey) {
+    if (!surveyDoc) {
       return NextResponse.json(
         { error: '설문을 찾을 수 없습니다' },
         { status: 404 }
       );
     }
+    
+    // Mongoose document를 plain object로 변환
+    const survey = surveyDoc.toObject();
     
     // public_results가 false인 경우 접근 불가
     if (survey.public_results === false) {
@@ -33,10 +36,10 @@ export async function GET(
     }
 
     // admin_results가 있으면 그것을 우선 사용 (슈퍼관리자가 수정한 데이터)
-    // Mongoose Map은 toObject()로 변환되어 있을 수 있음
+    // toObject()로 변환된 경우 Map이 일반 객체가 됨
     const hasAdminResults = survey.admin_results && 
-      ((survey.admin_results instanceof Map && survey.admin_results.size > 0) ||
-       (typeof survey.admin_results === 'object' && Object.keys(survey.admin_results).length > 0));
+       typeof survey.admin_results === 'object' && 
+       Object.keys(survey.admin_results).length > 0;
     
     if (hasAdminResults) {
       // admin_results 데이터를 API 응답 형식으로 변환
@@ -47,10 +50,8 @@ export async function GET(
         // question.id 또는 question._id 둘 다 시도
         const questionId = (question.id || question._id || '').toString();
         
-        // Map이면 get 메서드 사용, 아니면 객체 접근
-        const adminResult = survey.admin_results instanceof Map 
-          ? survey.admin_results.get(questionId)
-          : survey.admin_results![questionId];
+        // toObject()로 변환된 경우 일반 객체로 접근
+        const adminResult = survey.admin_results![questionId];
         
         if (adminResult) {
           questionStats[questionId] = {

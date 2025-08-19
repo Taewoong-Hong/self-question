@@ -150,9 +150,10 @@ export default function PublicResultsClient({ survey, results }: PublicResultsCl
                       </div>
 
                       {/* Victory 차트 렌더링 */}
-                      <div className="w-full h-64 sm:h-80">
-                        {chartType === 'bar' ? (
-                          <VictoryChart
+                      {prepareVictoryData(questionStats).length > 0 && (
+                        <div className="w-full h-64 sm:h-80">
+                          {chartType === 'bar' ? (
+                            <VictoryChart
                             theme={VictoryTheme.material}
                             domainPadding={{ x: 20 }}
                             height={300}
@@ -217,9 +218,10 @@ export default function PublicResultsClient({ survey, results }: PublicResultsCl
                                 />
                               }
                             />
-                          </div>
-                        )}
-                      </div>
+                            </div>
+                          )}
+                        </div>
+                      )}
 
                       {/* 기존 목록 형태도 유지 */}
                       <div className="space-y-3 mt-4">
