@@ -163,74 +163,224 @@ export default function PublicResultsClient({ survey, results }: PublicResultsCl
 
                         {/* Victory 차트 렌더링 */}
                         {prepareVictoryData(questionStats).length > 0 && (
-                          <div className="w-full h-36 sm:h-40 lg:h-44">
+                          <div className="w-[280px] h-[180px] sm:w-[320px] sm:h-[200px] lg:w-[380px] lg:h-[240px] mx-auto">
                           {chartType === 'bar' ? (
-                            <VictoryChart
-                            theme={VictoryTheme.material}
-                            domainPadding={{ x: prepareVictoryData(questionStats).length <= 2 ? 60 : 30 }}
-                            padding={{ left: 45, right: 25, top: 20, bottom: 25 }}
-                            height={180}
-                            width={280}
-                            containerComponent={
-                              <VictoryContainer 
-                                responsive={true}
-                                style={{ touchAction: "auto" }}
-                              />
-                            }
-                          >
-                            <VictoryAxis
-                              style={{
-                                axis: { stroke: "#a1a1aa" },
-                                tickLabels: { fill: "#a1a1aa", fontSize: 10 },
-                                grid: { stroke: "#3f3f46" }
-                              }}
-                              dependentAxis
-                            />
-                            <VictoryAxis
-                              style={{
-                                axis: { stroke: "#a1a1aa" },
-                                tickLabels: { 
-                                  fill: prepareVictoryData(questionStats).length <= 3 ? "#a1a1aa" : "transparent",
-                                  fontSize: 10
-                                }
-                              }}
-                            />
-                            <VictoryBar
-                              data={prepareVictoryData(questionStats)}
-                              style={{
-                                data: { fill: ({ datum }) => datum.fill }
-                              }}
-                              barRatio={prepareVictoryData(questionStats).length <= 2 ? 0.5 : 0.8}
-                              labelComponent={<VictoryTooltip />}
-                            />
-                          </VictoryChart>
+                            <>
+                              {/* 모바일 차트 */}
+                              <div className="block sm:hidden">
+                                <VictoryChart
+                                  theme={VictoryTheme.material}
+                                  domainPadding={{ x: prepareVictoryData(questionStats).length <= 2 ? 60 : 30 }}
+                                  padding={{ left: 45, right: 25, top: 20, bottom: 25 }}
+                                  height={180}
+                                  width={280}
+                                  containerComponent={
+                                    <VictoryContainer 
+                                      responsive={false}
+                                      style={{ touchAction: "auto" }}
+                                    />
+                                  }
+                                >
+                                  <VictoryAxis
+                                    style={{
+                                      axis: { stroke: "#a1a1aa" },
+                                      tickLabels: { fill: "#a1a1aa", fontSize: 10 },
+                                      grid: { stroke: "#3f3f46" }
+                                    }}
+                                    dependentAxis
+                                  />
+                                  <VictoryAxis
+                                    style={{
+                                      axis: { stroke: "#a1a1aa" },
+                                      tickLabels: { 
+                                        fill: prepareVictoryData(questionStats).length <= 3 ? "#a1a1aa" : "transparent",
+                                        fontSize: 10
+                                      }
+                                    }}
+                                  />
+                                  <VictoryBar
+                                    data={prepareVictoryData(questionStats)}
+                                    style={{
+                                      data: { fill: ({ datum }) => datum.fill }
+                                    }}
+                                    barRatio={prepareVictoryData(questionStats).length <= 2 ? 0.5 : 0.8}
+                                    labelComponent={<VictoryTooltip />}
+                                  />
+                                </VictoryChart>
+                              </div>
+                              
+                              {/* 태블릿 차트 */}
+                              <div className="hidden sm:block lg:hidden">
+                                <VictoryChart
+                                  theme={VictoryTheme.material}
+                                  domainPadding={{ x: prepareVictoryData(questionStats).length <= 2 ? 70 : 35 }}
+                                  padding={{ left: 50, right: 30, top: 20, bottom: 25 }}
+                                  height={200}
+                                  width={320}
+                                  containerComponent={
+                                    <VictoryContainer 
+                                      responsive={false}
+                                      style={{ touchAction: "auto" }}
+                                    />
+                                  }
+                                >
+                                  <VictoryAxis
+                                    style={{
+                                      axis: { stroke: "#a1a1aa" },
+                                      tickLabels: { fill: "#a1a1aa", fontSize: 10 },
+                                      grid: { stroke: "#3f3f46" }
+                                    }}
+                                    dependentAxis
+                                  />
+                                  <VictoryAxis
+                                    style={{
+                                      axis: { stroke: "#a1a1aa" },
+                                      tickLabels: { 
+                                        fill: prepareVictoryData(questionStats).length <= 3 ? "#a1a1aa" : "transparent",
+                                        fontSize: 10
+                                      }
+                                    }}
+                                  />
+                                  <VictoryBar
+                                    data={prepareVictoryData(questionStats)}
+                                    style={{
+                                      data: { fill: ({ datum }) => datum.fill }
+                                    }}
+                                    barRatio={prepareVictoryData(questionStats).length <= 2 ? 0.5 : 0.8}
+                                    labelComponent={<VictoryTooltip />}
+                                  />
+                                </VictoryChart>
+                              </div>
+                              
+                              {/* 데스크탑 차트 */}
+                              <div className="hidden lg:block">
+                                <VictoryChart
+                                  theme={VictoryTheme.material}
+                                  domainPadding={{ x: prepareVictoryData(questionStats).length <= 2 ? 80 : 40 }}
+                                  padding={{ left: 55, right: 35, top: 25, bottom: 30 }}
+                                  height={240}
+                                  width={380}
+                                  containerComponent={
+                                    <VictoryContainer 
+                                      responsive={false}
+                                      style={{ touchAction: "auto" }}
+                                    />
+                                  }
+                                >
+                                  <VictoryAxis
+                                    style={{
+                                      axis: { stroke: "#a1a1aa" },
+                                      tickLabels: { fill: "#a1a1aa", fontSize: 11 },
+                                      grid: { stroke: "#3f3f46" }
+                                    }}
+                                    dependentAxis
+                                  />
+                                  <VictoryAxis
+                                    style={{
+                                      axis: { stroke: "#a1a1aa" },
+                                      tickLabels: { 
+                                        fill: prepareVictoryData(questionStats).length <= 3 ? "#a1a1aa" : "transparent",
+                                        fontSize: 11
+                                      }
+                                    }}
+                                  />
+                                  <VictoryBar
+                                    data={prepareVictoryData(questionStats)}
+                                    style={{
+                                      data: { fill: ({ datum }) => datum.fill }
+                                    }}
+                                    barRatio={prepareVictoryData(questionStats).length <= 2 ? 0.5 : 0.8}
+                                    labelComponent={<VictoryTooltip />}
+                                  />
+                                </VictoryChart>
+                              </div>
+                            </>
                         ) : (
-                          <div className="flex justify-center items-center h-full">
-                            <VictoryPie
-                              data={preparePieData(questionStats)}
-                              width={280}
-                              height={180}
-                              innerRadius={0}
-                              padAngle={3}
-                              cornerRadius={3}
-                              colorScale={COLORS}
-                              labelRadius={({ innerRadius }: any) => 85 }
-                              labelComponent={
-                                <VictoryLabel
-                                  style={{
-                                    fontSize: 12,
-                                    fill: "#e4e4e7"
-                                  }}
-                                />
-                              }
-                              containerComponent={
-                                <VictoryContainer 
-                                  responsive={true}
-                                  style={{ touchAction: "auto" }}
-                                />
-                              }
-                            />
+                          <>
+                            {/* 모바일 파이 차트 */}
+                            <div className="block sm:hidden flex justify-center items-center h-full">
+                              <VictoryPie
+                                data={preparePieData(questionStats)}
+                                width={280}
+                                height={180}
+                                innerRadius={0}
+                                padAngle={3}
+                                cornerRadius={3}
+                                colorScale={COLORS}
+                                labelRadius={({ innerRadius }: any) => 85 }
+                                labelComponent={
+                                  <VictoryLabel
+                                    style={{
+                                      fontSize: 10,
+                                      fill: "#e4e4e7"
+                                    }}
+                                  />
+                                }
+                                containerComponent={
+                                  <VictoryContainer 
+                                    responsive={false}
+                                    style={{ touchAction: "auto" }}
+                                  />
+                                }
+                              />
                             </div>
+                            
+                            {/* 태블릿 파이 차트 */}
+                            <div className="hidden sm:block lg:hidden flex justify-center items-center h-full">
+                              <VictoryPie
+                                data={preparePieData(questionStats)}
+                                width={320}
+                                height={200}
+                                innerRadius={0}
+                                padAngle={3}
+                                cornerRadius={3}
+                                colorScale={COLORS}
+                                labelRadius={({ innerRadius }: any) => 95 }
+                                labelComponent={
+                                  <VictoryLabel
+                                    style={{
+                                      fontSize: 11,
+                                      fill: "#e4e4e7"
+                                    }}
+                                  />
+                                }
+                                containerComponent={
+                                  <VictoryContainer 
+                                    responsive={false}
+                                    style={{ touchAction: "auto" }}
+                                  />
+                                }
+                              />
+                            </div>
+                            
+                            {/* 데스크탑 파이 차트 */}
+                            <div className="hidden lg:block flex justify-center items-center h-full">
+                              <VictoryPie
+                                data={preparePieData(questionStats)}
+                                width={380}
+                                height={240}
+                                innerRadius={0}
+                                padAngle={3}
+                                cornerRadius={3}
+                                colorScale={COLORS}
+                                labelRadius={({ innerRadius }: any) => 110 }
+                                labelComponent={
+                                  <VictoryLabel
+                                    style={{
+                                      fontSize: 12,
+                                      fill: "#e4e4e7"
+                                    }}
+                                  />
+                                }
+                                containerComponent={
+                                  <VictoryContainer 
+                                    responsive={false}
+                                    style={{ touchAction: "auto" }}
+                                  />
+                                }
+                              />
+                            </div>
+                          </>
                           )}
                         </div>
                         )}
@@ -338,42 +488,123 @@ export default function PublicResultsClient({ survey, results }: PublicResultsCl
 
                       {/* 평점 분포 차트 */}
                       {questionStats.rating_distribution && (
-                        <div className="w-full h-36 sm:h-40">
-                          <VictoryChart
-                            theme={VictoryTheme.material}
-                            domainPadding={{ x: 30 }}
-                            padding={{ left: 45, right: 25, top: 20, bottom: 25 }}
-                            height={160}
-                            width={280}
-                            containerComponent={
-                              <VictoryContainer 
-                                responsive={true}
-                                style={{ touchAction: "auto" }}
+                        <div className="w-[280px] h-[160px] sm:w-[320px] sm:h-[180px] lg:w-[380px] lg:h-[220px] mx-auto">
+                          {/* 모바일 평점 차트 */}
+                          <div className="block sm:hidden">
+                            <VictoryChart
+                              theme={VictoryTheme.material}
+                              domainPadding={{ x: 30 }}
+                              padding={{ left: 45, right: 25, top: 20, bottom: 25 }}
+                              height={160}
+                              width={280}
+                              containerComponent={
+                                <VictoryContainer 
+                                  responsive={false}
+                                  style={{ touchAction: "auto" }}
+                                />
+                              }
+                            >
+                              <VictoryAxis
+                                style={{
+                                  axis: { stroke: "#a1a1aa" },
+                                  tickLabels: { fill: "#a1a1aa", fontSize: 10 },
+                                  grid: { stroke: "#3f3f46" }
+                                }}
+                                dependentAxis
                               />
-                            }
-                          >
-                            <VictoryAxis
-                              style={{
-                                axis: { stroke: "#a1a1aa" },
-                                tickLabels: { fill: "#a1a1aa", fontSize: 10 },
-                                grid: { stroke: "#3f3f46" }
-                              }}
-                              dependentAxis
-                            />
-                            <VictoryAxis
-                              style={{
-                                axis: { stroke: "#a1a1aa" },
-                                tickLabels: { fill: "#a1a1aa", fontSize: 10 }
-                              }}
-                            />
-                            <VictoryBar
-                              data={prepareRatingData(questionStats.rating_distribution)}
-                              style={{
-                                data: { fill: "#39FF14" }
-                              }}
-                              barRatio={0.8}
-                            />
-                          </VictoryChart>
+                              <VictoryAxis
+                                style={{
+                                  axis: { stroke: "#a1a1aa" },
+                                  tickLabels: { fill: "#a1a1aa", fontSize: 10 }
+                                }}
+                              />
+                              <VictoryBar
+                                data={prepareRatingData(questionStats.rating_distribution)}
+                                style={{
+                                  data: { fill: "#39FF14" }
+                                }}
+                                barRatio={0.8}
+                              />
+                            </VictoryChart>
+                          </div>
+                          
+                          {/* 태블릿 평점 차트 */}
+                          <div className="hidden sm:block lg:hidden">
+                            <VictoryChart
+                              theme={VictoryTheme.material}
+                              domainPadding={{ x: 35 }}
+                              padding={{ left: 50, right: 30, top: 20, bottom: 25 }}
+                              height={180}
+                              width={320}
+                              containerComponent={
+                                <VictoryContainer 
+                                  responsive={false}
+                                  style={{ touchAction: "auto" }}
+                                />
+                              }
+                            >
+                              <VictoryAxis
+                                style={{
+                                  axis: { stroke: "#a1a1aa" },
+                                  tickLabels: { fill: "#a1a1aa", fontSize: 10 },
+                                  grid: { stroke: "#3f3f46" }
+                                }}
+                                dependentAxis
+                              />
+                              <VictoryAxis
+                                style={{
+                                  axis: { stroke: "#a1a1aa" },
+                                  tickLabels: { fill: "#a1a1aa", fontSize: 10 }
+                                }}
+                              />
+                              <VictoryBar
+                                data={prepareRatingData(questionStats.rating_distribution)}
+                                style={{
+                                  data: { fill: "#39FF14" }
+                                }}
+                                barRatio={0.8}
+                              />
+                            </VictoryChart>
+                          </div>
+                          
+                          {/* 데스크탑 평점 차트 */}
+                          <div className="hidden lg:block">
+                            <VictoryChart
+                              theme={VictoryTheme.material}
+                              domainPadding={{ x: 40 }}
+                              padding={{ left: 55, right: 35, top: 25, bottom: 30 }}
+                              height={220}
+                              width={380}
+                              containerComponent={
+                                <VictoryContainer 
+                                  responsive={false}
+                                  style={{ touchAction: "auto" }}
+                                />
+                              }
+                            >
+                              <VictoryAxis
+                                style={{
+                                  axis: { stroke: "#a1a1aa" },
+                                  tickLabels: { fill: "#a1a1aa", fontSize: 11 },
+                                  grid: { stroke: "#3f3f46" }
+                                }}
+                                dependentAxis
+                              />
+                              <VictoryAxis
+                                style={{
+                                  axis: { stroke: "#a1a1aa" },
+                                  tickLabels: { fill: "#a1a1aa", fontSize: 11 }
+                                }}
+                              />
+                              <VictoryBar
+                                data={prepareRatingData(questionStats.rating_distribution)}
+                                style={{
+                                  data: { fill: "#39FF14" }
+                                }}
+                                barRatio={0.8}
+                              />
+                            </VictoryChart>
+                          </div>
                         </div>
                       )}
                     </>
