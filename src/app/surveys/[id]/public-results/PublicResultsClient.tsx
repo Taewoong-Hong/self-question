@@ -161,13 +161,13 @@ export default function PublicResultsClient({ survey, results }: PublicResultsCl
 
                       {/* Victory 차트 렌더링 */}
                       {prepareVictoryData(questionStats).length > 0 && (
-                        <div className="w-full h-40 sm:h-48">
+                        <div className="w-full h-36 sm:h-44 lg:h-52">
                           {chartType === 'bar' ? (
                             <VictoryChart
                             theme={VictoryTheme.material}
                             domainPadding={{ x: prepareVictoryData(questionStats).length <= 2 ? 100 : 40 }}
-                            padding={{ left: 50, right: 30, top: 20, bottom: 20 }}
-                            height={200}
+                            padding={{ left: 50, right: 30, top: 20, bottom: 30 }}
+                            height={250}
                             width={prepareVictoryData(questionStats).length <= 2 ? 350 : 500}
                             containerComponent={
                               <VictoryContainer 
@@ -206,13 +206,13 @@ export default function PublicResultsClient({ survey, results }: PublicResultsCl
                           <div className="flex justify-center items-center h-full">
                             <VictoryPie
                               data={preparePieData(questionStats)}
-                              width={350}
-                              height={200}
+                              width={400}
+                              height={250}
                               innerRadius={0}
                               padAngle={3}
                               cornerRadius={3}
                               colorScale={COLORS}
-                              labelRadius={({ innerRadius }: any) => 100 }
+                              labelRadius={({ innerRadius }: any) => 120 }
                               labelComponent={
                                 <VictoryLabel
                                   style={{
@@ -332,12 +332,12 @@ export default function PublicResultsClient({ survey, results }: PublicResultsCl
 
                       {/* 평점 분포 차트 */}
                       {questionStats.rating_distribution && (
-                        <div className="w-full h-40">
+                        <div className="w-full h-36 sm:h-44">
                           <VictoryChart
                             theme={VictoryTheme.material}
                             domainPadding={{ x: 40 }}
-                            padding={{ left: 50, right: 30, top: 20, bottom: 20 }}
-                            height={160}
+                            padding={{ left: 50, right: 30, top: 20, bottom: 30 }}
+                            height={200}
                             width={400}
                             containerComponent={
                               <VictoryContainer 
