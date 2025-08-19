@@ -141,6 +141,15 @@ export default function SurveyResults({ surveyId }: SurveyResultsProps) {
       <div className="mb-6">
         <h2 className="text-lg sm:text-xl font-semibold text-zinc-100 mb-2">설문 결과</h2>
         <p className="text-sm text-zinc-400">총 {totalResponses}명이 응답했습니다</p>
+        <div className="mt-4">
+          <a
+            href={`/surveys/${surveyId}/public-results`}
+            className="flex items-center justify-between p-3 bg-zinc-800/50 rounded-lg hover:bg-zinc-800 transition-colors"
+          >
+            <span>결과 통계 보기</span>
+            <span className="text-zinc-400">→</span>
+          </a>
+        </div>
       </div>
 
       <div className="space-y-8">

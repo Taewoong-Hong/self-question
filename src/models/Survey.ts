@@ -83,6 +83,9 @@ export interface ISurvey extends Document {
     language: string;
   };
   
+  // Public results visibility
+  public_results?: boolean;
+  
   // Statistics
   stats: {
     response_count: number;
@@ -305,6 +308,12 @@ const surveySchema = new Schema<ISurvey>({
       type: String,
       default: 'ko'
     }
+  },
+  
+  // Public results visibility
+  public_results: {
+    type: Boolean,
+    default: true
   },
   
   // Statistics
