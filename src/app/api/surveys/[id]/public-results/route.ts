@@ -27,6 +27,14 @@ export async function GET(
     // Mongoose document를 plain object로 변환
     const survey = surveyDoc.toObject();
     
+    console.log('[API] Survey basic info:', {
+      id: survey.id,
+      hasAdminResults: !!survey.admin_results,
+      adminResultsKeys: survey.admin_results ? Object.keys(survey.admin_results) : [],
+      questionsCount: survey.questions?.length,
+      statsResponseCount: survey.stats?.response_count
+    });
+    
     // public_results가 false인 경우 접근 불가
     if (survey.public_results === false) {
       return NextResponse.json(
@@ -42,6 +50,7 @@ export async function GET(
        Object.keys(survey.admin_results).length > 0;
     
     if (hasAdminResults) {
+      console.log('[API] Processing admin results...');
       // admin_results 데이터를 API 응답 형식으로 변환
       const questionStats: any = {};
       let totalResponses = 0;
@@ -50,10 +59,16 @@ export async function GET(
         // question.id 또는 question._id 둘 다 시도
         const questionId = (question.id || question._id || '').toString();
         
+        console.log(`[API] Processing question ${questionId}:`, {
+          type: question.type,
+          title: question.title?.substring(0, 50)
+        });
+        
         // toObject()로 변환된 경우 일반 객체로 접근
         const adminResult = survey.admin_results![questionId];
         
         if (adminResult) {
+          console.log(`[API] Found admin result for question ${questionId}:`, adminResult);
           questionStats[questionId] = {
             response_count: adminResult.total_responses || 0,
             options: {},
@@ -106,11 +121,18 @@ export async function GET(
               questionStats[questionId].text_response_count = adminResult.total_responses || 0;
               break;
           }
+        } else {
+          console.log(`[API] No admin result for question ${questionId}`);
         }
       });
       
       // stats의 response_count를 우선 사용
       const finalTotalResponses = survey.stats?.response_count || totalResponses;
+      
+      console.log('[API] Final response data:', {
+        questionStatsKeys: Object.keys(questionStats),
+        totalResponses: finalTotalResponses
+      });
       
       return NextResponse.json({
         question_stats: questionStats,

@@ -27,6 +27,19 @@ interface PublicResultsClientProps {
 
 export default function PublicResultsClient({ survey, results }: PublicResultsClientProps) {
   const [chartType, setChartType] = useState<'bar' | 'pie'>('bar');
+  
+  // 디버깅 로그
+  console.log('[Client] Survey data:', {
+    id: survey.id,
+    questionsCount: survey.questions?.length,
+    firstQuestion: survey.questions?.[0]
+  });
+  
+  console.log('[Client] Results data:', {
+    questionStats: results.question_stats,
+    totalResponses: results.total_responses,
+    dataSource: results.data_source
+  });
 
   // Victory 차트용 데이터 준비 함수
   const prepareVictoryData = (questionStats: any) => {
@@ -110,6 +123,13 @@ export default function PublicResultsClient({ survey, results }: PublicResultsCl
           // question.id와 question._id 둘 다 시도
           const questionId = question.id || question._id;
           const questionStats = results.question_stats?.[questionId];
+          
+          console.log(`[Client] Question ${index}:`, {
+            questionId,
+            questionType: question.type,
+            hasStats: !!questionStats,
+            stats: questionStats
+          });
           
           return (
             <div key={questionId} className="bg-zinc-900/50 backdrop-blur-sm border border-zinc-800 rounded-xl p-4 sm:p-6">
