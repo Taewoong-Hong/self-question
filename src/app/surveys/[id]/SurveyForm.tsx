@@ -18,6 +18,7 @@ export default function SurveyForm({ surveyId, questions, onComplete }: SurveyFo
   const [submitting, setSubmitting] = useState(false);
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [skippedQuestions, setSkippedQuestions] = useState<Set<string>>(new Set());
+  const [startedAt] = useState(new Date());
 
   // 조건부 로직에 따라 건너뛸 질문 확인
   const checkSkipLogic = (question: any) => {
@@ -122,20 +123,38 @@ export default function SurveyForm({ surveyId, questions, onComplete }: SurveyFo
       setSubmitting(true);
       
       const responseData: SurveyResponseData = {
+        started_at: startedAt,
         answers: questions
           .filter(q => !checkSkipLogic(q)) // 건너뛴 질문은 제외
           .map(q => {
             const answer: any = {
               question_id: q._id,
-              answer: responses[q._id] || null
+              question_type: q.type, // question_type 추가
+              answered_at: new Date()
             };
             
-            // 단일 선택에서 '기타' 옵션이 선택된 경우
-            if (q.type === 'single_choice' && responses[q._id]) {
-              const selectedChoice = q.properties?.choices?.find((c: any) => c.id === responses[q._id]);
-              if (selectedChoice?.is_other && otherTexts[q._id]) {
-                answer.other_text = otherTexts[q._id];
-              }
+            // 질문 유형에 따라 적절한 필드 설정
+            switch (q.type) {
+              case 'single_choice':
+                answer.choice_id = responses[q._id] || null;
+                // '기타' 옵션이 선택된 경우
+                if (responses[q._id]) {
+                  const selectedChoice = q.properties?.choices?.find((c: any) => c.id === responses[q._id]);
+                  if (selectedChoice?.is_other && otherTexts[q._id]) {
+                    answer.other_text = otherTexts[q._id];
+                  }
+                }
+                break;
+              case 'multiple_choice':
+                answer.choice_ids = responses[q._id] || [];
+                break;
+              case 'short_text':
+              case 'long_text':
+                answer.text = responses[q._id] || '';
+                break;
+              case 'rating':
+                answer.rating = responses[q._id] || null;
+                break;
             }
             
             // 다중 선택에서 '기타' 옵션이 포함된 경우
@@ -153,7 +172,6 @@ export default function SurveyForm({ surveyId, questions, onComplete }: SurveyFo
             
             return answer;
           })
-          .filter(a => a.answer !== null)
       };
 
       await surveyApi.respond(surveyId, responseData);

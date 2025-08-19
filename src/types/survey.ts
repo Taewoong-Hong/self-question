@@ -139,10 +139,8 @@ export interface SurveyCreateData {
 }
 
 export interface SurveyResponseData {
-  answers: {
-    question_id: string;
-    answer: any; // 타입에 따라 다른 값
-  }[];
+  started_at?: Date;
+  answers: Answer[];
 }
 
 export interface SurveyListResponse {
