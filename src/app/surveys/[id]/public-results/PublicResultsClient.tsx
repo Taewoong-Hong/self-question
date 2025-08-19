@@ -17,8 +17,8 @@ import {
   VictoryArea
 } from 'victory';
 
-// 차트 색상 팔레트
-const COLORS = ['#39FF14', '#2ECC0B', '#FFD700', '#FF6B6B', '#4ECDC4', '#95E1D3'];
+// 차트 색상 팔레트 (브랜드 컬러 제외)
+const COLORS = ['#3B82F6', '#8B5CF6', '#F59E0B', '#EF4444', '#10B981', '#06B6D4'];
 
 interface PublicResultsClientProps {
   survey: any;
@@ -166,7 +166,7 @@ export default function PublicResultsClient({ survey, results }: PublicResultsCl
                             <VictoryChart
                             theme={VictoryTheme.material}
                             domainPadding={{ x: prepareVictoryData(questionStats).length <= 2 ? 120 : 40 }}
-                            padding={{ left: 60, right: 40, top: 40, bottom: 80 }}
+                            padding={{ left: 60, right: 40, top: 40, bottom: 60 }}
                             height={300}
                             width={prepareVictoryData(questionStats).length <= 2 ? 400 : 600}
                             containerComponent={
@@ -255,7 +255,7 @@ export default function PublicResultsClient({ survey, results }: PublicResultsCl
 
                       {/* 기존 목록 형태도 유지 */}
                       <div className="space-y-3 mt-4">
-                        {Object.entries(questionStats.options || {}).map(([choiceId, choice]: any) => {
+                        {Object.entries(questionStats.options || {}).map(([choiceId, choice]: any, index) => {
                           // choice가 객체인지 확인
                           if (typeof choice !== 'object' || !choice.label) return null;
                           
@@ -266,18 +266,25 @@ export default function PublicResultsClient({ survey, results }: PublicResultsCl
                           const percentage = totalCount > 0 && typeof choice.count === 'number'
                             ? (choice.count / totalCount) * 100 
                             : 0;
+                          
+                          // 차트 색상과 동일한 색상 사용
+                          const barColor = COLORS[index % COLORS.length];
+                          
                           return (
                             <div key={choiceId}>
-                              <div className="flex justify-between items-center mb-1">
-                                <span className="text-sm">{choice.label}</span>
-                                <span className="text-sm text-zinc-400">
+                              <div className="flex justify-between items-start gap-2 mb-1">
+                                <span className="text-sm break-words flex-1">{choice.label}</span>
+                                <span className="text-sm text-zinc-400 whitespace-nowrap flex-shrink-0">
                                   {choice.count || 0}명 ({percentage.toFixed(1)}%)
                                 </span>
                               </div>
                               <div className="w-full bg-zinc-800 rounded-full h-3 overflow-hidden">
                                 <div 
-                                  className="bg-gradient-to-r from-surbate to-brand-600 h-full transition-all duration-500"
-                                  style={{ width: `${percentage}%` }}
+                                  className="h-full transition-all duration-500"
+                                  style={{ 
+                                    width: `${percentage}%`,
+                                    backgroundColor: barColor
+                                  }}
                                 />
                               </div>
                             </div>
