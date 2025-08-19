@@ -207,7 +207,6 @@ const responseSchema = new Schema<IResponse>({
 // Compound index - prevent duplicates by IP and survey combination
 responseSchema.index({ survey_id: 1, respondent_ip_hash: 1 }, { unique: true });
 responseSchema.index({ survey_ref: 1, created_at: -1 });
-responseSchema.index({ response_code: 1 });
 
 // IP hashing
 responseSchema.pre('save', function(next) {
