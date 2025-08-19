@@ -178,8 +178,24 @@ export async function GET(
       const finalTotalResponses = survey.stats?.response_count || totalResponses;
       
       
+      // 응답 전에 questionStats를 완전히 정리
+      const cleanQuestionStats: any = {};
+      Object.keys(questionStats).forEach(qId => {
+        const stat = questionStats[qId];
+        cleanQuestionStats[qId] = {
+          response_count: stat.response_count,
+          options: stat.options && Object.keys(stat.options).length > 0 ? stat.options : {},
+          responses: Array.isArray(stat.responses) ? stat.responses : [],
+          average: stat.average || 0,
+          question_type: stat.question_type,
+          question_title: stat.question_title,
+          ...(stat.text_response_count !== undefined && { text_response_count: stat.text_response_count }),
+          ...(stat.rating_distribution && { rating_distribution: stat.rating_distribution })
+        };
+      });
+      
       return NextResponse.json({
-        question_stats: questionStats,
+        question_stats: cleanQuestionStats,
         total_responses: finalTotalResponses,
         last_updated: new Date(),
         data_source: 'admin_modified'
@@ -280,8 +296,24 @@ export async function GET(
     // stats의 response_count를 우선 사용
     const finalTotalResponses = survey.stats?.response_count || responses.length;
     
+    // 응답 전에 questionStats를 완전히 정리
+    const cleanQuestionStats: any = {};
+    Object.keys(questionStats).forEach(qId => {
+      const stat = questionStats[qId];
+      cleanQuestionStats[qId] = {
+        response_count: stat.response_count,
+        options: stat.options && Object.keys(stat.options).length > 0 ? stat.options : {},
+        responses: Array.isArray(stat.responses) ? stat.responses : [],
+        average: stat.average || 0,
+        question_type: stat.question_type,
+        question_title: stat.question_title,
+        ...(stat.text_response_count !== undefined && { text_response_count: stat.text_response_count }),
+        ...(stat.rating_distribution && { rating_distribution: stat.rating_distribution })
+      };
+    });
+    
     return NextResponse.json({
-      question_stats: questionStats,
+      question_stats: cleanQuestionStats,
       total_responses: finalTotalResponses,
       last_updated: new Date(),
       data_source: 'actual_responses'
