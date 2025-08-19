@@ -203,9 +203,11 @@ export async function GET(
     }
     
     // admin_results가 없으면 실제 응답 데이터 사용
+    console.log('[API] Fetching actual responses for survey ID:', survey.id);
     const responses = await Response.find({
       survey_id: survey.id  // survey.id를 사용해야 함 (survey._id가 아님)
     }).select('answers').lean();
+    console.log('[API] Found responses:', responses.length);
 
     // 질문별 통계 계산
     const questionStats: any = {};
@@ -294,7 +296,9 @@ export async function GET(
     });
 
     // stats의 response_count를 우선 사용
+    console.log('[API] Survey stats:', survey.stats);
     const finalTotalResponses = survey.stats?.response_count || responses.length;
+    console.log('[API] Final total responses:', finalTotalResponses);
     
     // 응답 전에 questionStats를 완전히 정리
     const cleanQuestionStats: any = {};
