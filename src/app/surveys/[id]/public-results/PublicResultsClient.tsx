@@ -49,10 +49,13 @@ export default function PublicResultsClient({ survey, results }: PublicResultsCl
   const preparePieData = (questionStats: any) => {
     const data: any[] = [];
     
+    // 전체 응답 수 계산
+    const totalCount = Object.values(questionStats.options || {}).reduce((sum: number, opt: any) => sum + (opt.count || 0), 0);
+    
     Object.entries(questionStats.options || {}).forEach(([choiceId, choice]: any, index) => {
       if (choice.label && choice.count !== undefined && choice.count > 0) {
-        const percentage = questionStats.response_count > 0 
-          ? ((choice.count / questionStats.response_count) * 100).toFixed(1)
+        const percentage = totalCount > 0 
+          ? ((choice.count / totalCount) * 100).toFixed(1)
           : 0;
         data.push({
           x: `${choice.label} (${percentage}%)`,
@@ -114,13 +117,13 @@ export default function PublicResultsClient({ survey, results }: PublicResultsCl
                 {index + 1}. {question.title}
               </h3>
 
-              {/* 응답이 없는 경우 */}
-              {!questionStats || questionStats.response_count === 0 ? (
+              {/* 통계 데이터가 있는지 확인 */}
+              {!questionStats ? (
                 <p className="text-zinc-500 text-center py-8">아직 응답이 없습니다</p>
               ) : (
                 <>
                   {/* 단일/다중 선택 결과 */}
-                  {(question.type === 'single_choice' || question.type === 'multiple_choice') && questionStats.options && (
+                  {(question.type === 'single_choice' || question.type === 'multiple_choice') && (
                     <>
                       {/* 차트 유형 선택 버튼 */}
                       <div className="flex gap-2 mb-3">
@@ -221,8 +224,10 @@ export default function PublicResultsClient({ survey, results }: PublicResultsCl
                       {/* 기존 목록 형태도 유지 */}
                       <div className="space-y-3 mt-4">
                         {Object.entries(questionStats.options || {}).map(([choiceId, choice]: any) => {
-                          const percentage = questionStats.response_count > 0 
-                            ? (choice.count / questionStats.response_count) * 100 
+                          // 전체 응답 수 계산 (각 선택지의 count 합계)
+                          const totalCount = Object.values(questionStats.options || {}).reduce((sum: number, opt: any) => sum + (opt.count || 0), 0);
+                          const percentage = totalCount > 0 
+                            ? (choice.count / totalCount) * 100 
                             : 0;
                           return (
                             <div key={choiceId}>
