@@ -62,7 +62,7 @@ export default function GuestbookPage() {
   return (
     <div className="fixed inset-0 bg-zinc-950 overflow-hidden">
       {/* 전체 화면 방명록 보드 - 헤더 공간 확보 */}
-      <div className="absolute inset-0 bg-zinc-900/30 pt-20">
+      <div className="absolute inset-0 bg-zinc-900/30 pt-28 lg:pt-20 lg:pl-64">
           {loading ? (
             <div className="flex items-center justify-center h-full">
               <div className="inline-block animate-spin rounded-full h-8 w-8 border-b-2 border-zinc-100"></div>
@@ -95,13 +95,13 @@ export default function GuestbookPage() {
           )}
       </div>
       
-      {/* 플로팅 헤더 */}
-      <div className="absolute top-0 left-0 right-0 z-50 bg-zinc-950/90 backdrop-blur-sm border-b border-zinc-800">
+      {/* 플로팅 헤더 - 반응형 위치 조정 */}
+      <div className="absolute top-14 lg:top-0 lg:left-64 left-0 right-0 z-50 bg-zinc-950/90 backdrop-blur-sm border-b border-zinc-800">
         <div className="max-w-7xl mx-auto px-4 py-4">
           <div className="flex items-center justify-between">
             <div>
               <h1 className="text-2xl font-bold">방명록</h1>
-              <p className="text-zinc-400 text-sm mt-1">자유롭게 메모를 남겨주세요</p>
+              <p className="text-zinc-400 text-sm mt-1 hidden sm:block">자유롭게 메모를 남겨주세요</p>
             </div>
             <button
               onClick={() => router.push('/guestbook/write')}
