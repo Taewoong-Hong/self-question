@@ -35,13 +35,19 @@ export interface GuestbookListResponse {
   total: number;
 }
 
-export const GUESTBOOK_COLORS = [
-  '#FFE500', // 노란색
-  '#FF9500', // 주황색
-  '#FF6B6B', // 빨간색
-  '#4ECDC4', // 민트색
-  '#45B7D1', // 하늘색
-  '#96CEB4', // 연두색
-  '#FECA57', // 황금색
-  '#DDA5E9', // 보라색
+export interface GuestbookColor {
+  id: string;
+  bg: string;
+  name: string;
+}
+
+export const GUESTBOOK_COLORS: GuestbookColor[] = [
+  { id: 'yellow', bg: '#FFE500', name: '노란색' },
+  { id: 'orange', bg: '#FF9500', name: '주황색' },
+  { id: 'red', bg: '#FF6B6B', name: '빨간색' },
+  { id: 'mint', bg: '#4ECDC4', name: '민트색' },
+  { id: 'sky', bg: '#45B7D1', name: '하늘색' },
+  { id: 'green', bg: '#96CEB4', name: '연두색' },
+  { id: 'gold', bg: '#FECA57', name: '황금색' },
+  { id: 'purple', bg: '#DDA5E9', name: '보라색' },
 ];

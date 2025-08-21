@@ -45,8 +45,8 @@ export default function StickyNote({ note, onUpdatePosition, onDelete }: StickyN
     const newY = ((e.clientY - dragStartPos.current.y) / rect.height) * 100;
 
     // 경계 체크
-    const boundedX = Math.max(0, Math.min(90, newX));
-    const boundedY = Math.max(0, Math.min(90, newY));
+    const boundedX = Math.max(0, Math.min(85, newX));
+    const boundedY = Math.max(0, Math.min(85, newY));
 
     setPosition({ x: boundedX, y: boundedY });
   };
@@ -94,8 +94,8 @@ export default function StickyNote({ note, onUpdatePosition, onDelete }: StickyN
     const newX = ((touch.clientX - dragStartPos.current.x) / rect.width) * 100;
     const newY = ((touch.clientY - dragStartPos.current.y) / rect.height) * 100;
 
-    const boundedX = Math.max(0, Math.min(90, newX));
-    const boundedY = Math.max(0, Math.min(90, newY));
+    const boundedX = Math.max(0, Math.min(85, newX));
+    const boundedY = Math.max(0, Math.min(85, newY));
 
     setPosition({ x: boundedX, y: boundedY });
   };
@@ -110,7 +110,7 @@ export default function StickyNote({ note, onUpdatePosition, onDelete }: StickyN
   return (
     <div
       ref={noteRef}
-      className={`absolute w-48 h-48 p-4 shadow-lg rounded-sm cursor-move select-none transition-shadow ${
+      className={`absolute w-64 h-64 p-5 shadow-lg rounded-sm cursor-move select-none transition-shadow ${
         isDragging ? 'shadow-2xl scale-105' : 'hover:shadow-xl'
       }`}
       style={{
@@ -142,11 +142,11 @@ export default function StickyNote({ note, onUpdatePosition, onDelete }: StickyN
 
       {/* 내용 */}
       <div className="h-full flex flex-col">
-        <p className="text-zinc-900 text-sm flex-1 break-words overflow-hidden">
+        <p className="text-zinc-900 text-base flex-1 break-words overflow-hidden">
           {note.content}
         </p>
         
-        <div className="mt-2 text-xs text-zinc-700 space-y-1">
+        <div className="mt-3 text-sm text-zinc-700 space-y-1">
           {note.author_nickname && (
             <p className="font-medium">- {note.author_nickname}</p>
           )}
