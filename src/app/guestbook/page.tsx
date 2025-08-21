@@ -28,20 +28,22 @@ export default function GuestbookPage() {
   };
 
   const handleUpdatePosition = async (id: string, x: number, y: number) => {
+    // 로컬 상태만 업데이트 (서버 업데이트는 본인 노트만 가능)
+    setNotes(notes.map(note => 
+      note.id === id 
+        ? { ...note, position: { x, y }, z_index: Date.now() }
+        : note
+    ));
+    
+    // 서버 업데이트는 에러 처리만 조용히 수행
     try {
       await guestbookApi.updatePosition(id, {
         position: { x, y },
-        z_index: Date.now(), // 최상위로 이동
+        z_index: Date.now(),
       });
-      
-      // 로컬 상태 업데이트
-      setNotes(notes.map(note => 
-        note.id === id 
-          ? { ...note, position: { x, y }, z_index: Date.now() }
-          : note
-      ));
     } catch (error) {
-      console.error('위치 업데이트 실패:', error);
+      // 권한 오류는 무시 (다른 사람의 노트를 움직이는 경우)
+      // 로컬에서는 이미 업데이트되었으므로 사용자 경험에 영향 없음
     }
   };
 
@@ -58,36 +60,9 @@ export default function GuestbookPage() {
   };
 
   return (
-    <div className="min-h-screen bg-zinc-950">
-      {/* 페이지 헤더 */}
-      <div className="border-b border-zinc-800 mb-8">
-        <div className="max-w-7xl mx-auto px-4 py-6">
-          <div className="flex items-center justify-between">
-            <div>
-              <h1 className="text-2xl font-bold">방명록</h1>
-              <p className="text-zinc-400 text-sm mt-1">자유롭게 메모를 남겨주세요</p>
-            </div>
-            <button
-              onClick={() => router.push('/guestbook/write')}
-              className="relative p-3 border border-zinc-700 text-zinc-100 rounded-lg hover:border-zinc-500 hover:bg-zinc-800/50 transform hover:-translate-y-0.5 transition-all duration-200"
-              title="메모 남기기"
-            >
-              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z" />
-              </svg>
-              <div className="absolute -top-1 -left-1 w-4 h-4 bg-zinc-950 border border-zinc-100 rounded-full flex items-center justify-center">
-                <svg className="w-2.5 h-2.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M12 4v16m8-8H4" />
-                </svg>
-              </div>
-            </button>
-          </div>
-        </div>
-      </div>
-
-      {/* 방명록 보드 - 뷰포트 높이에서 헤더와 여백을 뺀 높이 */}
-      <div className="relative mx-4" style={{ height: 'calc(100vh - 200px)', minHeight: '600px' }}>
-        <div className="relative w-full h-full bg-zinc-900/30 border border-zinc-800 rounded-xl overflow-hidden">
+    <div className="fixed inset-0 bg-zinc-950 overflow-hidden">
+      {/* 전체 화면 방명록 보드 - 헤더 공간 확보 */}
+      <div className="absolute inset-0 bg-zinc-900/30 pt-20">
           {loading ? (
             <div className="flex items-center justify-center h-full">
               <div className="inline-block animate-spin rounded-full h-8 w-8 border-b-2 border-zinc-100"></div>
@@ -118,6 +93,31 @@ export default function GuestbookPage() {
               ))}
             </>
           )}
+      </div>
+      
+      {/* 플로팅 헤더 */}
+      <div className="absolute top-0 left-0 right-0 z-50 bg-zinc-950/90 backdrop-blur-sm border-b border-zinc-800">
+        <div className="max-w-7xl mx-auto px-4 py-4">
+          <div className="flex items-center justify-between">
+            <div>
+              <h1 className="text-2xl font-bold">방명록</h1>
+              <p className="text-zinc-400 text-sm mt-1">자유롭게 메모를 남겨주세요</p>
+            </div>
+            <button
+              onClick={() => router.push('/guestbook/write')}
+              className="relative p-3 border border-zinc-700 text-zinc-100 rounded-lg hover:border-zinc-500 hover:bg-zinc-800/50 transform hover:-translate-y-0.5 transition-all duration-200"
+              title="메모 남기기"
+            >
+              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z" />
+              </svg>
+              <div className="absolute -top-1 -left-1 w-4 h-4 bg-zinc-950 border border-zinc-100 rounded-full flex items-center justify-center">
+                <svg className="w-2.5 h-2.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M12 4v16m8-8H4" />
+                </svg>
+              </div>
+            </button>
+          </div>
         </div>
       </div>
     </div>

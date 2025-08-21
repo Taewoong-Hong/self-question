@@ -9,6 +9,7 @@ export interface GuestbookNote {
   author_nickname?: string;
   created_at: string;
   z_index?: number;
+  is_mine?: boolean; // 현재 사용자가 작성한 노트인지 여부
 }
 
 export interface CreateGuestbookRequest {
