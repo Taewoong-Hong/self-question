@@ -58,10 +58,10 @@ export default function GuestbookPage() {
   };
 
   return (
-    <div className="fixed inset-0 bg-zinc-950">
-      {/* 고정 헤더 */}
-      <div className="absolute top-0 left-0 right-0 z-50 bg-zinc-950/90 backdrop-blur-sm border-b border-zinc-800">
-        <div className="max-w-7xl mx-auto px-4 py-4">
+    <div className="min-h-screen bg-zinc-950">
+      {/* 페이지 헤더 */}
+      <div className="border-b border-zinc-800 mb-8">
+        <div className="max-w-7xl mx-auto px-4 py-6">
           <div className="flex items-center justify-between">
             <div>
               <h1 className="text-2xl font-bold">방명록</h1>
@@ -85,9 +85,9 @@ export default function GuestbookPage() {
         </div>
       </div>
 
-      {/* 전체 화면 방명록 보드 */}
-      <div className="absolute inset-0 pt-20 overflow-hidden">
-        <div className="relative w-full h-full bg-zinc-900/30">
+      {/* 방명록 보드 - 뷰포트 높이에서 헤더와 여백을 뺀 높이 */}
+      <div className="relative mx-4" style={{ height: 'calc(100vh - 200px)', minHeight: '600px' }}>
+        <div className="relative w-full h-full bg-zinc-900/30 border border-zinc-800 rounded-xl overflow-hidden">
           {loading ? (
             <div className="flex items-center justify-center h-full">
               <div className="inline-block animate-spin rounded-full h-8 w-8 border-b-2 border-zinc-100"></div>
