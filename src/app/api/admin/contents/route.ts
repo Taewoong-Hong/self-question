@@ -74,6 +74,8 @@ export async function GET(request: NextRequest) {
         type: 'survey',
         status: survey.status,
         created_at: survey.created_at,
+        start_at: survey.start_at || null,
+        end_at: survey.end_at || null,
         author_ip: survey.creator_ip || 'unknown',
         author_nickname: survey.author_nickname,
         participant_count: survey.stats?.response_count || 0,
@@ -84,9 +86,12 @@ export async function GET(request: NextRequest) {
     
     // 질문 데이터 조회
     if (filter === 'all' || filter === 'question') {
-      const questions = await Question.find(
-        search ? { title: { $regex: search, $options: 'i' } } : {}
-      )
+      const queryCondition: any = { isDeleted: false };
+      if (search) {
+        queryCondition.title = { $regex: search, $options: 'i' };
+      }
+      
+      const questions = await Question.find(queryCondition)
       .sort({ createdAt: -1 })
       .lean();
       
@@ -96,6 +101,8 @@ export async function GET(request: NextRequest) {
         type: 'question',
         status: question.status,
         created_at: question.createdAt,
+        start_at: null, // 질문은 시작 시간이 없음
+        end_at: null, // 질문은 종료 시간이 없음
         author_ip: question.ipAddress || 'unknown',
         author_nickname: question.nickname,
         participant_count: 0, // 질문은 참여자 개념이 없음
