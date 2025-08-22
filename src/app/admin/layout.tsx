@@ -54,75 +54,9 @@ export default function AdminLayout({
   }
 
   return (
-    <div className="min-h-screen bg-zinc-950">
-      {/* 헤더 */}
-      <header className="bg-zinc-900/50 backdrop-blur-sm border-b border-zinc-800">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex items-center justify-between h-16">
-            <div className="flex items-center gap-8">
-              <Link href="/admin/dashboard" className="text-xl font-bold text-zinc-100">
-                Surbate Admin
-              </Link>
-              <nav className="hidden md:flex gap-6">
-                <Link
-                  href="/admin/dashboard"
-                  className={`text-sm font-medium transition-colors ${
-                    pathname === '/admin/dashboard' ? 'text-surbate' : 'text-zinc-400 hover:text-zinc-100'
-                  }`}
-                >
-                  대시보드
-                </Link>
-                <Link
-                  href="/admin/contents"
-                  className={`text-sm font-medium transition-colors ${
-                    pathname === '/admin/contents' ? 'text-surbate' : 'text-zinc-400 hover:text-zinc-100'
-                  }`}
-                >
-                  콘텐츠 관리
-                </Link>
-                <Link
-                  href="/admin/users"
-                  className={`text-sm font-medium transition-colors ${
-                    pathname === '/admin/users' ? 'text-surbate' : 'text-zinc-400 hover:text-zinc-100'
-                  }`}
-                >
-                  회원 관리
-                </Link>
-                <Link
-                  href="/admin/stats"
-                  className={`text-sm font-medium transition-colors ${
-                    pathname === '/admin/stats' ? 'text-surbate' : 'text-zinc-400 hover:text-zinc-100'
-                  }`}
-                >
-                  통계 분석
-                </Link>
-                <Link
-                  href="/admin/errors"
-                  className={`text-sm font-medium transition-colors ${
-                    pathname === '/admin/errors' ? 'text-surbate' : 'text-zinc-400 hover:text-zinc-100'
-                  }`}
-                >
-                  에러 로그
-                </Link>
-              </nav>
-            </div>
-            <div className="flex items-center gap-4">
-              <span className="text-sm text-zinc-400">
-                {adminUser?.name || 'Admin'}
-              </span>
-              <button
-                onClick={handleLogout}
-                className="px-3 py-1.5 bg-zinc-800 text-zinc-100 rounded-lg text-sm hover:bg-zinc-700 transition-colors"
-              >
-                로그아웃
-              </button>
-            </div>
-          </div>
-        </div>
-      </header>
-
-      {/* 메인 컨텐츠 */}
+    <>
+      {/* 메인 컨텐츠만 렌더링 - 네비게이션은 root layout의 사이드바 사용 */}
       {children}
-    </div>
+    </>
   );
 }
