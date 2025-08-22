@@ -48,7 +48,8 @@ export default function AdminDashboardPage() {
       const response = await fetch('/api/admin/stats', {
         headers: {
           'Authorization': `Bearer ${token}`
-        }
+        },
+        credentials: 'include'
       });
       
       if (!response.ok) {

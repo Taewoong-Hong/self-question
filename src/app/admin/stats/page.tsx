@@ -107,7 +107,8 @@ export default function AdminStatsPage() {
       const response = await fetch(`/api/admin/stats/detailed?range=${dateRange}`, {
         headers: {
           'Authorization': `Bearer ${token}`
-        }
+        },
+        credentials: 'include'
       });
       
       if (!response.ok) {
