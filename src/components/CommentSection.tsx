@@ -21,7 +21,6 @@ interface CommentSectionProps {
 export default function CommentSection({ contentType, contentId }: CommentSectionProps) {
   const [comments, setComments] = useState<Comment[]>([]);
   const [loading, setLoading] = useState(false);
-  const [showForm, setShowForm] = useState(false);
   const [replyTo, setReplyTo] = useState<string | null>(null);
   const [formData, setFormData] = useState({
     nickname: '',
@@ -75,7 +74,6 @@ export default function CommentSection({ contentType, contentId }: CommentSectio
 
       // 폼 초기화
       setFormData({ nickname: '', password: '', content: '' });
-      setShowForm(false);
       setReplyTo(null);
       
       // 댓글 목록 새로고침
@@ -233,24 +231,14 @@ export default function CommentSection({ contentType, contentId }: CommentSectio
 
   return (
     <div className="mt-8">
-      <div className="flex items-center justify-between mb-4">
+      <div className="mb-4">
         <h3 className="text-lg font-semibold text-zinc-100">
           댓글 {comments.reduce((acc, c) => acc + 1 + (c.replies?.length || 0), 0)}
         </h3>
-        <button
-          onClick={() => {
-            setShowForm(!showForm);
-            setReplyTo(null);
-          }}
-          className="px-4 py-2 bg-brand-500 text-white rounded-lg hover:bg-brand-600 text-sm"
-        >
-          댓글 작성
-        </button>
       </div>
 
-      {/* 댓글 작성 폼 */}
-      {showForm && (
-        <form onSubmit={handleSubmit} className="mb-6 bg-zinc-900/50 border border-zinc-800 rounded-lg p-4">
+      {/* 댓글 작성 폼 - 항상 표시 */}
+      <form onSubmit={handleSubmit} className="mb-6 bg-zinc-900/50 border border-zinc-800 rounded-lg p-4">
           {replyTo && (
             <div className="mb-2 text-sm text-zinc-400">
               답글 작성 중... 
@@ -295,29 +283,18 @@ export default function CommentSection({ contentType, contentId }: CommentSectio
             <span className="text-xs text-zinc-500">
               {formData.content.length}/500
             </span>
-            <div className="flex gap-2">
-              <button
-                type="button"
-                onClick={() => {
-                  setShowForm(false);
-                  setReplyTo(null);
-                  setFormData({ nickname: '', password: '', content: '' });
-                }}
-                className="px-4 py-2 bg-zinc-700 text-zinc-300 rounded-lg hover:bg-zinc-600"
-              >
-                취소
-              </button>
-              <button
-                type="submit"
-                disabled={loading}
-                className="px-4 py-2 bg-brand-500 text-white rounded-lg hover:bg-brand-600 disabled:opacity-50 disabled:cursor-not-allowed"
-              >
-                {loading ? '작성 중...' : '작성'}
-              </button>
-            </div>
+            <button
+              type="submit"
+              disabled={loading || !formData.nickname.trim() || !formData.password || !formData.content.trim()}
+              className="p-2 bg-brand-500 text-white rounded-full hover:bg-brand-600 disabled:opacity-50 disabled:cursor-not-allowed transition-all"
+              title="댓글 작성"
+            >
+              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z" />
+              </svg>
+            </button>
           </div>
         </form>
-      )}
 
       {/* 댓글 목록 */}
       <div className="space-y-4">
