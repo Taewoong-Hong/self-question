@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { signJwt } from '@/lib/jwt';
 
+export const runtime = 'nodejs';
 export const dynamic = 'force-dynamic';
 
 // 슈퍼 관리자 로그인
@@ -27,7 +28,8 @@ export async function POST(request: NextRequest) {
       isAdmin: true
     });
     
-    return NextResponse.json({
+    // Create response with token in both body and cookie
+    const response = NextResponse.json({
       message: '로그인 성공',
       token,
       user: {
@@ -35,6 +37,17 @@ export async function POST(request: NextRequest) {
         role: 'super_admin'
       }
     });
+    
+    // Set HTTP-only cookie for API route authentication
+    response.cookies.set('admin_token', token, {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === 'production',
+      sameSite: 'strict',
+      maxAge: 60 * 60 * 24, // 24 hours
+      path: '/'
+    });
+    
+    return response;
     
   } catch (error) {
     console.error('Super admin login error:', error);

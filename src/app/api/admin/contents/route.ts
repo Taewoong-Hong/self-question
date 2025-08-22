@@ -3,24 +3,25 @@ import dbConnect from '@/lib/mongodb';
 import Debate from '@/lib/models/Debate';
 import Survey from '@/lib/models/Survey';
 import Question from '@/lib/models/Question';
-import { verifyAdminToken } from '@/lib/middleware/adminAuth';
+import { verifyAdminAuth } from '@/lib/adminAuthUtils';
+
+export const runtime = 'nodejs';
+export const dynamic = 'force-dynamic';
 
 // 콘텐츠 목록 조회
 export async function GET(request: NextRequest) {
   try {
-    // Admin 인증 확인
-    const token = request.headers.get('authorization')?.replace('Bearer ', '');
+    // Admin 인증 확인 (헤더 또는 쿠키에서)
+    const adminUser = verifyAdminAuth(request);
     
-    if (!token) {
+    if (!adminUser) {
       return NextResponse.json(
-        { error: '인증 토큰이 없습니다.' },
+        { error: '인증이 필요합니다.' },
         { status: 401 }
       );
     }
     
-    const adminPayload = verifyAdminToken(token);
-    
-    if (!adminPayload || !adminPayload.isAdmin) {
+    if (!adminUser.isAdmin) {
       return NextResponse.json(
         { error: '관리자 권한이 없습니다.' },
         { status: 403 }
@@ -130,19 +131,17 @@ export async function GET(request: NextRequest) {
 // 콘텐츠 일괄 처리
 export async function POST(request: NextRequest) {
   try {
-    // Admin 인증 확인
-    const token = request.headers.get('authorization')?.replace('Bearer ', '');
+    // Admin 인증 확인 (헤더 또는 쿠키에서)
+    const adminUser = verifyAdminAuth(request);
     
-    if (!token) {
+    if (!adminUser) {
       return NextResponse.json(
-        { error: '인증 토큰이 없습니다.' },
+        { error: '인증이 필요합니다.' },
         { status: 401 }
       );
     }
     
-    const adminPayload = verifyAdminToken(token);
-    
-    if (!adminPayload || !adminPayload.isAdmin) {
+    if (!adminUser.isAdmin) {
       return NextResponse.json(
         { error: '관리자 권한이 없습니다.' },
         { status: 403 }

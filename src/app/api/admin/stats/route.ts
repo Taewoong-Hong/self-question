@@ -2,26 +2,21 @@ import { NextRequest, NextResponse } from 'next/server';
 import dbConnect from '@/lib/mongodb';
 import Debate from '@/lib/models/Debate';
 import Survey from '@/lib/models/Survey';
-import { verifyAdminToken } from '@/lib/middleware/adminAuth';
+import { verifyAdminAuth } from '@/lib/adminAuthUtils';
 
+export const runtime = 'nodejs';
 export const dynamic = 'force-dynamic';
 
 export async function GET(request: NextRequest) {
-  // 슈퍼 관리자 인증 확인
-  const authHeader = request.headers.get('authorization');
-  if (!authHeader || !authHeader.startsWith('Bearer ')) {
+  // 슈퍼 관리자 인증 확인 (헤더 또는 쿠키에서)
+  const adminUser = verifyAdminAuth(request);
+  
+  if (!adminUser) {
     return NextResponse.json({ error: '인증이 필요합니다' }, { status: 401 });
   }
   
-  const token = authHeader.split(' ')[1];
-  try {
-    const decoded = verifyAdminToken(token);
-    // 슈퍼 관리자인지 확인
-    if (!decoded || !decoded.isAdmin) {
-      return NextResponse.json({ error: '슈퍼 관리자 권한이 필요합니다' }, { status: 403 });
-    }
-  } catch (error) {
-    return NextResponse.json({ error: '유효하지 않은 토큰입니다' }, { status: 401 });
+  if (!adminUser.isAdmin) {
+    return NextResponse.json({ error: '슈퍼 관리자 권한이 필요합니다' }, { status: 403 });
   }
 
   try {
