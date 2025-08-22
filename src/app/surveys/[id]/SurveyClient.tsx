@@ -18,6 +18,11 @@ interface SurveyProps {
     end_at?: string;
     tags?: string[];
     questions: any[];
+    stats?: {
+      response_count: number;
+      completion_rate?: number;
+      view_count?: number;
+    };
   };
 }
 
@@ -25,6 +30,7 @@ export default function SurveyClient({ survey }: SurveyProps) {
   const router = useRouter();
   const [hasResponded, setHasResponded] = useState(false);
   const [loading, setLoading] = useState(true);
+  const [stats, setStats] = useState(survey.stats || { response_count: 0 });
 
   useEffect(() => {
     // API에서 응답 여부 확인
@@ -36,6 +42,9 @@ export default function SurveyClient({ survey }: SurveyProps) {
       const response = await fetch(`/api/surveys/${survey.id}`);
       const data = await response.json();
       setHasResponded(data.has_responded || false);
+      if (data.stats) {
+        setStats(data.stats);
+      }
     } catch (error) {
       console.error('Error checking response status:', error);
     } finally {
@@ -92,15 +101,29 @@ export default function SurveyClient({ survey }: SurveyProps) {
             <p className="text-zinc-400 text-sm sm:text-base lg:text-lg whitespace-pre-wrap mt-2">{survey.description}</p>
           )}
           <div className="flex flex-wrap items-center gap-2 sm:gap-4 mt-3 text-xs sm:text-sm text-zinc-500">
+            <span>응답 {stats.response_count}명</span>
+            <span>•</span>
             <span>작성자: {survey.author_nickname || '익명'}</span>
             <span>•</span>
-            <span>
-              {new Date(survey.created_at).toLocaleDateString('ko-KR', {
-                year: 'numeric',
-                month: '2-digit',
-                day: '2-digit'
-              }).replace(/\. /g, '-').replace('.', '')}
-            </span>
+            <span>시작: {(() => {
+              const date = new Date(survey.start_at || survey.created_at);
+              const year = date.getFullYear();
+              const month = String(date.getMonth() + 1).padStart(2, '0');
+              const day = String(date.getDate()).padStart(2, '0');
+              const hour = String(date.getHours()).padStart(2, '0');
+              const minute = String(date.getMinutes()).padStart(2, '0');
+              return `${year}-${month}-${day} ${hour}:${minute}`;
+            })()}</span>
+            <span>•</span>
+            <span>종료: {survey.end_at ? (() => {
+              const date = new Date(survey.end_at);
+              const year = date.getFullYear();
+              const month = String(date.getMonth() + 1).padStart(2, '0');
+              const day = String(date.getDate()).padStart(2, '0');
+              const hour = String(date.getHours()).padStart(2, '0');
+              const minute = String(date.getMinutes()).padStart(2, '0');
+              return `${year}-${month}-${day} ${hour}:${minute}`;
+            })() : '미정'}</span>
             <span>•</span>
             <span className={`inline-flex items-center px-2 py-0.5 rounded text-xs font-medium ${
               survey.status === 'open' 

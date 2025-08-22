@@ -156,26 +156,30 @@ export default function DebatesPage() {
                     </div>
                     <div>
                       {debate.start_at ? (
-                        <span>시작: {new Date(debate.start_at).toLocaleDateString('ko-KR', { 
-                          year: 'numeric',
-                          month: '2-digit',
-                          day: '2-digit',
-                          hour: '2-digit',
-                          minute: '2-digit'
-                        }).replace(/\. /g, '-').replace('.', '')}</span>
+                        <span>시작: {(() => {
+                          const date = new Date(debate.start_at);
+                          const year = date.getFullYear();
+                          const month = String(date.getMonth() + 1).padStart(2, '0');
+                          const day = String(date.getDate()).padStart(2, '0');
+                          const hour = String(date.getHours()).padStart(2, '0');
+                          const minute = String(date.getMinutes()).padStart(2, '0');
+                          return `${year}-${month}-${day} ${hour}:${minute}`;
+                        })()}</span>
                       ) : (
                         <span>시작: -</span>
                       )}
                     </div>
                     <div>
                       {debate.end_at ? (
-                        <span>종료: {new Date(debate.end_at).toLocaleDateString('ko-KR', { 
-                          year: 'numeric',
-                          month: '2-digit',
-                          day: '2-digit',
-                          hour: '2-digit',
-                          minute: '2-digit'
-                        }).replace(/\. /g, '-').replace('.', '')}</span>
+                        <span>종료: {(() => {
+                          const date = new Date(debate.end_at);
+                          const year = date.getFullYear();
+                          const month = String(date.getMonth() + 1).padStart(2, '0');
+                          const day = String(date.getDate()).padStart(2, '0');
+                          const hour = String(date.getHours()).padStart(2, '0');
+                          const minute = String(date.getMinutes()).padStart(2, '0');
+                          return `${year}-${month}-${day} ${hour}:${minute}`;
+                        })()}</span>
                       ) : (
                         <span>종료: 미정</span>
                       )}
