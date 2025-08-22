@@ -78,11 +78,11 @@ export default function DebateClient({ debate }: DebateProps) {
               <span>작성자: {debate.author_nickname || '익명'}</span>
               <span>•</span>
               <span>
-                {new Date(debate.created_at).toLocaleDateString('ko-KR', {
+                {debate.start_at ? new Date(debate.start_at).toLocaleDateString('ko-KR', {
                   year: 'numeric',
                   month: '2-digit',
                   day: '2-digit'
-                }).replace(/\. /g, '-').replace('.', '')}
+                }).replace(/\. /g, '-').replace('.', '') : '시작일 미정'}
               </span>
               <span>•</span>
               <span className={`inline-flex items-center px-2 py-0.5 rounded text-xs font-medium ${

@@ -4,8 +4,6 @@ import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { debateApi } from '@/lib/api';
 import { Debate } from '@/types/debate';
-import { formatDistanceToNow } from 'date-fns';
-import { ko } from 'date-fns/locale';
 import SortDropdown from '@/components/SortDropdown';
 
 export default function DebatesPage() {

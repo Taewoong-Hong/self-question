@@ -1,9 +1,8 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { connectDB } from '@/lib/db';
-import Debate from '@/models/Debate';
-import Survey from '@/models/Survey';
-import Response from '@/models/Response';
-import { verifyJwt } from '@/lib/jwt';
+import dbConnect from '@/lib/mongodb';
+import Debate from '@/lib/models/Debate';
+import Survey from '@/lib/models/Survey';
+import { verifyAdminToken } from '@/lib/middleware/adminAuth';
 
 export const dynamic = 'force-dynamic';
 
@@ -16,9 +15,9 @@ export async function GET(request: NextRequest) {
   
   const token = authHeader.split(' ')[1];
   try {
-    const decoded = verifyJwt(token) as any;
+    const decoded = verifyAdminToken(token);
     // 슈퍼 관리자인지 확인
-    if (!decoded.isAdmin) {
+    if (!decoded || !decoded.isAdmin) {
       return NextResponse.json({ error: '슈퍼 관리자 권한이 필요합니다' }, { status: 403 });
     }
   } catch (error) {
@@ -26,7 +25,7 @@ export async function GET(request: NextRequest) {
   }
 
   try {
-    await connectDB();
+    await dbConnect();
     
     // 현재 시간 기준
     const now = new Date();
@@ -49,30 +48,49 @@ export async function GET(request: NextRequest) {
     });
     
     // 총 참여자 수 (고유 IP 기준)
-    const debateVoters = await Debate.distinct('voters.ip_address');
-    const surveyResponders = await Response.distinct('ip_address');
-    const allUniqueIps = new Set([...debateVoters, ...surveyResponders]);
-    const totalUsers = allUniqueIps.size;
+    // Debate 모델에서 voter_ips 배열의 ip_hash 필드에서 고유값 추출
+    const debates = await Debate.find({ is_deleted: false });
+    const debateVoterIps = new Set();
+    debates.forEach(debate => {
+      if (debate.voter_ips && Array.isArray(debate.voter_ips)) {
+        debate.voter_ips.forEach((voterIp: any) => {
+          if (voterIp.ip_hash) {
+            debateVoterIps.add(voterIp.ip_hash);
+          }
+        });
+      }
+    });
+    
+    // Survey는 응답자 IP를 저장하지 않으므로 임시로 0 사용
+    const totalUsers = debateVoterIps.size;
     
     // 오늘 참여자 수
-    const todayDebateVoters = await Debate.distinct('voters.ip_address', {
-      'voters.voted_at': { $gte: todayStart }
+    const todayDebates = await Debate.find({ is_deleted: false });
+    const todayDebateVoterIps = new Set();
+    todayDebates.forEach(debate => {
+      if (debate.voter_ips && Array.isArray(debate.voter_ips)) {
+        debate.voter_ips.forEach((voterIp: any) => {
+          if (voterIp.ip_hash && voterIp.last_vote_at && new Date(voterIp.last_vote_at) >= todayStart) {
+            todayDebateVoterIps.add(voterIp.ip_hash);
+          }
+        });
+      }
     });
-    const todaySurveyResponders = await Response.distinct('ip_address', {
-      created_at: { $gte: todayStart }
-    });
-    const todayUniqueIps = new Set([...todayDebateVoters, ...todaySurveyResponders]);
-    const todayUsers = todayUniqueIps.size;
+    const todayUsers = todayDebateVoterIps.size;
     
     // 월간 활성 사용자 (MAU)
-    const monthDebateVoters = await Debate.distinct('voters.ip_address', {
-      'voters.voted_at': { $gte: monthStart }
+    const monthDebates = await Debate.find({ is_deleted: false });
+    const monthDebateVoterIps = new Set();
+    monthDebates.forEach(debate => {
+      if (debate.voter_ips && Array.isArray(debate.voter_ips)) {
+        debate.voter_ips.forEach((voterIp: any) => {
+          if (voterIp.ip_hash && voterIp.last_vote_at && new Date(voterIp.last_vote_at) >= monthStart) {
+            monthDebateVoterIps.add(voterIp.ip_hash);
+          }
+        });
+      }
     });
-    const monthSurveyResponders = await Response.distinct('ip_address', {
-      created_at: { $gte: monthStart }
-    });
-    const monthUniqueIps = new Set([...monthDebateVoters, ...monthSurveyResponders]);
-    const monthlyActiveUsers = monthUniqueIps.size;
+    const monthlyActiveUsers = monthDebateVoterIps.size;
     
     // 최근 에러 수 (ErrorLog 모델이 있다면)
     // const recentErrors = await ErrorLog.countDocuments({
@@ -87,7 +105,14 @@ export async function GET(request: NextRequest) {
       { $group: { _id: null, total: { $sum: '$stats.total_votes' } } }
     ]);
     
-    const totalResponses = await Response.countDocuments();
+    // Survey는 응답 수를 stats에 저장
+    const surveys = await Survey.find({ is_deleted: false });
+    let totalResponses = 0;
+    surveys.forEach(survey => {
+      if (survey.stats && survey.stats.response_count) {
+        totalResponses += survey.stats.response_count;
+      }
+    });
     
     return NextResponse.json({
       totalDebates,
