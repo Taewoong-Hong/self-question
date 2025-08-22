@@ -10,8 +10,8 @@ import toast from 'react-hot-toast';
 interface ContentItem {
   id: string;
   title: string;
-  type: 'debate' | 'survey';
-  status: 'open' | 'closed' | 'scheduled';
+  type: 'debate' | 'survey' | 'question';
+  status: 'open' | 'closed' | 'scheduled' | 'pending' | 'answered';
   created_at: string;
   start_at?: string;
   end_at?: string;
@@ -20,15 +20,25 @@ interface ContentItem {
   participant_count: number;
   is_reported: boolean;
   is_hidden: boolean;
+  // 질문 관련 필드
+  content?: string;
+  adminAnswer?: {
+    content: string;
+    answeredAt: string;
+    answeredBy: string;
+  };
 }
 
 export default function AdminContentsPage() {
   const router = useRouter();
   const [loading, setLoading] = useState(true);
   const [contents, setContents] = useState<ContentItem[]>([]);
-  const [filter, setFilter] = useState<'all' | 'debate' | 'survey' | 'reported'>('all');
+  const [filter, setFilter] = useState<'all' | 'debate' | 'survey' | 'question' | 'reported'>('all');
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedItems, setSelectedItems] = useState<string[]>([]);
+  const [showAnswerModal, setShowAnswerModal] = useState(false);
+  const [selectedQuestion, setSelectedQuestion] = useState<ContentItem | null>(null);
+  const [answerContent, setAnswerContent] = useState('');
 
   useEffect(() => {
     fetchContents();
@@ -117,6 +127,48 @@ export default function AdminContentsPage() {
     }
   };
 
+  const handleAnswerQuestion = async () => {
+    if (!selectedQuestion || !answerContent.trim()) {
+      toast.error('답변 내용을 입력해주세요.');
+      return;
+    }
+
+    try {
+      const token = localStorage.getItem('admin_token');
+      
+      const response = await fetch(`/api/admin/questions/${selectedQuestion.id}/answer`, {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ content: answerContent.trim() })
+      });
+      
+      if (!response.ok) {
+        throw new Error('Failed to submit answer');
+      }
+      
+      // 상태 업데이트
+      setContents(prev => prev.map(content => 
+        content.id === selectedQuestion.id 
+          ? { ...content, status: 'answered' as const, adminAnswer: {
+              content: answerContent.trim(),
+              answeredAt: new Date().toISOString(),
+              answeredBy: 'Admin'
+            }}
+          : content
+      ));
+      
+      setShowAnswerModal(false);
+      setSelectedQuestion(null);
+      setAnswerContent('');
+      toast.success('답변이 등록되었습니다.');
+    } catch (error) {
+      console.error('Failed to submit answer:', error);
+      toast.error('답변 등록에 실패했습니다.');
+    }
+  };
 
   const handleBulkAction = async (action: 'hide' | 'show' | 'delete') => {
     if (selectedItems.length === 0) {
@@ -217,6 +269,16 @@ export default function AdminContentsPage() {
                 }`}
               >
                 설문
+              </button>
+              <button
+                onClick={() => setFilter('question')}
+                className={`px-2 py-1 rounded text-[11px] font-medium transition-colors ${
+                  filter === 'question' 
+                    ? 'bg-surbate text-zinc-900' 
+                    : 'bg-zinc-800 text-zinc-400 hover:text-zinc-100'
+                }`}
+              >
+                질문
               </button>
               <button
                 onClick={() => setFilter('reported')}
@@ -345,9 +407,11 @@ export default function AdminContentsPage() {
                       <span className={`inline-flex items-center px-2 py-0.5 rounded text-[11px] font-medium whitespace-nowrap ${
                         content.type === 'debate' 
                           ? 'bg-blue-100/10 text-blue-400' 
-                          : 'bg-brand-100/10 text-brand-400'
+                          : content.type === 'survey'
+                          ? 'bg-brand-100/10 text-brand-400'
+                          : 'bg-yellow-100/10 text-yellow-400'
                       }`}>
-                        {content.type === 'debate' ? '투표' : '설문'}
+                        {content.type === 'debate' ? '투표' : content.type === 'survey' ? '설문' : '질문'}
                       </span>
                     </td>
                     <td className="px-3 py-2">
@@ -356,9 +420,16 @@ export default function AdminContentsPage() {
                           ? 'bg-green-100/10 text-green-400' 
                           : content.status === 'closed'
                           ? 'bg-red-100/10 text-red-400'
+                          : content.status === 'pending'
+                          ? 'bg-yellow-100/10 text-yellow-400'
+                          : content.status === 'answered'
+                          ? 'bg-green-100/10 text-green-400'
                           : 'bg-yellow-100/10 text-yellow-400'
                       }`}>
-                        {content.status === 'open' ? '진행중' : content.status === 'closed' ? '종료' : '예정'}
+                        {content.status === 'open' ? '진행중' : 
+                         content.status === 'closed' ? '종료' : 
+                         content.status === 'pending' ? '답변 대기' :
+                         content.status === 'answered' ? '답변 완료' : '예정'}
                       </span>
                     </td>
                     <td className="px-3 py-2">
@@ -455,6 +526,21 @@ export default function AdminContentsPage() {
                               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
                             </svg>
                           </Link>
+                        )}
+                        {content.type === 'question' && content.status === 'pending' && (
+                          <button
+                            onClick={() => {
+                              setSelectedQuestion(content);
+                              setAnswerContent(content.adminAnswer?.content || '');
+                              setShowAnswerModal(true);
+                            }}
+                            className="text-green-400 hover:text-green-300 transition-colors"
+                            title="답변하기"
+                          >
+                            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 5v-5z" />
+                            </svg>
+                          </button>
                         )}
                       </div>
                     </td>
@@ -604,6 +690,67 @@ export default function AdminContentsPage() {
           </div>
         </div>
       </main>
+
+      {/* 답변 모달 */}
+      {showAnswerModal && selectedQuestion && (
+        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
+          <div className="bg-zinc-900 border border-zinc-800 rounded-lg p-6 w-full max-w-2xl max-h-[80vh] overflow-y-auto">
+            <h3 className="text-xl font-semibold mb-4">질문 답변하기</h3>
+            
+            {/* 질문 내용 */}
+            <div className="mb-4 bg-zinc-800/50 rounded-lg p-4">
+              <h4 className="text-lg font-medium text-zinc-100 mb-2">{selectedQuestion.title}</h4>
+              {selectedQuestion.content && (
+                <p className="text-zinc-400 text-sm whitespace-pre-wrap">{selectedQuestion.content}</p>
+              )}
+              <div className="mt-2 text-xs text-zinc-500">
+                작성자: {selectedQuestion.author_nickname} • {' '}
+                {new Date(selectedQuestion.created_at).toLocaleDateString('ko-KR', {
+                  year: 'numeric',
+                  month: '2-digit',
+                  day: '2-digit',
+                  hour: '2-digit',
+                  minute: '2-digit'
+                }).replace(/\. /g, '-').replace('.', '')}
+              </div>
+            </div>
+
+            {/* 답변 입력 */}
+            <div className="mb-4">
+              <label className="block text-sm font-medium text-zinc-300 mb-2">
+                답변 내용
+              </label>
+              <textarea
+                value={answerContent}
+                onChange={(e) => setAnswerContent(e.target.value)}
+                className="w-full px-4 py-2 bg-zinc-800 border border-zinc-700 rounded-lg text-zinc-100 placeholder-zinc-500 focus:outline-none focus:ring-2 focus:ring-brand-500 focus:border-transparent resize-none"
+                placeholder="답변을 입력하세요..."
+                rows={8}
+              />
+            </div>
+
+            {/* 버튼 */}
+            <div className="flex gap-3">
+              <button
+                onClick={handleAnswerQuestion}
+                className="flex-1 px-4 py-2 bg-brand-500 text-white rounded-lg hover:bg-brand-600"
+              >
+                답변 등록
+              </button>
+              <button
+                onClick={() => {
+                  setShowAnswerModal(false);
+                  setSelectedQuestion(null);
+                  setAnswerContent('');
+                }}
+                className="flex-1 px-4 py-2 bg-zinc-800 text-zinc-300 rounded-lg hover:bg-zinc-700"
+              >
+                취소
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

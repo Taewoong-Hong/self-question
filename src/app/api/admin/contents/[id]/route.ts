@@ -1,35 +1,36 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { connectDB } from '@/lib/db';
-import Debate from '@/models/Debate';
-import Survey from '@/models/Survey';
-import { verifyJwt } from '@/lib/jwt';
+import dbConnect from '@/lib/mongodb';
+import Debate from '@/lib/models/Debate';
+import Survey from '@/lib/models/Survey';
+import Question from '@/lib/models/Question';
+import { verifyAdminToken } from '@/lib/middleware/adminAuth';
 
-export const dynamic = 'force-dynamic';
-
-// 개별 콘텐츠 숨기기/보이기 토글
+// 콘텐츠 수정 (숨기기/공개)
 export async function PUT(
   request: NextRequest,
   { params }: { params: { id: string } }
 ) {
-  // 슈퍼 관리자 인증 확인
-  const authHeader = request.headers.get('authorization');
-  if (!authHeader || !authHeader.startsWith('Bearer ')) {
-    return NextResponse.json({ error: '인증이 필요합니다' }, { status: 401 });
-  }
-  
-  const token = authHeader.split(' ')[1];
   try {
-    const decoded = verifyJwt(token) as any;
-    // 슈퍼 관리자인지 확인
-    if (!decoded.isAdmin) {
-      return NextResponse.json({ error: '슈퍼 관리자 권한이 필요합니다' }, { status: 403 });
+    // Admin 인증 확인
+    const token = request.headers.get('authorization')?.replace('Bearer ', '');
+    
+    if (!token) {
+      return NextResponse.json(
+        { error: '인증 토큰이 없습니다.' },
+        { status: 401 }
+      );
     }
-  } catch (error) {
-    return NextResponse.json({ error: '유효하지 않은 토큰입니다' }, { status: 401 });
-  }
-
-  try {
-    await connectDB();
+    
+    const adminPayload = verifyAdminToken(token);
+    
+    if (!adminPayload || !adminPayload.isAdmin) {
+      return NextResponse.json(
+        { error: '관리자 권한이 없습니다.' },
+        { status: 403 }
+      );
+    }
+    
+    await dbConnect();
     
     const { id } = params;
     const body = await request.json();
@@ -37,112 +38,109 @@ export async function PUT(
     
     if (!['hide', 'show'].includes(action)) {
       return NextResponse.json(
-        { error: '유효하지 않은 액션입니다' },
+        { error: '잘못된 작업입니다.' },
         { status: 400 }
       );
     }
     
-    // 먼저 투표에서 찾기
-    let content = await Debate.findOne({ id });
-    let type = 'debate';
-    
-    // 투표에 없으면 설문에서 찾기
-    if (!content) {
-      content = await Survey.findOne({ id });
-      type = 'survey';
+    // 투표 확인
+    let content = await Debate.findById(id);
+    if (content) {
+      content.is_hidden = action === 'hide';
+      await content.save();
+      return NextResponse.json({ success: true });
     }
     
-    if (!content) {
-      return NextResponse.json(
-        { error: '콘텐츠를 찾을 수 없습니다' },
-        { status: 404 }
-      );
+    // 설문 확인
+    content = await Survey.findById(id);
+    if (content) {
+      content.is_hidden = action === 'hide';
+      await content.save();
+      return NextResponse.json({ success: true });
     }
     
-    // 숨김 상태 토글
-    content.is_hidden = action === 'hide';
-    await content.save();
+    // 질문 확인
+    const question = await Question.findById(id);
+    if (question) {
+      question.isDeleted = action === 'hide';
+      await question.save();
+      return NextResponse.json({ success: true });
+    }
     
-    return NextResponse.json({
-      message: `${type === 'debate' ? '투표' : '설문'}가 ${action === 'hide' ? '숨김' : '공개'} 처리되었습니다`,
-      content: {
-        id: content.id,
-        title: content.title,
-        type,
-        is_hidden: content.is_hidden
-      }
-    });
-    
-  } catch (error: any) {
-    console.error('Admin content update error:', error);
     return NextResponse.json(
-      { error: error.message || '서버 오류가 발생했습니다' },
+      { error: '콘텐츠를 찾을 수 없습니다.' },
+      { status: 404 }
+    );
+    
+  } catch (error) {
+    console.error('콘텐츠 수정 오류:', error);
+    return NextResponse.json(
+      { error: '콘텐츠 수정 중 오류가 발생했습니다.' },
       { status: 500 }
     );
   }
 }
 
-// 개별 콘텐츠 삭제
+// 콘텐츠 삭제
 export async function DELETE(
   request: NextRequest,
   { params }: { params: { id: string } }
 ) {
-  // 슈퍼 관리자 인증 확인
-  const authHeader = request.headers.get('authorization');
-  if (!authHeader || !authHeader.startsWith('Bearer ')) {
-    return NextResponse.json({ error: '인증이 필요합니다' }, { status: 401 });
-  }
-  
-  const token = authHeader.split(' ')[1];
   try {
-    const decoded = verifyJwt(token) as any;
-    // 슈퍼 관리자인지 확인
-    if (!decoded.isAdmin) {
-      return NextResponse.json({ error: '슈퍼 관리자 권한이 필요합니다' }, { status: 403 });
-    }
-  } catch (error) {
-    return NextResponse.json({ error: '유효하지 않은 토큰입니다' }, { status: 401 });
-  }
-
-  try {
-    await connectDB();
+    // Admin 인증 확인
+    const token = request.headers.get('authorization')?.replace('Bearer ', '');
     
-    const { id } = params;
-    
-    // 먼저 투표에서 찾기
-    let content = await Debate.findOne({ id });
-    let type = 'debate';
-    
-    // 투표에 없으면 설문에서 찾기
-    if (!content) {
-      content = await Survey.findOne({ id });
-      type = 'survey';
-    }
-    
-    if (!content) {
+    if (!token) {
       return NextResponse.json(
-        { error: '콘텐츠를 찾을 수 없습니다' },
-        { status: 404 }
+        { error: '인증 토큰이 없습니다.' },
+        { status: 401 }
       );
     }
     
-    // 소프트 삭제
-    content.is_deleted = true;
-    await content.save();
+    const adminPayload = verifyAdminToken(token);
     
-    return NextResponse.json({
-      message: `${type === 'debate' ? '투표' : '설문'}가 삭제되었습니다`,
-      content: {
-        id: content.id,
-        title: content.title,
-        type
-      }
-    });
+    if (!adminPayload || !adminPayload.isAdmin) {
+      return NextResponse.json(
+        { error: '관리자 권한이 없습니다.' },
+        { status: 403 }
+      );
+    }
     
-  } catch (error: any) {
-    console.error('Admin content delete error:', error);
+    await dbConnect();
+    
+    const { id } = params;
+    
+    // 투표 확인
+    let content = await Debate.findById(id);
+    if (content) {
+      await content.deleteOne();
+      return NextResponse.json({ success: true });
+    }
+    
+    // 설문 확인
+    content = await Survey.findById(id);
+    if (content) {
+      await content.deleteOne();
+      return NextResponse.json({ success: true });
+    }
+    
+    // 질문 확인
+    const question = await Question.findById(id);
+    if (question) {
+      question.isDeleted = true;
+      await question.save();
+      return NextResponse.json({ success: true });
+    }
+    
     return NextResponse.json(
-      { error: error.message || '서버 오류가 발생했습니다' },
+      { error: '콘텐츠를 찾을 수 없습니다.' },
+      { status: 404 }
+    );
+    
+  } catch (error) {
+    console.error('콘텐츠 삭제 오류:', error);
+    return NextResponse.json(
+      { error: '콘텐츠 삭제 중 오류가 발생했습니다.' },
       { status: 500 }
     );
   }

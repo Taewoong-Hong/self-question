@@ -3,10 +3,9 @@
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
-import { formatDistanceToNow } from 'date-fns';
-import { ko } from 'date-fns/locale';
 import VoteSection from './VoteSection';
 import OpinionSection from './OpinionSection';
+import CommentSection from '@/components/CommentSection';
 
 interface DebateProps {
   debate: {
@@ -79,10 +78,11 @@ export default function DebateClient({ debate }: DebateProps) {
               <span>작성자: {debate.author_nickname || '익명'}</span>
               <span>•</span>
               <span>
-                {formatDistanceToNow(new Date(debate.created_at), { 
-                  addSuffix: true, 
-                  locale: ko 
-                })}
+                {new Date(debate.created_at).toLocaleDateString('ko-KR', {
+                  year: 'numeric',
+                  month: '2-digit',
+                  day: '2-digit'
+                }).replace(/\. /g, '-').replace('.', '')}
               </span>
               <span>•</span>
               <span className={`inline-flex items-center px-2 py-0.5 rounded text-xs font-medium ${
@@ -122,6 +122,9 @@ export default function DebateClient({ debate }: DebateProps) {
       {debate.allow_comments && (
         <OpinionSection debateId={debate.id} />
       )}
+
+      {/* 댓글 섹션 */}
+      <CommentSection contentType="debate" contentId={debate.id} />
     </div>
   );
 }
