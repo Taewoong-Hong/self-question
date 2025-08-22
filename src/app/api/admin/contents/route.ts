@@ -44,14 +44,14 @@ export async function GET(request: NextRequest) {
       .lean();
       
       contents.push(...debates.map((debate: any) => ({
-        id: debate._id.toString(),
+        id: debate.id || debate._id.toString(),
         title: debate.title,
         type: 'debate',
         status: debate.status === 'active' ? 'open' : debate.status === 'ended' ? 'closed' : 'scheduled',
         created_at: debate.created_at,
         start_at: debate.start_at,
         end_at: debate.end_at,
-        author_ip: debate.author_ip || 'unknown',
+        author_ip: debate.author_ip_hash || 'unknown',
         author_nickname: debate.author_nickname,
         participant_count: debate.stats?.unique_voters || 0,
         is_reported: false, // TODO: 신고 기능 구현
@@ -68,12 +68,12 @@ export async function GET(request: NextRequest) {
       .lean();
       
       contents.push(...surveys.map((survey: any) => ({
-        id: survey._id.toString(),
+        id: survey.id || survey._id.toString(),
         title: survey.title,
         type: 'survey',
         status: survey.status,
         created_at: survey.created_at,
-        author_ip: survey.author_ip || 'unknown',
+        author_ip: survey.creator_ip || 'unknown',
         author_nickname: survey.author_nickname,
         participant_count: survey.stats?.response_count || 0,
         is_reported: false, // TODO: 신고 기능 구현
@@ -171,7 +171,7 @@ export async function POST(request: NextRequest) {
     // 각 ID에 대해 타입 확인 후 처리
     for (const id of ids) {
       // 투표 확인
-      const debate = await Debate.findById(id);
+      const debate = await Debate.findOne({ $or: [{ _id: id }, { id: id }] });
       if (debate) {
         if (action === 'delete') {
           await debate.deleteOne();
@@ -183,7 +183,7 @@ export async function POST(request: NextRequest) {
       }
       
       // 설문 확인
-      const survey = await Survey.findById(id);
+      const survey = await Survey.findOne({ $or: [{ _id: id }, { id: id }] });
       if (survey) {
         if (action === 'delete') {
           await survey.deleteOne();
@@ -195,7 +195,7 @@ export async function POST(request: NextRequest) {
       }
       
       // 질문 확인
-      const question = await Question.findById(id);
+      const question = await Question.findOne({ $or: [{ _id: id }, { id: id }] });
       if (question) {
         if (action === 'delete') {
           question.isDeleted = true;

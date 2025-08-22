@@ -5,8 +5,6 @@ import { useParams, useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { surveyApi } from '@/lib/api';
 import { Survey } from '@/types/survey';
-import { formatDistanceToNow } from 'date-fns';
-import { ko } from 'date-fns/locale';
 import QRCode from 'qrcode';
 import toast from 'react-hot-toast';
 
@@ -210,10 +208,11 @@ export default function SurveyAdminPage() {
                 <>
                   <span>•</span>
                   <span>
-                    {formatDistanceToNow(new Date(survey.created_at), { 
-                      addSuffix: true, 
-                      locale: ko 
-                    })}
+                    {new Date(survey.created_at).toLocaleDateString('ko-KR', {
+                      year: 'numeric',
+                      month: '2-digit',
+                      day: '2-digit'
+                    }).replace(/\. /g, '-').replace('.', '')}
                   </span>
                 </>
               )}

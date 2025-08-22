@@ -141,9 +141,7 @@ export default function CommentSection({ contentType, contentId }: CommentSectio
                 {new Date(comment.createdAt).toLocaleDateString('ko-KR', {
                   year: 'numeric',
                   month: '2-digit',
-                  day: '2-digit',
-                  hour: '2-digit',
-                  minute: '2-digit'
+                  day: '2-digit'
                 }).replace(/\. /g, '-').replace('.', '')}
               </span>
               {comment.updatedAt !== comment.createdAt && (
@@ -155,8 +153,7 @@ export default function CommentSection({ contentType, contentId }: CommentSectio
                 <button
                   onClick={() => {
                     setReplyTo(comment._id);
-                    setShowForm(true);
-                  }}
+                    }}
                   className="text-xs text-zinc-400 hover:text-zinc-300"
                 >
                   답글

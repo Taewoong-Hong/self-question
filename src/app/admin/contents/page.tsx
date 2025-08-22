@@ -3,8 +3,6 @@
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
-import { formatDistanceToNow } from 'date-fns';
-import { ko } from 'date-fns/locale';
 import toast from 'react-hot-toast';
 
 interface ContentItem {
@@ -445,10 +443,11 @@ export default function AdminContentsPage() {
                     </td>
                     <td className="px-3 py-2 text-zinc-400 text-xs">
                       <div>
-                        {formatDistanceToNow(new Date(content.created_at), { 
-                          addSuffix: true, 
-                          locale: ko 
-                        })}
+                        {new Date(content.created_at).toLocaleDateString('ko-KR', {
+                          year: 'numeric',
+                          month: '2-digit',
+                          day: '2-digit'
+                        }).replace(/\. /g, '-').replace('.', '')}
                       </div>
                       {content.start_at && (
                         <div className="text-[10px] text-zinc-500 mt-0.5">
@@ -660,7 +659,11 @@ export default function AdminContentsPage() {
                         <span>•</span>
                         <span className="truncate max-w-[120px]" title={content.author_ip}>{content.author_ip}</span>
                       </div>
-                      <div>참여자 {content.participant_count}명 • {formatDistanceToNow(new Date(content.created_at), { addSuffix: true, locale: ko })}</div>
+                      <div>참여자 {content.participant_count}명 • {new Date(content.created_at).toLocaleDateString('ko-KR', {
+                        year: 'numeric',
+                        month: '2-digit',
+                        day: '2-digit'
+                      }).replace(/\. /g, '-').replace('.', '')}</div>
                       {(content.start_at || content.end_at) && (
                         <div className="text-[10px] text-zinc-500 mt-1">
                           {content.start_at && (
