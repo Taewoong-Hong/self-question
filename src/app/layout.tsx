@@ -60,7 +60,7 @@ function LayoutContent({ children }: { children: React.ReactNode }) {
               </button>
               <Link href="/" className="flex items-center gap-2 hover:opacity-80 transition-opacity">
                 <img src="/images/logo_surbate.png" alt="Surbate" className="h-7 w-7 drop-shadow-md dark:drop-shadow-none" />
-                <h1 className="text-xl font-bold text-surbate">Surbate</h1>
+                <h1 className="text-xl font-bold text-surbate drop-shadow-md dark:drop-shadow-none">Surbate</h1>
               </Link>
               {mounted && (
                 <button
@@ -103,7 +103,7 @@ function LayoutContent({ children }: { children: React.ReactNode }) {
                   <Link href="/" className="block hover:opacity-80 transition-opacity" onClick={closeSidebar}>
                     <div className="flex items-center gap-2">
                       <img src="/images/logo_surbate.png" alt="Surbate" className="h-7 w-7 drop-shadow-md dark:drop-shadow-none" />
-                      <h1 className="text-xl font-bold text-surbate">Surbate</h1>
+                      <h1 className="text-xl font-bold text-surbate drop-shadow-md dark:drop-shadow-none">Surbate</h1>
                     </div>
                   </Link>
                   <div className="flex items-center gap-2">
