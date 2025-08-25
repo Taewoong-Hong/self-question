@@ -175,7 +175,7 @@ export default function CreateSurveyPage() {
     <div className="min-h-screen">
       <div className="mb-8">
         <h1 className="text-2xl font-bold">새 설문 만들기</h1>
-        <p className="text-zinc-400 mt-1">다양한 질문으로 의견을 수집하세요</p>
+        <p className="text-zinc-600 dark:text-zinc-400 mt-1">다양한 질문으로 의견을 수집하세요</p>
       </div>
 
       <form onSubmit={handleSubmit} className="space-y-6 max-w-2xl">
@@ -184,7 +184,7 @@ export default function CreateSurveyPage() {
           
           <div className="space-y-4">
             <div>
-              <label className="block text-sm font-medium text-zinc-300 mb-2">
+              <label className="block text-sm font-medium text-zinc-700 dark:text-zinc-300 mb-2">
                 설문 제목 *
               </label>
               <input
@@ -192,39 +192,39 @@ export default function CreateSurveyPage() {
                 required
                 value={formData.title}
                 onChange={(e) => setFormData({ ...formData, title: e.target.value })}
-                className="w-full px-4 py-2 bg-zinc-900 border border-zinc-800 rounded-lg text-zinc-100 placeholder-zinc-500 focus:outline-none focus:ring-2 focus:ring-brand-500 focus:border-transparent"
+                className="w-full px-4 py-2 bg-white dark:bg-zinc-900 border border-zinc-300 dark:border-zinc-800 rounded-lg text-zinc-900 dark:text-zinc-100 placeholder-zinc-500 focus:outline-none focus:ring-2 focus:ring-brand-500 focus:border-transparent"
                 placeholder="예: 신제품 출시에 대한 의견 조사"
               />
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-zinc-300 mb-2">
+              <label className="block text-sm font-medium text-zinc-700 dark:text-zinc-300 mb-2">
                 설명
               </label>
               <textarea
                 value={formData.description}
                 onChange={(e) => setFormData({ ...formData, description: e.target.value })}
-                className="w-full px-4 py-2 bg-zinc-900 border border-zinc-800 rounded-lg text-zinc-100 placeholder-zinc-500 focus:outline-none focus:ring-2 focus:ring-brand-500 focus:border-transparent"
+                className="w-full px-4 py-2 bg-white dark:bg-zinc-900 border border-zinc-300 dark:border-zinc-800 rounded-lg text-zinc-900 dark:text-zinc-100 placeholder-zinc-500 focus:outline-none focus:ring-2 focus:ring-brand-500 focus:border-transparent"
                 rows={3}
                 placeholder="설문에 대한 설명을 입력하세요"
               />
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-zinc-300 mb-2">
+              <label className="block text-sm font-medium text-zinc-700 dark:text-zinc-300 mb-2">
                 작성자 닉네임
               </label>
               <input
                 type="text"
                 value={formData.author_nickname}
                 onChange={(e) => setFormData({ ...formData, author_nickname: e.target.value })}
-                className="w-full px-4 py-2 bg-zinc-900 border border-zinc-800 rounded-lg text-zinc-100 placeholder-zinc-500 focus:outline-none focus:ring-2 focus:ring-brand-500 focus:border-transparent"
+                className="w-full px-4 py-2 bg-white dark:bg-zinc-900 border border-zinc-300 dark:border-zinc-800 rounded-lg text-zinc-900 dark:text-zinc-100 placeholder-zinc-500 focus:outline-none focus:ring-2 focus:ring-brand-500 focus:border-transparent"
                 placeholder="익명 (선택사항)"
               />
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-zinc-300 mb-2">
+              <label className="block text-sm font-medium text-zinc-700 dark:text-zinc-300 mb-2">
                 태그
               </label>
               <input
@@ -232,21 +232,17 @@ export default function CreateSurveyPage() {
                 value={formData.tags?.join(', ')}
                 onChange={(e) => {
                   const value = e.target.value;
-                  // 마지막 문자가 쉼표인 경우를 처리하기 위해 빈 문자열도 유지
-                  const tags = value.split(',').map(tag => tag.trim());
-                  // 마지막 태그가 빈 문자열이 아니거나, 마지막 문자가 쉼표인 경우에만 필터링
-                  const filteredTags = value.endsWith(',') 
-                    ? tags.slice(0, -1).filter(tag => tag)
-                    : tags.filter(tag => tag);
-                  setFormData({ ...formData, tags: filteredTags });
+                  // 쉼표로 구분하여 태그 배열 생성
+                  const tags = value.split(',').map(tag => tag.trim()).filter(tag => tag);
+                  setFormData({ ...formData, tags });
                 }}
-                className="w-full px-4 py-2 bg-zinc-900 border border-zinc-800 rounded-lg text-zinc-100 placeholder-zinc-500 focus:outline-none focus:ring-2 focus:ring-brand-500 focus:border-transparent"
+                className="w-full px-4 py-2 bg-white dark:bg-zinc-900 border border-zinc-300 dark:border-zinc-800 rounded-lg text-zinc-900 dark:text-zinc-100 placeholder-zinc-500 focus:outline-none focus:ring-2 focus:ring-brand-500 focus:border-transparent"
                 placeholder="태그1, 태그2 (쉼표로 구분)"
               />
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-zinc-300 mb-2">
+              <label className="block text-sm font-medium text-zinc-700 dark:text-zinc-300 mb-2">
                 종료일시 (선택사항)
               </label>
               <DatePicker
@@ -292,7 +288,7 @@ export default function CreateSurveyPage() {
             {formData.questions.map((question, qIndex) => (
               <div key={qIndex} className="bg-gray-100 dark:bg-zinc-800/50 rounded-lg p-4">
                 <div className="flex justify-between items-start mb-4">
-                  <h3 className="text-sm font-medium text-zinc-300">질문 {qIndex + 1}</h3>
+                  <h3 className="text-sm font-medium text-zinc-700 dark:text-zinc-300">질문 {qIndex + 1}</h3>
                   {formData.questions.length > 1 && (
                     <button
                       type="button"
@@ -310,7 +306,7 @@ export default function CreateSurveyPage() {
                     required
                     value={question.title}
                     onChange={(e) => updateQuestion(qIndex, 'title', e.target.value)}
-                    className="w-full px-3 py-2 bg-zinc-900 border border-zinc-700 rounded-lg text-zinc-100 placeholder-zinc-500 focus:outline-none focus:ring-2 focus:ring-brand-500 focus:border-transparent"
+                    className="w-full px-3 py-2 bg-white dark:bg-zinc-900 border border-zinc-300 dark:border-zinc-700 rounded-lg text-zinc-900 dark:text-zinc-100 placeholder-zinc-500 focus:outline-none focus:ring-2 focus:ring-brand-500 focus:border-transparent"
                     placeholder="질문을 입력하세요"
                   />
 
@@ -318,7 +314,7 @@ export default function CreateSurveyPage() {
                     <select
                       value={question.type}
                       onChange={(e) => updateQuestion(qIndex, 'type', e.target.value)}
-                      className="px-3 py-2 bg-zinc-900 border border-zinc-700 rounded-lg text-zinc-100 focus:outline-none focus:ring-2 focus:ring-brand-500 focus:border-transparent"
+                      className="px-3 py-2 bg-white dark:bg-zinc-900 border border-zinc-300 dark:border-zinc-700 rounded-lg text-zinc-900 dark:text-zinc-100 focus:outline-none focus:ring-2 focus:ring-brand-500 focus:border-transparent"
                     >
                       <option value="single_choice">단일 선택</option>
                       <option value="multiple_choice">다중 선택</option>
@@ -332,9 +328,9 @@ export default function CreateSurveyPage() {
                         type="checkbox"
                         checked={question.required}
                         onChange={(e) => updateQuestion(qIndex, 'required', e.target.checked)}
-                        className="rounded bg-zinc-900 border-zinc-700 text-brand-500 focus:ring-brand-500"
+                        className="rounded bg-white dark:bg-zinc-900 border-zinc-300 dark:border-zinc-700 text-brand-500 focus:ring-brand-500"
                       />
-                      <span className="text-sm text-zinc-300">필수 응답</span>
+                      <span className="text-sm text-zinc-700 dark:text-zinc-300">필수 응답</span>
                     </label>
                   </div>
 
@@ -359,9 +355,9 @@ export default function CreateSurveyPage() {
                               updateQuestion(qIndex, 'skip_logic', undefined);
                             }
                           }}
-                          className="rounded bg-zinc-900 border-zinc-700 text-brand-500 focus:ring-brand-500"
+                          className="rounded bg-white dark:bg-zinc-900 border-zinc-300 dark:border-zinc-700 text-brand-500 focus:ring-brand-500"
                         />
-                        <span className="text-sm text-zinc-300">조건부 표시</span>
+                        <span className="text-sm text-zinc-700 dark:text-zinc-300">조건부 표시</span>
                       </label>
                       
                       {question.skip_logic && (
@@ -456,7 +452,7 @@ export default function CreateSurveyPage() {
                               type="checkbox"
                               checked={choice.is_other || false}
                               onChange={(e) => toggleOtherOption(qIndex, oIndex, e.target.checked)}
-                              className="rounded bg-zinc-900 border-zinc-700 text-brand-500 focus:ring-brand-500"
+                              className="rounded bg-white dark:bg-zinc-900 border-zinc-300 dark:border-zinc-700 text-brand-500 focus:ring-brand-500"
                             />
                             기타
                           </label>

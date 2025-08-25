@@ -70,7 +70,7 @@ export default function CreateDebatePage() {
     <div className="min-h-screen">
       <div className="mb-8">
         <h1 className="text-2xl font-bold">새 투표 만들기</h1>
-        <p className="text-zinc-400 mt-1">찬성과 반대 의견을 수집하는 투표를 만들어보세요</p>
+        <p className="text-zinc-600 dark:text-zinc-400 mt-1">찬성과 반대 의견을 수집하는 투표를 만들어보세요</p>
       </div>
 
       <form onSubmit={handleSubmit} className="space-y-6 max-w-2xl">
@@ -79,7 +79,7 @@ export default function CreateDebatePage() {
           
           <div className="space-y-4">
             <div>
-              <label className="block text-sm font-medium text-zinc-300 mb-2">
+              <label className="block text-sm font-medium text-zinc-700 dark:text-zinc-300 mb-2">
                 투표 제목 *
               </label>
               <input
@@ -87,26 +87,26 @@ export default function CreateDebatePage() {
                 required
                 value={formData.title}
                 onChange={(e) => setFormData({ ...formData, title: e.target.value })}
-                className="w-full px-4 py-2 bg-zinc-900 border border-zinc-800 rounded-lg text-zinc-100 placeholder-zinc-500 focus:outline-none focus:ring-2 ring-surbate focus:border-transparent"
+                className="w-full px-4 py-2 bg-white dark:bg-zinc-900 border border-zinc-300 dark:border-zinc-800 rounded-lg text-zinc-900 dark:text-zinc-100 placeholder-zinc-500 focus:outline-none focus:ring-2 ring-surbate focus:border-transparent"
                 placeholder="예: 회사 야유회 장소를 제주도로 할까요?"
               />
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-zinc-300 mb-2">
+              <label className="block text-sm font-medium text-zinc-700 dark:text-zinc-300 mb-2">
                 설명
               </label>
               <textarea
                 value={formData.description}
                 onChange={(e) => setFormData({ ...formData, description: e.target.value })}
-                className="w-full px-4 py-2 bg-zinc-900 border border-zinc-800 rounded-lg text-zinc-100 placeholder-zinc-500 focus:outline-none focus:ring-2 ring-surbate focus:border-transparent"
+                className="w-full px-4 py-2 bg-white dark:bg-zinc-900 border border-zinc-300 dark:border-zinc-800 rounded-lg text-zinc-900 dark:text-zinc-100 placeholder-zinc-500 focus:outline-none focus:ring-2 ring-surbate focus:border-transparent"
                 rows={3}
                 placeholder="투표에 대한 상세한 설명을 입력하세요"
               />
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-zinc-300 mb-2">
+              <label className="block text-sm font-medium text-zinc-700 dark:text-zinc-300 mb-2">
                 작성자 닉네임 *
               </label>
               <input
@@ -114,13 +114,13 @@ export default function CreateDebatePage() {
                 required
                 value={formData.author_nickname}
                 onChange={(e) => setFormData({ ...formData, author_nickname: e.target.value })}
-                className="w-full px-4 py-2 bg-zinc-900 border border-zinc-800 rounded-lg text-zinc-100 placeholder-zinc-500 focus:outline-none focus:ring-2 ring-surbate focus:border-transparent"
+                className="w-full px-4 py-2 bg-white dark:bg-zinc-900 border border-zinc-300 dark:border-zinc-800 rounded-lg text-zinc-900 dark:text-zinc-100 placeholder-zinc-500 focus:outline-none focus:ring-2 ring-surbate focus:border-transparent"
                 placeholder="투표 작성자 닉네임"
               />
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-zinc-300 mb-2">
+              <label className="block text-sm font-medium text-zinc-700 dark:text-zinc-300 mb-2">
                 태그
               </label>
               <input
@@ -128,22 +128,18 @@ export default function CreateDebatePage() {
                 value={formData.tags?.join(', ')}
                 onChange={(e) => {
                   const value = e.target.value;
-                  // 마지막 문자가 쉼표인 경우를 처리하기 위해 빈 문자열도 유지
-                  const tags = value.split(',').map(tag => tag.trim());
-                  // 마지막 태그가 빈 문자열이 아니거나, 마지막 문자가 쉼표인 경우에만 필터링
-                  const filteredTags = value.endsWith(',') 
-                    ? tags.slice(0, -1).filter(tag => tag)
-                    : tags.filter(tag => tag);
-                  setFormData({ ...formData, tags: filteredTags });
+                  // 쉼표로 구분하여 태그 배열 생성
+                  const tags = value.split(',').map(tag => tag.trim()).filter(tag => tag);
+                  setFormData({ ...formData, tags });
                 }}
-                className="w-full px-4 py-2 bg-zinc-900 border border-zinc-800 rounded-lg text-zinc-100 placeholder-zinc-500 focus:outline-none focus:ring-2 ring-surbate focus:border-transparent"
+                className="w-full px-4 py-2 bg-white dark:bg-zinc-900 border border-zinc-300 dark:border-zinc-800 rounded-lg text-zinc-900 dark:text-zinc-100 placeholder-zinc-500 focus:outline-none focus:ring-2 ring-surbate focus:border-transparent"
                 placeholder="태그1, 태그2 (쉼표로 구분)"
               />
             </div>
 
             <div className="grid grid-cols-2 gap-4">
               <div className="relative">
-                <label className="block text-sm font-medium text-zinc-300 mb-2">
+                <label className="block text-sm font-medium text-zinc-700 dark:text-zinc-300 mb-2">
                   시작일시
                 </label>
                 <DatePicker
@@ -155,7 +151,7 @@ export default function CreateDebatePage() {
                   dateFormat="yyyy년 MM월 dd일 HH:mm"
                   locale={ko}
                   placeholderText="시작일시를 선택하세요"
-                  className="w-full px-2 py-1.5 sm:px-4 sm:py-2 text-sm sm:text-base bg-zinc-900 border border-zinc-800 rounded-lg text-zinc-100 placeholder-zinc-500 focus:outline-none focus:ring-2 ring-surbate focus:border-transparent"
+                  className="w-full px-2 py-1.5 sm:px-4 sm:py-2 text-sm sm:text-base bg-white dark:bg-zinc-900 border border-zinc-300 dark:border-zinc-800 rounded-lg text-zinc-900 dark:text-zinc-100 placeholder-zinc-500 focus:outline-none focus:ring-2 ring-surbate focus:border-transparent"
                   wrapperClassName="w-full"
                   withPortal
                   portalId="root-portal"
@@ -163,7 +159,7 @@ export default function CreateDebatePage() {
                 />
               </div>
               <div className="relative">
-                <label className="block text-sm font-medium text-zinc-300 mb-2">
+                <label className="block text-sm font-medium text-zinc-700 dark:text-zinc-300 mb-2">
                   종료일시
                 </label>
                 <DatePicker
@@ -175,7 +171,7 @@ export default function CreateDebatePage() {
                   dateFormat="yyyy년 MM월 dd일 HH:mm"
                   locale={ko}
                   placeholderText="종료일시를 선택하세요"
-                  className="w-full px-2 py-1.5 sm:px-4 sm:py-2 text-sm sm:text-base bg-zinc-900 border border-zinc-800 rounded-lg text-zinc-100 placeholder-zinc-500 focus:outline-none focus:ring-2 ring-surbate focus:border-transparent"
+                  className="w-full px-2 py-1.5 sm:px-4 sm:py-2 text-sm sm:text-base bg-white dark:bg-zinc-900 border border-zinc-300 dark:border-zinc-800 rounded-lg text-zinc-900 dark:text-zinc-100 placeholder-zinc-500 focus:outline-none focus:ring-2 ring-surbate focus:border-transparent"
                   wrapperClassName="w-full"
                   withPortal
                   portalId="root-portal"
@@ -200,11 +196,11 @@ export default function CreateDebatePage() {
                     ...formData, 
                     settings: { ...formData.settings!, allow_anonymous_vote: e.target.checked } 
                   })}
-                  className="rounded text-surbate bg-zinc-900 border-zinc-700 focus:ring-2 ring-surbate"
+                  className="rounded text-surbate bg-white dark:bg-zinc-900 border-zinc-300 dark:border-zinc-700 focus:ring-2 ring-surbate"
                 />
                 <span>익명 투표 허용</span>
               </label>
-              <p className="mt-1 text-sm text-zinc-500 ml-7">
+              <p className="mt-1 text-sm text-zinc-600 dark:text-zinc-500 ml-7">
                 참여자가 이름 없이 투표할 수 있습니다
               </p>
             </div>
@@ -218,11 +214,11 @@ export default function CreateDebatePage() {
                     ...formData, 
                     settings: { ...formData.settings!, allow_opinion: e.target.checked } 
                   })}
-                  className="rounded text-surbate bg-zinc-900 border-zinc-700 focus:ring-2 ring-surbate"
+                  className="rounded text-surbate bg-white dark:bg-zinc-900 border-zinc-300 dark:border-zinc-700 focus:ring-2 ring-surbate"
                 />
                 <span>의견 작성 허용</span>
               </label>
-              <p className="mt-1 text-sm text-zinc-500 ml-7">
+              <p className="mt-1 text-sm text-zinc-600 dark:text-zinc-500 ml-7">
                 참여자가 투표와 함께 의견을 남길 수 있습니다
               </p>
             </div>
@@ -236,11 +232,11 @@ export default function CreateDebatePage() {
                     ...formData, 
                     settings: { ...formData.settings!, show_results_before_end: e.target.checked } 
                   })}
-                  className="rounded text-surbate bg-zinc-900 border-zinc-700 focus:ring-2 ring-surbate"
+                  className="rounded text-surbate bg-white dark:bg-zinc-900 border-zinc-300 dark:border-zinc-700 focus:ring-2 ring-surbate"
                 />
                 <span>투표 종료 전 결과 공개</span>
               </label>
-              <p className="mt-1 text-sm text-zinc-500 ml-7">
+              <p className="mt-1 text-sm text-zinc-600 dark:text-zinc-500 ml-7">
                 참여자가 투표 결과를 실시간으로 볼 수 있습니다
               </p>
             </div>
@@ -264,7 +260,7 @@ export default function CreateDebatePage() {
               className="w-full px-4 py-2 bg-zinc-900 border border-zinc-800 rounded-lg text-zinc-100 placeholder-zinc-500 focus:outline-none focus:ring-2 ring-surbate focus:border-transparent"
               placeholder="8자 이상의 비밀번호"
             />
-            <p className="mt-2 text-sm text-zinc-500">
+            <p className="mt-2 text-sm text-zinc-600 dark:text-zinc-500">
               이 비밀번호로 투표를 수정하거나 결과를 확인할 수 있습니다.
             </p>
           </div>
@@ -281,7 +277,7 @@ export default function CreateDebatePage() {
           <button
             type="button"
             onClick={() => router.back()}
-            className="px-6 py-3 bg-zinc-800 text-zinc-100 rounded-lg hover:bg-zinc-700 transition-colors"
+            className="px-6 py-3 bg-zinc-200 dark:bg-zinc-800 text-zinc-800 dark:text-zinc-100 rounded-lg hover:bg-zinc-300 dark:hover:bg-zinc-700 transition-colors"
           >
             취소
           </button>
