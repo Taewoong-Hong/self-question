@@ -88,10 +88,8 @@ export default function AdminErrorsPage() {
         withCredentials: true
       });
       setApiTestResults(prev => ({ ...prev, [endpoint.name]: 'success' }));
-      toast.success(`${endpoint.name} API 정상 작동`);
     } catch (error) {
       setApiTestResults(prev => ({ ...prev, [endpoint.name]: 'error' }));
-      toast.error(`${endpoint.name} API 오류`);
       console.error(`API 테스트 실패 - ${endpoint.name}:`, error);
     }
   };
@@ -165,21 +163,25 @@ export default function AdminErrorsPage() {
               className="flex items-center justify-between p-3 bg-gray-50 dark:bg-zinc-800/50 rounded-lg"
             >
               <span className="text-sm font-medium text-zinc-700 dark:text-zinc-300">{endpoint.name}</span>
-              <button
-                onClick={() => testAPI(endpoint)}
-                className={`px-3 py-1 rounded text-xs font-medium transition-colors ${
-                  apiTestResults[endpoint.name] === 'pending'
-                    ? 'bg-yellow-500/20 text-yellow-600 dark:text-yellow-400'
-                    : apiTestResults[endpoint.name] === 'success'
-                    ? 'bg-green-500/20 text-green-600 dark:text-green-400'
-                    : apiTestResults[endpoint.name] === 'error'
-                    ? 'bg-red-500/20 text-red-600 dark:text-red-400'
-                    : 'bg-gray-200 dark:bg-zinc-700 text-zinc-700 dark:text-zinc-300 hover:bg-gray-300 dark:hover:bg-zinc-600'
-                }`}
-                disabled={apiTestResults[endpoint.name] === 'pending'}
-              >
-                {apiTestResults[endpoint.name] === 'pending' ? '테스트 중...' : '테스트'}
-              </button>
+              <div className="flex items-center gap-2">
+                <button
+                  onClick={() => testAPI(endpoint)}
+                  className={`px-3 py-1 rounded text-xs font-medium transition-colors ${
+                    apiTestResults[endpoint.name] === 'pending'
+                      ? 'bg-yellow-500/20 text-yellow-600 dark:text-yellow-400'
+                      : 'bg-gray-200 dark:bg-zinc-700 text-zinc-700 dark:text-zinc-300 hover:bg-gray-300 dark:hover:bg-zinc-600'
+                  }`}
+                  disabled={apiTestResults[endpoint.name] === 'pending'}
+                >
+                  {apiTestResults[endpoint.name] === 'pending' ? '테스트 중...' : '테스트'}
+                </button>
+                {apiTestResults[endpoint.name] === 'success' && (
+                  <span className="text-green-600 dark:text-green-400 font-bold text-base">O</span>
+                )}
+                {apiTestResults[endpoint.name] === 'error' && (
+                  <span className="text-red-600 dark:text-red-400 font-bold text-base">X</span>
+                )}
+              </div>
             </div>
           ))}
         </div>
