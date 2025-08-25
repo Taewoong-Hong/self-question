@@ -228,7 +228,7 @@ export default function AdminDashboardPage() {
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
               </svg>
               <div>
-                <h4 className="font-medium text-zinc-900 dark:text-zinc-100">에러 로그</h4>
+                <h4 className="font-medium text-zinc-900 dark:text-zinc-100">시스템 관리</h4>
                 <p className="text-sm text-zinc-600 dark:text-zinc-500">시스템 에러 확인</p>
               </div>
             </Link>
