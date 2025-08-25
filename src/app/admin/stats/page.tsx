@@ -238,7 +238,7 @@ export default function AdminStatsPage() {
           </div>
 
           {/* DAU 트렌드 차트 */}
-          <div className="bg-zinc-900/50 backdrop-blur-sm border border-zinc-800 rounded-xl p-6">
+          <div className="bg-white dark:bg-zinc-900/50 backdrop-blur-sm border border-gray-200 dark:border-zinc-800 rounded-xl p-6 shadow-sm dark:shadow-none">
             <h3 className="text-lg font-semibold text-zinc-900 dark:text-zinc-100 mb-4">DAU 트렌드 (최근 30일)</h3>
             <div className="h-64">
               <ResponsiveContainer width="100%" height="100%">
@@ -249,12 +249,13 @@ export default function AdminStatsPage() {
                       <stop offset="95%" stopColor="#39FF14" stopOpacity={0}/>
                     </linearGradient>
                   </defs>
-                  <CartesianGrid strokeDasharray="3 3" stroke="#3f3f46" />
-                  <XAxis dataKey="day" stroke="#a1a1aa" />
-                  <YAxis stroke="#a1a1aa" />
+                  <CartesianGrid strokeDasharray="3 3" stroke="#e4e4e7" className="dark:stroke-zinc-700" />
+                  <XAxis dataKey="day" stroke="#6b7280" className="dark:stroke-zinc-400" />
+                  <YAxis stroke="#6b7280" className="dark:stroke-zinc-400" />
                   <Tooltip 
-                    contentStyle={{ backgroundColor: '#18181b', border: '1px solid #3f3f46' }}
-                    labelStyle={{ color: '#e4e4e7' }}
+                    contentStyle={{ backgroundColor: 'rgba(255, 255, 255, 0.95)', border: '1px solid #e5e7eb', color: '#111827' }}
+                    labelStyle={{ color: '#111827' }}
+                    wrapperClassName="dark:!bg-zinc-900 dark:!border-zinc-700"
                   />
                   <Area type="monotone" dataKey="users" stroke="#39FF14" fillOpacity={1} fill="url(#colorUsers)" />
                 </AreaChart>
@@ -305,9 +306,9 @@ export default function AdminStatsPage() {
               <div className="h-64">
                 <ResponsiveContainer width="100%" height="100%">
                   <BarChart data={stats.contentStats.weeklyContent}>
-                    <CartesianGrid strokeDasharray="3 3" stroke="#3f3f46" />
-                    <XAxis dataKey="date" stroke="#a1a1aa" />
-                    <YAxis stroke="#a1a1aa" />
+                    <CartesianGrid strokeDasharray="3 3" stroke="#e4e4e7" className="dark:stroke-zinc-700" />
+                    <XAxis dataKey="date" stroke="#6b7280" className="dark:stroke-zinc-400" />
+                    <YAxis stroke="#6b7280" className="dark:stroke-zinc-400" />
                     <Tooltip 
                       contentStyle={{ backgroundColor: '#18181b', border: '1px solid #3f3f46' }}
                       labelStyle={{ color: '#e4e4e7' }}
@@ -384,9 +385,9 @@ export default function AdminStatsPage() {
               <div className="h-64">
                 <ResponsiveContainer width="100%" height="100%">
                   <LineChart data={hourlyData}>
-                    <CartesianGrid strokeDasharray="3 3" stroke="#3f3f46" />
-                    <XAxis dataKey="hour" stroke="#a1a1aa" />
-                    <YAxis stroke="#a1a1aa" />
+                    <CartesianGrid strokeDasharray="3 3" stroke="#e4e4e7" className="dark:stroke-zinc-700" />
+                    <XAxis dataKey="hour" stroke="#6b7280" className="dark:stroke-zinc-400" />
+                    <YAxis stroke="#6b7280" className="dark:stroke-zinc-400" />
                     <Tooltip 
                       contentStyle={{ backgroundColor: '#18181b', border: '1px solid #3f3f46' }}
                       labelStyle={{ color: '#e4e4e7' }}
@@ -445,9 +446,9 @@ export default function AdminStatsPage() {
               <div className="h-64">
                 <ResponsiveContainer width="100%" height="100%">
                   <BarChart data={stats.deviceStats} layout="vertical">
-                    <CartesianGrid strokeDasharray="3 3" stroke="#3f3f46" />
-                    <XAxis type="number" stroke="#a1a1aa" />
-                    <YAxis type="category" dataKey="type" stroke="#a1a1aa" />
+                    <CartesianGrid strokeDasharray="3 3" stroke="#e4e4e7" className="dark:stroke-zinc-700" />
+                    <XAxis type="number" stroke="#6b7280" className="dark:stroke-zinc-400" />
+                    <YAxis type="category" dataKey="type" stroke="#6b7280" className="dark:stroke-zinc-400" />
                     <Tooltip 
                       contentStyle={{ backgroundColor: '#18181b', border: '1px solid #3f3f46' }}
                       labelStyle={{ color: '#e4e4e7' }}

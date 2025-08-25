@@ -76,14 +76,14 @@ export default function SurveyResultsClient({ survey, initialResults, isAuthenti
     <div className="min-h-screen max-w-4xl mx-auto">
       {/* 헤더 */}
       <div className="mb-6">
-        <Link href={`/surveys/${survey.id}`} className="text-zinc-400 hover:text-zinc-100 text-sm mb-3 inline-block">
+        <Link href={`/surveys/${survey.id}`} className="text-zinc-600 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-zinc-100 text-sm mb-3 inline-block">
           ← 설문으로 돌아가기
         </Link>
         
         <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-4">
           <div>
-            <h1 className="text-xl sm:text-2xl lg:text-3xl font-bold mb-2">{survey.title} - 결과</h1>
-            <div className="flex items-center gap-3 text-xs sm:text-sm text-zinc-500">
+            <h1 className="text-xl sm:text-2xl lg:text-3xl font-bold mb-2 text-zinc-900 dark:text-zinc-100">{survey.title} - 결과</h1>
+            <div className="flex items-center gap-3 text-xs sm:text-sm text-zinc-600 dark:text-zinc-500">
               <span>응답 {survey.stats?.response_count || 0}명</span>
               {survey.created_at && (
                 <>
@@ -109,7 +109,7 @@ export default function SurveyResultsClient({ survey, initialResults, isAuthenti
             </button>
             <Link
               href={`/surveys/${survey.id}/admin`}
-              className="px-3 py-1.5 sm:px-4 sm:py-2 text-sm bg-zinc-800 text-zinc-100 rounded-lg hover:bg-zinc-700 transition-colors"
+              className="px-3 py-1.5 sm:px-4 sm:py-2 text-sm bg-gray-200 dark:bg-zinc-800 text-zinc-700 dark:text-zinc-100 rounded-lg hover:bg-gray-300 dark:hover:bg-zinc-700 transition-colors"
             >
               <span className="hidden sm:inline">작성자 페이지</span>
               <span className="sm:hidden">관리</span>
@@ -120,8 +120,8 @@ export default function SurveyResultsClient({ survey, initialResults, isAuthenti
 
       {/* 접근 권한 확인 메시지 */}
       {isAuthenticated && (
-        <div className="bg-green-900/20 border border-green-800/50 rounded-xl p-4 mb-6">
-          <p className="text-sm text-green-400">
+        <div className="bg-green-100 dark:bg-green-900/20 border border-green-300 dark:border-green-800/50 rounded-xl p-4 mb-6">
+          <p className="text-sm text-green-700 dark:text-green-400">
             ✓ 설문 작성자로 인증되어 결과를 확인할 수 있습니다.
           </p>
         </div>
@@ -133,14 +133,14 @@ export default function SurveyResultsClient({ survey, initialResults, isAuthenti
           const questionResults = results.question_stats?.[question.id || question._id];
           
           return (
-            <div key={question.id || question._id} className="bg-zinc-900/50 backdrop-blur-sm border border-zinc-800 rounded-xl p-4 sm:p-6">
-              <h3 className="text-base sm:text-lg font-medium mb-3">
+            <div key={question.id || question._id} className="bg-white dark:bg-zinc-900/50 backdrop-blur-sm border border-gray-200 dark:border-zinc-800 rounded-xl p-4 sm:p-6 shadow-sm dark:shadow-none">
+              <h3 className="text-base sm:text-lg font-medium mb-3 text-zinc-900 dark:text-zinc-100">
                 {index + 1}. {question.title}
               </h3>
 
               {/* 응답이 없는 경우 */}
               {!questionResults || questionResults.response_count === 0 ? (
-                <p className="text-zinc-500 text-center py-8">아직 응답이 없습니다</p>
+                <p className="text-zinc-600 dark:text-zinc-500 text-center py-8">아직 응답이 없습니다</p>
               ) : (
                 <>
               {/* 단일/다중 선택 결과 */}
@@ -152,8 +152,8 @@ export default function SurveyResultsClient({ survey, initialResults, isAuthenti
                       onClick={() => setChartType('bar')}
                       className={`px-2.5 py-1 rounded-lg text-xs sm:text-sm transition-colors ${
                         chartType === 'bar' 
-                          ? 'bg-zinc-700 text-zinc-100' 
-                          : 'bg-zinc-800 text-zinc-400 hover:bg-zinc-700'
+                          ? 'bg-gray-300 dark:bg-zinc-700 text-zinc-900 dark:text-zinc-100' 
+                          : 'bg-gray-200 dark:bg-zinc-800 text-zinc-700 dark:text-zinc-400 hover:bg-gray-300 dark:hover:bg-zinc-700'
                       }`}
                     >
                       막대 차트
@@ -162,8 +162,8 @@ export default function SurveyResultsClient({ survey, initialResults, isAuthenti
                       onClick={() => setChartType('pie')}
                       className={`px-2.5 py-1 rounded-lg text-xs sm:text-sm transition-colors ${
                         chartType === 'pie' 
-                          ? 'bg-zinc-700 text-zinc-100' 
-                          : 'bg-zinc-800 text-zinc-400 hover:bg-zinc-700'
+                          ? 'bg-gray-300 dark:bg-zinc-700 text-zinc-900 dark:text-zinc-100' 
+                          : 'bg-gray-200 dark:bg-zinc-800 text-zinc-700 dark:text-zinc-400 hover:bg-gray-300 dark:hover:bg-zinc-700'
                       }`}
                     >
                       원형 차트
@@ -175,12 +175,13 @@ export default function SurveyResultsClient({ survey, initialResults, isAuthenti
                     <ResponsiveContainer width="100%" height="100%">
                       {chartType === 'bar' ? (
                         <BarChart data={prepareChartData(question, questionResults)}>
-                          <CartesianGrid strokeDasharray="3 3" stroke="#3f3f46" />
-                          <XAxis dataKey="name" stroke="#a1a1aa" />
-                          <YAxis stroke="#a1a1aa" />
+                          <CartesianGrid strokeDasharray="3 3" stroke="#e4e4e7" className="dark:stroke-zinc-700" />
+                          <XAxis dataKey="name" stroke="#6b7280" className="dark:stroke-zinc-400" />
+                          <YAxis stroke="#6b7280" className="dark:stroke-zinc-400" />
                           <Tooltip 
-                            contentStyle={{ backgroundColor: '#18181b', border: '1px solid #3f3f46' }}
-                            labelStyle={{ color: '#e4e4e7' }}
+                            contentStyle={{ backgroundColor: 'rgba(255, 255, 255, 0.95)', border: '1px solid #e5e7eb', color: '#111827' }}
+                            labelStyle={{ color: '#111827' }}
+                            wrapperClassName="dark:!bg-zinc-900 dark:!border-zinc-700"
                           />
                           <Bar dataKey="value" fill="#39FF14" />
                         </BarChart>
@@ -201,8 +202,9 @@ export default function SurveyResultsClient({ survey, initialResults, isAuthenti
                             ))}
                           </Pie>
                           <Tooltip 
-                            contentStyle={{ backgroundColor: '#18181b', border: '1px solid #3f3f46' }}
-                            labelStyle={{ color: '#e4e4e7' }}
+                            contentStyle={{ backgroundColor: 'rgba(255, 255, 255, 0.95)', border: '1px solid #e5e7eb', color: '#111827' }}
+                            labelStyle={{ color: '#111827' }}
+                            wrapperClassName="dark:!bg-zinc-900 dark:!border-zinc-700"
                           />
                         </PieChart>
                       )}
@@ -217,12 +219,12 @@ export default function SurveyResultsClient({ survey, initialResults, isAuthenti
                       return (
                         <div key={choice.id}>
                           <div className="flex justify-between items-center mb-1">
-                            <span className="text-sm">{choice.label}</span>
-                            <span className="text-sm text-zinc-400">
+                            <span className="text-sm text-zinc-900 dark:text-zinc-100">{choice.label}</span>
+                            <span className="text-sm text-zinc-600 dark:text-zinc-400">
                               {count}명 ({percentage.toFixed(1)}%)
                             </span>
                           </div>
-                          <div className="w-full bg-zinc-800 rounded-full h-3 overflow-hidden">
+                          <div className="w-full bg-gray-200 dark:bg-zinc-800 rounded-full h-3 overflow-hidden">
                             <div 
                               className="bg-gradient-to-r from-surbate to-brand-600 h-full transition-all duration-500"
                               style={{ width: `${percentage}%` }}
@@ -239,12 +241,12 @@ export default function SurveyResultsClient({ survey, initialResults, isAuthenti
               {(question.type === 'short_text' || question.type === 'long_text') && questionResults?.responses && (
                 <div className="space-y-2 max-h-60 overflow-y-auto">
                   {questionResults.responses.slice(0, 10).map((response: string, idx: number) => (
-                    <div key={idx} className="bg-zinc-800/50 rounded p-3 text-sm">
+                    <div key={idx} className="bg-gray-100 dark:bg-zinc-800/50 rounded p-3 text-sm text-zinc-700 dark:text-zinc-300">
                       {response}
                     </div>
                   ))}
                   {questionResults.responses.length > 10 && (
-                    <p className="text-sm text-zinc-500 text-center mt-2">
+                    <p className="text-sm text-zinc-600 dark:text-zinc-500 text-center mt-2">
                       ... 외 {questionResults.responses.length - 10}개 응답
                     </p>
                   )}
@@ -271,7 +273,7 @@ export default function SurveyResultsClient({ survey, initialResults, isAuthenti
                       </span>
                     ))}
                   </div>
-                  <p className="text-xs sm:text-sm text-zinc-500">
+                  <p className="text-xs sm:text-sm text-zinc-600 dark:text-zinc-500">
                     총 {questionResults.response_count || 0}명 응답
                   </p>
                 </div>

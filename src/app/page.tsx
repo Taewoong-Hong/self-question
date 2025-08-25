@@ -212,17 +212,17 @@ export default function Home() {
                     <div className="flex items-center gap-3">
                       <span className={`inline-flex items-center px-2.5 py-0.5 rounded text-xs font-medium ${
                         item.type === 'debate' 
-                          ? 'bg-blue-100/10 text-blue-400' 
-                          : 'bg-brand-100/10 text-pink-500'
+                          ? 'bg-blue-100 dark:bg-blue-100/10 text-blue-700 dark:text-blue-400' 
+                          : 'bg-pink-100 dark:bg-brand-100/10 text-pink-700 dark:text-pink-500'
                       }`}>
                         {item.type === 'debate' ? '📊 투표' : '📝 설문'}
                       </span>
                       <span className={`inline-flex items-center px-2.5 py-0.5 rounded text-xs font-medium ${
                         item.status === 'open' 
-                          ? 'bg-brand-100/10 text-brand-400' 
+                          ? 'bg-green-100 dark:bg-brand-100/10 text-green-700 dark:text-brand-400' 
                           : item.status === 'closed'
-                          ? 'bg-red-100/10 text-red-400'
-                          : 'bg-yellow-100/10 text-yellow-400'
+                          ? 'bg-red-100 dark:bg-red-100/10 text-red-700 dark:text-red-400'
+                          : 'bg-yellow-100 dark:bg-yellow-100/10 text-yellow-700 dark:text-yellow-400'
                       }`}>
                         {item.status === 'open' ? '진행중' : item.status === 'closed' ? '종료' : '예정'}
                       </span>
