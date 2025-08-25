@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { useRouter, useParams } from 'next/navigation';
 import Link from 'next/link';
 import toast from 'react-hot-toast';
@@ -54,17 +54,7 @@ export default function EditDebateResultsPage() {
   const [startAt, setStartAt] = useState<string>('');
   const [endAt, setEndAt] = useState<string>('');
 
-  useEffect(() => {
-    // 관리자 인증 확인
-    const token = localStorage.getItem('admin_token');
-    if (!token) {
-      router.push('/admin');
-      return;
-    }
-    fetchDebate();
-  }, [debateId, router]);
-
-  const fetchDebate = async () => {
+  const fetchDebate = useCallback(async () => {
     try {
       setLoading(true);
       const token = localStorage.getItem('admin_token');
@@ -109,7 +99,17 @@ export default function EditDebateResultsPage() {
     } finally {
       setLoading(false);
     }
-  };
+  }, [debateId, router]);
+
+  useEffect(() => {
+    // 관리자 인증 확인
+    const token = localStorage.getItem('admin_token');
+    if (!token) {
+      router.push('/admin');
+      return;
+    }
+    fetchDebate();
+  }, [fetchDebate, router]);
 
   const handleAddOpinion = () => {
     setOpinions([...opinions, {

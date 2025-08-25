@@ -6,6 +6,8 @@ import Survey from '@/models/Survey';
 import Request from '@/models/Request';
 import Guestbook from '@/models/Guestbook';
 
+export const dynamic = 'force-dynamic';
+
 export async function GET(request: NextRequest) {
   try {
     // 관리자 인증 확인
