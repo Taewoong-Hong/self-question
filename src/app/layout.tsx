@@ -19,6 +19,14 @@ function LayoutContent({ children }: { children: React.ReactNode }) {
   const { isAdminLoggedIn, adminUsername, logout } = useAdminAuth();
   const { theme, toggleTheme, mounted } = useTheme();
 
+  // errorLogger 초기화 (클라이언트에서만)
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      // errorLogger가 import되면 자동으로 초기화됨
+      console.log('Error logger initialized');
+    }
+  }, []);
+
   // 화면 크기 변경 시 사이드바 상태 업데이트
   useEffect(() => {
     const handleResize = () => {

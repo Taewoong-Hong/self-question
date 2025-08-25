@@ -1,10 +1,9 @@
 import { NextRequest, NextResponse } from 'next/server';
 import dbConnect from '@/lib/mongodb';
-import Debate from '@/lib/models/Debate';
-import Survey from '@/lib/models/Survey';
-import Question from '@/lib/models/Question';
+import Debate from '@/models/Debate';
+import Survey from '@/models/Survey';
 import Request from '@/models/Request';
-import { verifyAdminAuth } from '@/lib/adminAuthUtils';
+import { verifyAdminToken } from '@/lib/auth';
 
 export const runtime = 'nodejs';
 export const dynamic = 'force-dynamic';
@@ -12,20 +11,12 @@ export const dynamic = 'force-dynamic';
 // 콘텐츠 목록 조회
 export async function GET(request: NextRequest) {
   try {
-    // Admin 인증 확인 (헤더 또는 쿠키에서)
-    const adminUser = verifyAdminAuth(request);
-    
-    if (!adminUser) {
+    // 관리자 인증 확인
+    const isAdmin = await verifyAdminToken(request);
+    if (!isAdmin) {
       return NextResponse.json(
-        { error: '인증이 필요합니다.' },
+        { error: '관리자 권한이 필요합니다.' },
         { status: 401 }
-      );
-    }
-    
-    if (!adminUser.isAdmin) {
-      return NextResponse.json(
-        { error: '관리자 권한이 없습니다.' },
-        { status: 403 }
       );
     }
     
@@ -118,34 +109,6 @@ export async function GET(request: NextRequest) {
       })));
     }
     
-    // 질문 데이터 조회 (기존 질문 기능 유지)
-    if (filter === 'all' || filter === 'question') {
-      const queryCondition: any = { isDeleted: false };
-      if (search) {
-        queryCondition.title = { $regex: search, $options: 'i' };
-      }
-      
-      const questions = await Question.find(queryCondition)
-      .sort({ createdAt: -1 })
-      .lean();
-      
-      contents.push(...questions.map((question: any) => ({
-        id: question._id.toString(),
-        title: question.title,
-        type: 'question',
-        status: question.status,
-        created_at: question.createdAt,
-        start_at: null, // 질문은 시작 시간이 없음
-        end_at: null, // 질문은 종료 시간이 없음
-        author_ip: question.ipAddress || 'unknown',
-        author_nickname: question.nickname,
-        participant_count: 0, // 질문은 참여자 개념이 없음
-        is_reported: false, // TODO: 신고 기능 구현
-        is_hidden: question.isDeleted || false,
-        content: question.content,
-        adminAnswer: question.adminAnswer
-      })));
-    }
     
     // 신고된 콘텐츠 필터
     if (filter === 'reported') {
@@ -172,20 +135,12 @@ export async function GET(request: NextRequest) {
 // 콘텐츠 일괄 처리
 export async function POST(request: NextRequest) {
   try {
-    // Admin 인증 확인 (헤더 또는 쿠키에서)
-    const adminUser = verifyAdminAuth(request);
-    
-    if (!adminUser) {
+    // 관리자 인증 확인
+    const isAdmin = await verifyAdminToken(request);
+    if (!isAdmin) {
       return NextResponse.json(
-        { error: '인증이 필요합니다.' },
+        { error: '관리자 권한이 필요합니다.' },
         { status: 401 }
-      );
-    }
-    
-    if (!adminUser.isAdmin) {
-      return NextResponse.json(
-        { error: '관리자 권한이 없습니다.' },
-        { status: 403 }
       );
     }
     
@@ -247,17 +202,6 @@ export async function POST(request: NextRequest) {
         continue;
       }
       
-      // 질문 확인
-      const question = await Question.findOne({ $or: [{ _id: id }, { id: id }] });
-      if (question) {
-        if (action === 'delete') {
-          question.isDeleted = true;
-          await question.save();
-        } else {
-          question.isDeleted = action === 'hide';
-          await question.save();
-        }
-      }
     }
     
     return NextResponse.json({
