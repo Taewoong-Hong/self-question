@@ -142,8 +142,8 @@ export default function AdminErrorsPage() {
   return (
     <div className="min-h-screen">
       <div className="mb-8">
-        <h1 className="text-3xl font-bold text-zinc-900 dark:text-zinc-100">에러 로그</h1>
-        <p className="text-zinc-600 dark:text-zinc-400 mt-2">시스템 에러 로그 및 API 상태 모니터링</p>
+        <h1 className="text-3xl font-bold text-zinc-900 dark:text-zinc-100">시스템 관리</h1>
+        <p className="text-zinc-600 dark:text-zinc-400 mt-2">시스템 로그 및 API 상태 모니터링</p>
       </div>
 
       {/* API 테스트 섹션 */}
@@ -238,7 +238,7 @@ export default function AdminErrorsPage() {
         </div>
       </div>
 
-      {/* 에러 로그 목록 */}
+      {/* 시스템 로그 목록 */}
       <div className="bg-white dark:bg-zinc-900/50 backdrop-blur-sm border border-gray-200 dark:border-zinc-800 rounded-xl shadow-sm dark:shadow-none overflow-hidden">
         <div className="overflow-x-auto">
           <table className="w-full">
@@ -268,7 +268,7 @@ export default function AdminErrorsPage() {
               {errors.length === 0 ? (
                 <tr>
                   <td colSpan={6} className="px-6 py-12 text-center text-zinc-500">
-                    에러 로그가 없습니다.
+                    시스템 로그가 없습니다.
                   </td>
                 </tr>
               ) : (
