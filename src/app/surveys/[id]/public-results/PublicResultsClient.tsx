@@ -38,6 +38,19 @@ interface PublicResultsClientProps {
 
 export default function PublicResultsClient({ survey, results }: PublicResultsClientProps) {
   const [chartType, setChartType] = useState<'bar' | 'pie'>('bar');
+  const [expandedQuestions, setExpandedQuestions] = useState<Set<string>>(new Set());
+  
+  const toggleExpanded = (questionId: string) => {
+    setExpandedQuestions(prev => {
+      const newSet = new Set(prev);
+      if (newSet.has(questionId)) {
+        newSet.delete(questionId);
+      } else {
+        newSet.add(questionId);
+      }
+      return newSet;
+    });
+  };
   
 
   // Victory 차트용 데이터 준비 함수
@@ -475,13 +488,48 @@ export default function PublicResultsClient({ survey, results }: PublicResultsCl
                     </div>
                   )}
 
-                  {/* 텍스트 응답 결과 (공개 페이지에서는 개수만) */}
+                  {/* 텍스트 응답 결과 */}
                   {(question.type === 'short_text' || question.type === 'long_text') && (
-                    <div className="text-center py-6 bg-zinc-800/50 rounded-lg">
-                      <p className="text-xl font-bold text-surbate mb-1">
-                        {questionStats.text_response_count || 0}개
-                      </p>
-                      <p className="text-xs text-zinc-400">텍스트 응답</p>
+                    <div>
+                      <div className="text-center py-6 bg-zinc-800/50 rounded-lg">
+                        <p className="text-xl font-bold text-surbate mb-1">
+                          {questionStats.text_response_count || 0}개
+                        </p>
+                        <p className="text-xs text-zinc-400">텍스트 응답</p>
+                        
+                        {/* 자세히 버튼 - 응답이 있을 때만 표시 */}
+                        {questionStats.text_responses && questionStats.text_responses.length > 0 && (
+                          <button
+                            onClick={() => toggleExpanded(questionId)}
+                            className="mt-3 p-1 text-zinc-400 hover:text-zinc-200 transition-colors"
+                            title={expandedQuestions.has(questionId) ? '접기' : '펼치기'}
+                          >
+                            <svg
+                              xmlns="http://www.w3.org/2000/svg"
+                              fill="none"
+                              viewBox="0 0 24 24"
+                              strokeWidth={2}
+                              stroke="currentColor"
+                              className={`w-5 h-5 transition-transform ${
+                                expandedQuestions.has(questionId) ? 'rotate-180' : ''
+                              }`}
+                            >
+                              <path strokeLinecap="round" strokeLinejoin="round" d="M19.5 8.25l-7.5 7.5-7.5-7.5" />
+                            </svg>
+                          </button>
+                        )}
+                      </div>
+                      
+                      {/* 응답 목록 */}
+                      {expandedQuestions.has(questionId) && questionStats.text_responses && (
+                        <div className="mt-3 space-y-2 max-h-96 overflow-y-auto">
+                          {questionStats.text_responses.map((response: string, index: number) => (
+                            <div key={index} className="p-3 bg-zinc-800/30 rounded-lg text-sm">
+                              <p className="text-zinc-300 break-words">{response}</p>
+                            </div>
+                          ))}
+                        </div>
+                      )}
                     </div>
                   )}
 

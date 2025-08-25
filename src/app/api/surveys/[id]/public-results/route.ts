@@ -190,6 +190,10 @@ export async function GET(
             case 'short_text':
             case 'long_text':
               questionStats[questionId].text_response_count = cleanAdminResult.total_responses || 0;
+              // admin_results에 sample_responses가 있으면 사용
+              if (cleanAdminResult.sample_responses && Array.isArray(cleanAdminResult.sample_responses)) {
+                questionStats[questionId].text_responses = cleanAdminResult.sample_responses;
+              }
               break;
           }
         }
@@ -287,8 +291,12 @@ export async function GET(
 
         case 'short_text':
         case 'long_text':
-          // 텍스트 응답은 공개 결과에서는 개수만 표시
+          // 텍스트 응답은 공개 결과에서 개수와 응답 내용 모두 표시
           questionStats[questionId].text_response_count = questionResponses.length;
+          // 텍스트 응답 내용 수집
+          questionStats[questionId].text_responses = questionResponses
+            .map((answer: any) => answer.text)
+            .filter((text: string) => text && text.trim() !== '');
           break;
 
         case 'rating':
@@ -329,6 +337,7 @@ export async function GET(
         question_type: stat.question_type,
         question_title: stat.question_title,
         ...(stat.text_response_count !== undefined && { text_response_count: stat.text_response_count }),
+        ...(stat.text_responses && { text_responses: stat.text_responses }),
         ...(stat.rating_distribution && { rating_distribution: stat.rating_distribution })
       };
     });

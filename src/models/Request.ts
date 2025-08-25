@@ -12,6 +12,11 @@ export interface IRequest extends Document {
   created_at: Date;
   updated_at: Date;
   is_deleted: boolean;
+  admin_reply?: {
+    content: string;
+    replied_at: Date;
+    replied_by: string;
+  };
 }
 
 const RequestSchema = new Schema<IRequest>({
@@ -63,6 +68,14 @@ const RequestSchema = new Schema<IRequest>({
   is_deleted: { 
     type: Boolean, 
     default: false 
+  },
+  admin_reply: {
+    type: {
+      content: { type: String, required: true },
+      replied_at: { type: Date, required: true },
+      replied_by: { type: String, required: true }
+    },
+    required: false
   }
 });
 

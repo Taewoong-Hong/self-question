@@ -3,6 +3,7 @@ import dbConnect from '@/lib/mongodb';
 import Debate from '@/lib/models/Debate';
 import Survey from '@/lib/models/Survey';
 import Question from '@/lib/models/Question';
+import Request from '@/models/Request';
 import { verifyAdminAuth } from '@/lib/adminAuthUtils';
 
 export const runtime = 'nodejs';
@@ -84,7 +85,35 @@ export async function GET(request: NextRequest) {
       })));
     }
     
-    // 질문 데이터 조회
+    // 요청 데이터 조회
+    if (filter === 'all' || filter === 'request') {
+      const queryCondition: any = { is_deleted: false };
+      if (search) {
+        queryCondition.title = { $regex: search, $options: 'i' };
+      }
+      
+      const requests = await Request.find(queryCondition)
+      .sort({ created_at: -1 })
+      .lean();
+      
+      contents.push(...requests.map((request: any) => ({
+        id: request.id || request._id.toString(),
+        title: request.title,
+        type: 'request',
+        status: 'open', // 요청은 항상 열림 상태
+        created_at: request.created_at,
+        start_at: null, // 요청은 시작 시간이 없음
+        end_at: null, // 요청은 종료 시간이 없음
+        author_ip: request.author_ip || 'unknown',
+        author_nickname: request.author_nickname,
+        participant_count: request.views || 0, // 조회수를 참여자로 표시
+        is_reported: false, // TODO: 신고 기능 구현
+        is_hidden: request.is_deleted || !request.is_public || false,
+        content: request.content
+      })));
+    }
+    
+    // 질문 데이터 조회 (기존 질문 기능 유지)
     if (filter === 'all' || filter === 'question') {
       const queryCondition: any = { isDeleted: false };
       if (search) {
@@ -196,6 +225,19 @@ export async function POST(request: NextRequest) {
         } else {
           survey.is_hidden = action === 'hide';
           await survey.save();
+        }
+        continue;
+      }
+      
+      // 요청 확인
+      const request = await Request.findOne({ $or: [{ _id: id }, { id: id }] });
+      if (request) {
+        if (action === 'delete') {
+          request.is_deleted = true;
+          await request.save();
+        } else {
+          request.is_deleted = action === 'hide';
+          await request.save();
         }
         continue;
       }

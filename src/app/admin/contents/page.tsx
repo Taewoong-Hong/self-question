@@ -8,7 +8,7 @@ import toast from 'react-hot-toast';
 interface ContentItem {
   id: string;
   title: string;
-  type: 'debate' | 'survey' | 'question';
+  type: 'debate' | 'survey' | 'question' | 'request';
   status: 'open' | 'closed' | 'scheduled' | 'pending' | 'answered';
   created_at: string;
   start_at?: string;
@@ -18,7 +18,7 @@ interface ContentItem {
   participant_count: number;
   is_reported: boolean;
   is_hidden: boolean;
-  // 질문 관련 필드
+  // 질문/요청 관련 필드
   content?: string;
   adminAnswer?: {
     content: string;
@@ -31,7 +31,7 @@ export default function AdminContentsPage() {
   const router = useRouter();
   const [loading, setLoading] = useState(true);
   const [contents, setContents] = useState<ContentItem[]>([]);
-  const [filter, setFilter] = useState<'all' | 'debate' | 'survey' | 'question' | 'reported'>('all');
+  const [filter, setFilter] = useState<'all' | 'debate' | 'survey' | 'question' | 'request' | 'reported'>('all');
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedItems, setSelectedItems] = useState<string[]>([]);
   const [showAnswerModal, setShowAnswerModal] = useState(false);
@@ -130,45 +130,66 @@ export default function AdminContentsPage() {
 
   const handleAnswerQuestion = async () => {
     if (!selectedQuestion || !answerContent.trim()) {
-      toast.error('답변 내용을 입력해주세요.');
+      toast.error(selectedQuestion?.type === 'request' ? '답글 내용을 입력해주세요.' : '답변 내용을 입력해주세요.');
       return;
     }
 
     try {
       const token = localStorage.getItem('admin_token');
       
-      const response = await fetch(`/api/admin/questions/${selectedQuestion.id}/answer`, {
-        method: 'POST',
-        headers: {
-          'Authorization': `Bearer ${token}`,
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({ content: answerContent.trim() }),
-        credentials: 'include'
-      });
-      
-      if (!response.ok) {
-        throw new Error('Failed to submit answer');
+      if (selectedQuestion.type === 'request') {
+        // 요청 게시글에 대한 답글 처리
+        const response = await fetch(`/api/admin/requests/${selectedQuestion.id}/reply`, {
+          method: 'POST',
+          headers: {
+            'Authorization': `Bearer ${token}`,
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({ content: answerContent.trim() }),
+          credentials: 'include'
+        });
+        
+        if (!response.ok) {
+          throw new Error('Failed to submit reply');
+        }
+        
+        toast.success('답글이 등록되었습니다.');
+      } else {
+        // 질문에 대한 답변 처리
+        const response = await fetch(`/api/admin/questions/${selectedQuestion.id}/answer`, {
+          method: 'POST',
+          headers: {
+            'Authorization': `Bearer ${token}`,
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({ content: answerContent.trim() }),
+          credentials: 'include'
+        });
+        
+        if (!response.ok) {
+          throw new Error('Failed to submit answer');
+        }
+        
+        // 상태 업데이트
+        setContents(prev => prev.map(content => 
+          content.id === selectedQuestion.id 
+            ? { ...content, status: 'answered' as const, adminAnswer: {
+                content: answerContent.trim(),
+                answeredAt: new Date().toISOString(),
+                answeredBy: 'Admin'
+              }}
+            : content
+        ));
+        
+        toast.success('답변이 등록되었습니다.');
       }
-      
-      // 상태 업데이트
-      setContents(prev => prev.map(content => 
-        content.id === selectedQuestion.id 
-          ? { ...content, status: 'answered' as const, adminAnswer: {
-              content: answerContent.trim(),
-              answeredAt: new Date().toISOString(),
-              answeredBy: 'Admin'
-            }}
-          : content
-      ));
       
       setShowAnswerModal(false);
       setSelectedQuestion(null);
       setAnswerContent('');
-      toast.success('답변이 등록되었습니다.');
     } catch (error) {
-      console.error('Failed to submit answer:', error);
-      toast.error('답변 등록에 실패했습니다.');
+      console.error('Failed to submit answer/reply:', error);
+      toast.error(selectedQuestion?.type === 'request' ? '답글 등록에 실패했습니다.' : '답변 등록에 실패했습니다.');
     }
   };
 
@@ -284,6 +305,16 @@ export default function AdminContentsPage() {
                 질문
               </button>
               <button
+                onClick={() => setFilter('request')}
+                className={`px-2 py-1 rounded text-[11px] font-medium transition-colors ${
+                  filter === 'request' 
+                    ? 'bg-surbate text-zinc-900' 
+                    : 'bg-zinc-800 text-zinc-400 hover:text-zinc-100'
+                }`}
+              >
+                요청
+              </button>
+              <button
                 onClick={() => setFilter('reported')}
                 className={`px-2 py-1 rounded text-[11px] font-medium transition-colors ${
                   filter === 'reported' 
@@ -357,9 +388,13 @@ export default function AdminContentsPage() {
                         ? 'bg-blue-100/10 text-blue-400' 
                         : content.type === 'survey'
                         ? 'bg-brand-100/10 text-pink-500'
+                        : content.type === 'request'
+                        ? 'bg-green-100/10 text-green-400'
                         : 'bg-yellow-100/10 text-yellow-400'
                     }`}>
-                      {content.type === 'debate' ? '📊 투표' : content.type === 'survey' ? '📝 설문' : '❓ 질문'}
+                      {content.type === 'debate' ? '📊 투표' : 
+                       content.type === 'survey' ? '📝 설문' : 
+                       content.type === 'request' ? '💬 요청' : '❓ 질문'}
                     </span>
                     <span className={`inline-flex items-center px-2.5 py-0.5 rounded text-xs font-medium ${
                       content.status === 'open' 
@@ -443,7 +478,7 @@ export default function AdminContentsPage() {
                         </svg>
                       </Link>
                     )}
-                    {content.type === 'question' && content.status === 'pending' && (
+                    {(content.type === 'question' && content.status === 'pending') && (
                       <button
                         onClick={() => {
                           setSelectedQuestion(content);
@@ -452,6 +487,21 @@ export default function AdminContentsPage() {
                         }}
                         className="p-1.5 text-green-400 hover:text-green-300 transition-colors"
                         title="답변하기"
+                      >
+                        <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 5v-5z" />
+                        </svg>
+                      </button>
+                    )}
+                    {content.type === 'request' && (
+                      <button
+                        onClick={() => {
+                          setSelectedQuestion(content);
+                          setAnswerContent('');
+                          setShowAnswerModal(true);
+                        }}
+                        className="p-1.5 text-green-400 hover:text-green-300 transition-colors"
+                        title="답글 달기"
                       >
                         <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 5v-5z" />
@@ -523,11 +573,13 @@ export default function AdminContentsPage() {
         </div>
       </main>
 
-      {/* 답변 모달 */}
+      {/* 답변/답글 모달 */}
       {showAnswerModal && selectedQuestion && (
         <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
           <div className="bg-zinc-900 border border-zinc-800 rounded-lg p-6 w-full max-w-2xl max-h-[80vh] overflow-y-auto">
-            <h3 className="text-xl font-semibold mb-4">질문 답변하기</h3>
+            <h3 className="text-xl font-semibold mb-4">
+              {selectedQuestion.type === 'request' ? '요청에 답글 달기' : '질문 답변하기'}
+            </h3>
             
             {/* 질문 내용 */}
             <div className="mb-4 bg-zinc-800/50 rounded-lg p-4">
@@ -547,16 +599,16 @@ export default function AdminContentsPage() {
               </div>
             </div>
 
-            {/* 답변 입력 */}
+            {/* 답변/답글 입력 */}
             <div className="mb-4">
               <label className="block text-sm font-medium text-zinc-300 mb-2">
-                답변 내용
+                {selectedQuestion.type === 'request' ? '답글 내용' : '답변 내용'}
               </label>
               <textarea
                 value={answerContent}
                 onChange={(e) => setAnswerContent(e.target.value)}
                 className="w-full px-4 py-2 bg-zinc-800 border border-zinc-700 rounded-lg text-zinc-100 placeholder-zinc-500 focus:outline-none focus:ring-2 focus:ring-brand-500 focus:border-transparent resize-none"
-                placeholder="답변을 입력하세요..."
+                placeholder={selectedQuestion.type === 'request' ? '답글을 입력하세요...' : '답변을 입력하세요...'}
                 rows={8}
               />
             </div>
@@ -567,7 +619,7 @@ export default function AdminContentsPage() {
                 onClick={handleAnswerQuestion}
                 className="flex-1 px-4 py-2 bg-brand-500 text-white rounded-lg hover:bg-brand-600"
               >
-                답변 등록
+                {selectedQuestion.type === 'request' ? '답글 등록' : '답변 등록'}
               </button>
               <button
                 onClick={() => {
