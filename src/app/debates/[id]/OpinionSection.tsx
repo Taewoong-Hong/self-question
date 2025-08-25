@@ -48,24 +48,24 @@ export default function OpinionSection({ debateId }: OpinionSectionProps) {
   }
 
   return (
-    <div className="bg-zinc-900/50 backdrop-blur-sm border border-zinc-800 rounded-xl p-4 sm:p-6">
-      <h2 className="text-base sm:text-lg font-semibold mb-3 sm:mb-4">의견 ({opinions.length})</h2>
+    <div className="bg-white dark:bg-zinc-900/50 backdrop-blur-sm border border-gray-200 dark:border-zinc-800 rounded-xl p-4 sm:p-6 shadow-sm dark:shadow-none">
+      <h2 className="text-base sm:text-lg font-semibold mb-3 sm:mb-4 text-zinc-900 dark:text-zinc-100">의견 ({opinions.length})</h2>
       
       <div className="space-y-4">
         {opinions.map((opinion) => (
-          <div key={opinion.id} className="bg-zinc-800/50 rounded-lg p-3 sm:p-4">
+          <div key={opinion.id} className="bg-gray-50 dark:bg-zinc-800/50 rounded-lg p-3 sm:p-4">
             <div className="flex items-start justify-between mb-1.5 sm:mb-2">
-              <span className="text-sm sm:text-base font-medium text-zinc-300">
+              <span className="text-sm sm:text-base font-medium text-zinc-700 dark:text-zinc-300">
                 {opinion.author_nickname || '익명'}
               </span>
-              <span className="text-xs sm:text-sm text-zinc-500">
+              <span className="text-xs sm:text-sm text-zinc-500 dark:text-zinc-500">
                 {formatDistanceToNow(new Date(opinion.created_at), { 
                   addSuffix: true, 
                   locale: ko 
                 })}
               </span>
             </div>
-            <p className="text-sm sm:text-base text-zinc-400 whitespace-pre-wrap">{opinion.content}</p>
+            <p className="text-sm sm:text-base text-zinc-600 dark:text-zinc-400 whitespace-pre-wrap">{opinion.content}</p>
           </div>
         ))}
       </div>
@@ -76,14 +76,14 @@ export default function OpinionSection({ debateId }: OpinionSectionProps) {
 // 스켈레톤 UI
 function OpinionSkeleton() {
   return (
-    <div className="bg-zinc-900/50 backdrop-blur-sm border border-zinc-800 rounded-xl p-4 sm:p-6">
+    <div className="bg-white dark:bg-zinc-900/50 backdrop-blur-sm border border-gray-200 dark:border-zinc-800 rounded-xl p-4 sm:p-6 shadow-sm dark:shadow-none">
       <div className="animate-pulse">
-        <div className="h-6 bg-zinc-800 rounded w-24 mb-4"></div>
+        <div className="h-6 bg-gray-200 dark:bg-zinc-800 rounded w-24 mb-4"></div>
         <div className="space-y-4">
           {[1, 2].map((i) => (
-            <div key={i} className="bg-zinc-800/50 rounded-lg p-3 sm:p-4">
-              <div className="h-4 bg-zinc-800 rounded w-20 mb-2"></div>
-              <div className="h-4 bg-zinc-800 rounded w-full"></div>
+            <div key={i} className="bg-gray-50 dark:bg-zinc-800/50 rounded-lg p-3 sm:p-4">
+              <div className="h-4 bg-gray-200 dark:bg-zinc-800 rounded w-20 mb-2"></div>
+              <div className="h-4 bg-gray-200 dark:bg-zinc-800 rounded w-full"></div>
             </div>
           ))}
         </div>

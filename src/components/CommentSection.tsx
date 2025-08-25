@@ -133,11 +133,11 @@ export default function CommentSection({ contentType, contentId }: CommentSectio
 
     return (
       <div key={comment._id} className={`${isReply ? 'ml-8' : ''} mb-4`}>
-        <div className="bg-zinc-900/50 border border-zinc-800 rounded-lg p-4">
+        <div className="bg-white dark:bg-zinc-900/50 border border-gray-200 dark:border-zinc-800 rounded-lg p-4 shadow-sm dark:shadow-none">
           <div className="flex items-center justify-between mb-2">
             <div className="flex items-center gap-2">
-              <span className="font-medium text-zinc-100">{comment.nickname}</span>
-              <span className="text-xs text-zinc-500">
+              <span className="font-medium text-zinc-900 dark:text-zinc-100">{comment.nickname}</span>
+              <span className="text-xs text-zinc-500 dark:text-zinc-500">
                 {new Date(comment.createdAt).toLocaleDateString('ko-KR', {
                   year: 'numeric',
                   month: '2-digit',
@@ -145,7 +145,7 @@ export default function CommentSection({ contentType, contentId }: CommentSectio
                 }).replace(/\. /g, '-').replace('.', '')}
               </span>
               {comment.updatedAt !== comment.createdAt && (
-                <span className="text-xs text-zinc-600">(수정됨)</span>
+                <span className="text-xs text-zinc-500 dark:text-zinc-600">(수정됨)</span>
               )}
             </div>
             <div className="flex items-center gap-2">
@@ -154,7 +154,7 @@ export default function CommentSection({ contentType, contentId }: CommentSectio
                   onClick={() => {
                     setReplyTo(comment._id);
                     }}
-                  className="text-xs text-zinc-400 hover:text-zinc-300"
+                  className="text-xs text-zinc-600 dark:text-zinc-400 hover:text-zinc-800 dark:hover:text-zinc-300"
                 >
                   답글
                 </button>
@@ -164,13 +164,13 @@ export default function CommentSection({ contentType, contentId }: CommentSectio
                   setEditingComment(comment._id);
                   setEditFormData({ password: '', content: comment.content });
                 }}
-                className="text-xs text-zinc-400 hover:text-zinc-300"
+                className="text-xs text-zinc-600 dark:text-zinc-400 hover:text-zinc-800 dark:hover:text-zinc-300"
               >
                 수정
               </button>
               <button
                 onClick={() => handleDelete(comment._id)}
-                className="text-xs text-zinc-400 hover:text-red-400"
+                className="text-xs text-zinc-600 dark:text-zinc-400 hover:text-red-600 dark:hover:text-red-400"
               >
                 삭제
               </button>
@@ -182,7 +182,7 @@ export default function CommentSection({ contentType, contentId }: CommentSectio
               <textarea
                 value={editFormData.content}
                 onChange={(e) => setEditFormData({ ...editFormData, content: e.target.value })}
-                className="w-full px-3 py-2 bg-zinc-800 border border-zinc-700 rounded-lg text-zinc-100 placeholder-zinc-500 focus:outline-none focus:ring-2 focus:ring-brand-500 focus:border-transparent resize-none"
+                className="w-full px-3 py-2 bg-gray-50 dark:bg-zinc-800 border border-gray-300 dark:border-zinc-700 rounded-lg text-zinc-900 dark:text-zinc-100 placeholder-zinc-400 dark:placeholder-zinc-500 focus:outline-none focus:ring-2 focus:ring-brand-500 focus:border-transparent resize-none"
                 rows={3}
               />
               <input
@@ -190,7 +190,7 @@ export default function CommentSection({ contentType, contentId }: CommentSectio
                 placeholder="비밀번호"
                 value={editFormData.password}
                 onChange={(e) => setEditFormData({ ...editFormData, password: e.target.value })}
-                className="w-full px-3 py-2 bg-zinc-800 border border-zinc-700 rounded-lg text-zinc-100 placeholder-zinc-500 focus:outline-none focus:ring-2 focus:ring-brand-500 focus:border-transparent"
+                className="w-full px-3 py-2 bg-gray-50 dark:bg-zinc-800 border border-gray-300 dark:border-zinc-700 rounded-lg text-zinc-900 dark:text-zinc-100 placeholder-zinc-400 dark:placeholder-zinc-500 focus:outline-none focus:ring-2 focus:ring-brand-500 focus:border-transparent"
               />
               <div className="flex gap-2">
                 <button
@@ -205,14 +205,14 @@ export default function CommentSection({ contentType, contentId }: CommentSectio
                     setEditingComment(null);
                     setEditFormData({ password: '', content: '' });
                   }}
-                  className="px-3 py-1 bg-zinc-700 text-zinc-300 rounded-lg hover:bg-zinc-600 text-sm"
+                  className="px-3 py-1 bg-gray-300 dark:bg-zinc-700 text-zinc-700 dark:text-zinc-300 rounded-lg hover:bg-gray-400 dark:hover:bg-zinc-600 text-sm"
                 >
                   취소
                 </button>
               </div>
             </div>
           ) : (
-            <p className="text-zinc-300 whitespace-pre-wrap">{comment.content}</p>
+            <p className="text-zinc-700 dark:text-zinc-300 whitespace-pre-wrap">{comment.content}</p>
           )}
         </div>
 
@@ -229,20 +229,20 @@ export default function CommentSection({ contentType, contentId }: CommentSectio
   return (
     <div className="mt-8">
       <div className="mb-4">
-        <h3 className="text-lg font-semibold text-zinc-100">
+        <h3 className="text-lg font-semibold text-zinc-900 dark:text-zinc-100">
           댓글 {comments.reduce((acc, c) => acc + 1 + (c.replies?.length || 0), 0)}
         </h3>
       </div>
 
       {/* 댓글 작성 폼 - 항상 표시 */}
-      <form onSubmit={handleSubmit} className="mb-6 bg-zinc-900/50 border border-zinc-800 rounded-lg p-4">
+      <form onSubmit={handleSubmit} className="mb-6 bg-white dark:bg-zinc-900/50 border border-gray-200 dark:border-zinc-800 rounded-lg p-4 shadow-sm dark:shadow-none">
           {replyTo && (
-            <div className="mb-2 text-sm text-zinc-400">
+            <div className="mb-2 text-sm text-zinc-600 dark:text-zinc-400">
               답글 작성 중... 
               <button
                 type="button"
                 onClick={() => setReplyTo(null)}
-                className="ml-2 text-zinc-500 hover:text-zinc-300"
+                className="ml-2 text-zinc-500 dark:text-zinc-500 hover:text-zinc-700 dark:hover:text-zinc-300"
               >
                 취소
               </button>
@@ -255,7 +255,7 @@ export default function CommentSection({ contentType, contentId }: CommentSectio
               placeholder="닉네임"
               value={formData.nickname}
               onChange={(e) => setFormData({ ...formData, nickname: e.target.value })}
-              className="px-3 py-2 bg-zinc-800 border border-zinc-700 rounded-lg text-zinc-100 placeholder-zinc-500 focus:outline-none focus:ring-2 focus:ring-brand-500 focus:border-transparent"
+              className="px-3 py-2 bg-gray-50 dark:bg-zinc-800 border border-gray-300 dark:border-zinc-700 rounded-lg text-zinc-900 dark:text-zinc-100 placeholder-zinc-400 dark:placeholder-zinc-500 focus:outline-none focus:ring-2 focus:ring-brand-500 focus:border-transparent"
               maxLength={20}
             />
             <input
@@ -263,7 +263,7 @@ export default function CommentSection({ contentType, contentId }: CommentSectio
               placeholder="비밀번호 (수정/삭제 시 필요)"
               value={formData.password}
               onChange={(e) => setFormData({ ...formData, password: e.target.value })}
-              className="px-3 py-2 bg-zinc-800 border border-zinc-700 rounded-lg text-zinc-100 placeholder-zinc-500 focus:outline-none focus:ring-2 focus:ring-brand-500 focus:border-transparent"
+              className="px-3 py-2 bg-gray-50 dark:bg-zinc-800 border border-gray-300 dark:border-zinc-700 rounded-lg text-zinc-900 dark:text-zinc-100 placeholder-zinc-400 dark:placeholder-zinc-500 focus:outline-none focus:ring-2 focus:ring-brand-500 focus:border-transparent"
             />
           </div>
           
@@ -271,13 +271,13 @@ export default function CommentSection({ contentType, contentId }: CommentSectio
             placeholder="댓글을 입력하세요..."
             value={formData.content}
             onChange={(e) => setFormData({ ...formData, content: e.target.value })}
-            className="w-full px-3 py-2 bg-zinc-800 border border-zinc-700 rounded-lg text-zinc-100 placeholder-zinc-500 focus:outline-none focus:ring-2 focus:ring-brand-500 focus:border-transparent resize-none mb-3"
+            className="w-full px-3 py-2 bg-gray-50 dark:bg-zinc-800 border border-gray-300 dark:border-zinc-700 rounded-lg text-zinc-900 dark:text-zinc-100 placeholder-zinc-400 dark:placeholder-zinc-500 focus:outline-none focus:ring-2 focus:ring-brand-500 focus:border-transparent resize-none mb-3"
             rows={4}
             maxLength={500}
           />
           
           <div className="flex items-center justify-between">
-            <span className="text-xs text-zinc-500">
+            <span className="text-xs text-zinc-500 dark:text-zinc-500">
               {formData.content.length}/500
             </span>
             <button
@@ -296,7 +296,7 @@ export default function CommentSection({ contentType, contentId }: CommentSectio
       {/* 댓글 목록 */}
       <div className="space-y-4">
         {comments.length === 0 ? (
-          <p className="text-center text-zinc-500 py-8">
+          <p className="text-center text-zinc-500 dark:text-zinc-500 py-8">
             아직 댓글이 없습니다. 첫 번째 댓글을 작성해보세요!
           </p>
         ) : (

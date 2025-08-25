@@ -213,7 +213,7 @@ export default function SurveyForm({ surveyId, questions, onComplete }: SurveyFo
           <div className="space-y-2">
             {question.properties?.choices?.map((choice: any, index: number) => (
               <div key={choice.id || index}>
-                <label className="flex items-center gap-3 p-3 bg-zinc-800/50 rounded-lg cursor-pointer hover:bg-zinc-800">
+                <label className="flex items-center gap-3 p-3 bg-gray-100 dark:bg-zinc-800/50 rounded-lg cursor-pointer hover:bg-gray-200 dark:hover:bg-zinc-800">
                   <input
                     type="radio"
                     name={question._id}
@@ -222,7 +222,7 @@ export default function SurveyForm({ surveyId, questions, onComplete }: SurveyFo
                     onChange={(e) => handleResponseChange(question._id, e.target.value)}
                     className="text-surbate focus:ring-surbate"
                   />
-                  <span className="text-zinc-100">{choice.label}</span>
+                  <span className="text-zinc-900 dark:text-zinc-100">{choice.label}</span>
                 </label>
                 {choice.is_other && value === choice.id && (
                   <input
@@ -230,7 +230,7 @@ export default function SurveyForm({ surveyId, questions, onComplete }: SurveyFo
                     value={otherTexts[question._id] || ''}
                     onChange={(e) => setOtherTexts({ ...otherTexts, [question._id]: e.target.value })}
                     placeholder="기타 내용을 입력해주세요"
-                    className="mt-2 ml-8 w-full px-3 py-2 bg-zinc-900 border border-zinc-800 rounded-lg text-zinc-100 placeholder-zinc-500 focus:outline-none focus:ring-2 focus:ring-surbate focus:border-transparent"
+                    className="mt-2 ml-8 w-full px-3 py-2 bg-gray-50 dark:bg-zinc-900 border border-gray-300 dark:border-zinc-800 rounded-lg text-zinc-900 dark:text-zinc-100 placeholder-zinc-400 dark:placeholder-zinc-500 focus:outline-none focus:ring-2 focus:ring-surbate focus:border-transparent"
                   />
                 )}
               </div>
@@ -243,7 +243,7 @@ export default function SurveyForm({ surveyId, questions, onComplete }: SurveyFo
           <div className="space-y-2">
             {question.properties?.choices?.map((choice: any, index: number) => (
               <div key={choice.id || index}>
-                <label className="flex items-center gap-3 p-3 bg-zinc-800/50 rounded-lg cursor-pointer hover:bg-zinc-800">
+                <label className="flex items-center gap-3 p-3 bg-gray-100 dark:bg-zinc-800/50 rounded-lg cursor-pointer hover:bg-gray-200 dark:hover:bg-zinc-800">
                   <input
                     type="checkbox"
                     value={choice.id}
@@ -258,7 +258,7 @@ export default function SurveyForm({ surveyId, questions, onComplete }: SurveyFo
                     }}
                     className="text-surbate focus:ring-surbate"
                   />
-                  <span className="text-zinc-100">{choice.label}</span>
+                  <span className="text-zinc-900 dark:text-zinc-100">{choice.label}</span>
                 </label>
                 {choice.is_other && Array.isArray(value) && value.includes(choice.id) && (
                   <input
@@ -266,7 +266,7 @@ export default function SurveyForm({ surveyId, questions, onComplete }: SurveyFo
                     value={otherTexts[`${question._id}_${choice.id}`] || ''}
                     onChange={(e) => setOtherTexts({ ...otherTexts, [`${question._id}_${choice.id}`]: e.target.value })}
                     placeholder="기타 내용을 입력해주세요"
-                    className="mt-2 ml-8 w-full px-3 py-2 bg-zinc-900 border border-zinc-800 rounded-lg text-zinc-100 placeholder-zinc-500 focus:outline-none focus:ring-2 focus:ring-surbate focus:border-transparent"
+                    className="mt-2 ml-8 w-full px-3 py-2 bg-gray-50 dark:bg-zinc-900 border border-gray-300 dark:border-zinc-800 rounded-lg text-zinc-900 dark:text-zinc-100 placeholder-zinc-400 dark:placeholder-zinc-500 focus:outline-none focus:ring-2 focus:ring-surbate focus:border-transparent"
                   />
                 )}
               </div>
@@ -280,7 +280,7 @@ export default function SurveyForm({ surveyId, questions, onComplete }: SurveyFo
             type="text"
             value={value || ''}
             onChange={(e) => handleResponseChange(question._id, e.target.value)}
-            className="w-full px-4 py-2 bg-zinc-900 border border-zinc-800 rounded-lg text-zinc-100 placeholder-zinc-500 focus:outline-none focus:ring-2 focus:ring-brand-500 focus:border-transparent"
+            className="w-full px-4 py-2 bg-gray-50 dark:bg-zinc-900 border border-gray-300 dark:border-zinc-800 rounded-lg text-zinc-900 dark:text-zinc-100 placeholder-zinc-400 dark:placeholder-zinc-500 focus:outline-none focus:ring-2 focus:ring-brand-500 focus:border-transparent"
             placeholder="답변을 입력하세요"
           />
         );
@@ -291,7 +291,7 @@ export default function SurveyForm({ surveyId, questions, onComplete }: SurveyFo
             value={value || ''}
             onChange={(e) => handleResponseChange(question._id, e.target.value)}
             rows={4}
-            className="w-full px-4 py-2 bg-zinc-900 border border-zinc-800 rounded-lg text-zinc-100 placeholder-zinc-500 focus:outline-none focus:ring-2 focus:ring-brand-500 focus:border-transparent"
+            className="w-full px-4 py-2 bg-gray-50 dark:bg-zinc-900 border border-gray-300 dark:border-zinc-800 rounded-lg text-zinc-900 dark:text-zinc-100 placeholder-zinc-400 dark:placeholder-zinc-500 focus:outline-none focus:ring-2 focus:ring-brand-500 focus:border-transparent"
             placeholder="답변을 입력하세요"
           />
         );
@@ -307,7 +307,7 @@ export default function SurveyForm({ surveyId, questions, onComplete }: SurveyFo
                 className={`w-12 h-12 rounded-lg font-medium transition-colors ${
                   value === rating
                     ? 'bg-surbate text-zinc-900'
-                    : 'bg-zinc-800 text-zinc-400 hover:bg-zinc-700'
+                    : 'bg-gray-200 dark:bg-zinc-800 text-zinc-600 dark:text-zinc-400 hover:bg-gray-300 dark:hover:bg-zinc-700'
                 }`}
               >
                 {rating}
@@ -322,14 +322,14 @@ export default function SurveyForm({ surveyId, questions, onComplete }: SurveyFo
   };
 
   return (
-    <div className="bg-zinc-900/50 backdrop-blur-sm border border-zinc-800 rounded-xl p-4 sm:p-6">
+    <div className="bg-white dark:bg-zinc-900/50 backdrop-blur-sm border border-gray-200 dark:border-zinc-800 rounded-xl p-4 sm:p-6 shadow-sm dark:shadow-none">
       {/* 진행률 표시 */}
       <div className="mb-6">
-        <div className="flex justify-between text-sm text-zinc-400 mb-2">
+        <div className="flex justify-between text-sm text-zinc-600 dark:text-zinc-400 mb-2">
           <span>질문 {currentQuestionIndex + 1} / {visibleQuestions.length}</span>
           <span>{Math.round(progress)}% 완료</span>
         </div>
-        <div className="w-full bg-zinc-800 rounded-full h-2">
+        <div className="w-full bg-gray-200 dark:bg-zinc-800 rounded-full h-2">
           <div 
             className="bg-gradient-to-r from-surbate to-brand-600 h-2 rounded-full transition-all duration-300"
             style={{ width: `${progress}%` }}
@@ -339,18 +339,18 @@ export default function SurveyForm({ surveyId, questions, onComplete }: SurveyFo
 
       {/* 현재 질문 */}
       <div className="mb-8">
-        <h2 className="text-lg sm:text-xl font-semibold text-zinc-100 mb-2">
+        <h2 className="text-lg sm:text-xl font-semibold text-zinc-900 dark:text-zinc-100 mb-2">
           {currentQuestion.title}
-          {currentQuestion.required && <span className="text-red-400 ml-1">*</span>}
+          {currentQuestion.required && <span className="text-red-600 dark:text-red-400 ml-1">*</span>}
         </h2>
         {currentQuestion.description && (
-          <p className="text-sm text-zinc-400 mb-4 whitespace-pre-wrap">{currentQuestion.description}</p>
+          <p className="text-sm text-zinc-600 dark:text-zinc-400 mb-4 whitespace-pre-wrap">{currentQuestion.description}</p>
         )}
         
         {renderQuestionInput(currentQuestion)}
         
         {errors[currentQuestion._id] && (
-          <p className="text-red-400 text-sm mt-2">{errors[currentQuestion._id]}</p>
+          <p className="text-red-600 dark:text-red-400 text-sm mt-2">{errors[currentQuestion._id]}</p>
         )}
       </div>
 
@@ -360,7 +360,7 @@ export default function SurveyForm({ surveyId, questions, onComplete }: SurveyFo
           type="button"
           onClick={handlePrevious}
           disabled={currentQuestionIndex === 0}
-          className="px-4 py-2 text-sm bg-zinc-800 text-zinc-100 rounded-lg hover:bg-zinc-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+          className="px-4 py-2 text-sm bg-gray-200 dark:bg-zinc-800 text-zinc-700 dark:text-zinc-100 rounded-lg hover:bg-gray-300 dark:hover:bg-zinc-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
         >
           이전
         </button>

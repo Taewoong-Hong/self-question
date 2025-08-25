@@ -57,12 +57,12 @@ export default function SurveyClient({ survey }: SurveyProps) {
       {/* 헤더 - 제목과 버튼을 한 행에 표시 */}
       <div className="mb-6">
         <div className="flex items-start justify-between gap-4">
-          <h1 className="text-xl sm:text-2xl lg:text-3xl font-bold">{survey.title}</h1>
+          <h1 className="text-xl sm:text-2xl lg:text-3xl font-bold text-zinc-900 dark:text-zinc-100">{survey.title}</h1>
           {/* 우측 버튼들 */}
           <div className="flex gap-2 flex-shrink-0">
             <Link
               href="/surveys"
-              className="p-2 bg-zinc-800 text-zinc-100 rounded-lg hover:bg-zinc-700 transition-colors"
+              className="p-2 bg-gray-200 dark:bg-zinc-800 text-zinc-700 dark:text-zinc-100 rounded-lg hover:bg-gray-300 dark:hover:bg-zinc-700 transition-colors"
               title="설문 목록으로"
             >
               <svg 
@@ -78,7 +78,7 @@ export default function SurveyClient({ survey }: SurveyProps) {
             </Link>
             <Link
               href={`/surveys/${survey.id}/admin`}
-              className="p-2 bg-zinc-800 text-zinc-100 rounded-lg hover:bg-zinc-700 transition-colors"
+              className="p-2 bg-gray-200 dark:bg-zinc-800 text-zinc-700 dark:text-zinc-100 rounded-lg hover:bg-gray-300 dark:hover:bg-zinc-700 transition-colors"
               title="설문 관리"
             >
               <svg 
@@ -98,9 +98,9 @@ export default function SurveyClient({ survey }: SurveyProps) {
         {/* 설명 및 메타 정보 */}
         <div>
           {survey.description && (
-            <p className="text-zinc-400 text-sm sm:text-base lg:text-lg whitespace-pre-wrap mt-2">{survey.description}</p>
+            <p className="text-zinc-600 dark:text-zinc-400 text-sm sm:text-base lg:text-lg whitespace-pre-wrap mt-2">{survey.description}</p>
           )}
-          <div className="flex flex-wrap items-center gap-2 sm:gap-4 mt-3 text-xs sm:text-sm text-zinc-500">
+          <div className="flex flex-wrap items-center gap-2 sm:gap-4 mt-3 text-xs sm:text-sm text-zinc-600 dark:text-zinc-500">
             <span>응답 {stats.response_count}명</span>
             <span>•</span>
             <span>작성자: {survey.author_nickname || '익명'}</span>
@@ -140,7 +140,7 @@ export default function SurveyClient({ survey }: SurveyProps) {
               {survey.tags.map((tag, index) => (
                 <span 
                   key={index}
-                  className="inline-flex items-center px-2 py-0.5 rounded text-xs bg-zinc-800 text-zinc-400"
+                  className="inline-flex items-center px-2 py-0.5 rounded text-xs bg-gray-200 dark:bg-zinc-800 text-zinc-700 dark:text-zinc-400"
                 >
                   #{tag}
                 </span>
@@ -155,14 +155,14 @@ export default function SurveyClient({ survey }: SurveyProps) {
         <>
           {survey.status === 'closed' ? (
             <>
-              <div className="bg-red-900/20 border border-red-800/50 rounded-xl p-6 mb-6">
-                <h2 className="text-xl font-semibold text-red-400 mb-2 text-center">종료된 설문입니다</h2>
-                <p className="text-center text-zinc-400">
+              <div className="bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800/50 rounded-xl p-6 mb-6">
+                <h2 className="text-xl font-semibold text-red-600 dark:text-red-400 mb-2 text-center">종료된 설문입니다</h2>
+                <p className="text-center text-zinc-600 dark:text-zinc-400">
                   이 설문은 종료되어 더 이상 응답할 수 없습니다.
                 </p>
               </div>
               <div className="relative">
-                <div className="absolute inset-0 bg-zinc-950/50 backdrop-blur-sm z-10 rounded-xl" />
+                <div className="absolute inset-0 bg-gray-100/50 dark:bg-zinc-950/50 backdrop-blur-sm z-10 rounded-xl" />
                 <div className="opacity-50 pointer-events-none">
                   <SurveyForm 
                     surveyId={survey.id} 
@@ -173,9 +173,9 @@ export default function SurveyClient({ survey }: SurveyProps) {
               </div>
             </>
           ) : survey.status === 'draft' ? (
-            <div className="bg-yellow-900/20 border border-yellow-800/50 rounded-xl p-6 mb-6">
-              <h2 className="text-xl font-semibold text-yellow-400 mb-2 text-center">준비중인 설문입니다</h2>
-              <p className="text-center text-zinc-400">
+            <div className="bg-yellow-50 dark:bg-yellow-900/20 border border-yellow-200 dark:border-yellow-800/50 rounded-xl p-6 mb-6">
+              <h2 className="text-xl font-semibold text-yellow-600 dark:text-yellow-400 mb-2 text-center">준비중인 설문입니다</h2>
+              <p className="text-center text-zinc-600 dark:text-zinc-400">
                 이 설문은 아직 시작되지 않았습니다.
               </p>
             </div>
@@ -187,14 +187,14 @@ export default function SurveyClient({ survey }: SurveyProps) {
             />
           ) : survey.status === 'open' && hasResponded ? (
             <>
-              <div className="bg-zinc-900/50 backdrop-blur-sm border border-zinc-800 rounded-xl p-6 mb-6">
-                <h2 className="text-xl font-semibold text-surbate mb-2 text-center">이미 응답하신 설문입니다</h2>
-                <p className="text-center text-zinc-400">
+              <div className="bg-white dark:bg-zinc-900/50 backdrop-blur-sm border border-gray-200 dark:border-zinc-800 rounded-xl p-6 mb-6 shadow-sm dark:shadow-none">
+                <h2 className="text-xl font-semibold text-surbate dark:text-surbate mb-2 text-center">이미 응답하신 설문입니다</h2>
+                <p className="text-center text-zinc-600 dark:text-zinc-400">
                   귀하의 응답이 저장되었습니다. 감사합니다!
                 </p>
               </div>
               <div className="relative">
-                <div className="absolute inset-0 bg-zinc-950/50 backdrop-blur-sm z-10 rounded-xl" />
+                <div className="absolute inset-0 bg-gray-100/50 dark:bg-zinc-950/50 backdrop-blur-sm z-10 rounded-xl" />
                 <div className="opacity-50 pointer-events-none">
                   <SurveyForm 
                     surveyId={survey.id} 

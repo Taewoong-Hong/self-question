@@ -31,12 +31,12 @@ export default function DebateClient({ debate }: DebateProps) {
       {/* 헤더 - 제목과 버튼을 한 행에 표시 */}
       <div className="mb-6">
         <div className="flex items-start justify-between gap-4">
-          <h1 className="text-xl sm:text-2xl lg:text-3xl font-bold">{debate.title}</h1>
+          <h1 className="text-xl sm:text-2xl lg:text-3xl font-bold text-zinc-900 dark:text-zinc-100">{debate.title}</h1>
           {/* 우측 버튼들 */}
           <div className="flex gap-2 flex-shrink-0">
             <Link
               href="/debates"
-              className="p-2 bg-zinc-800 text-zinc-100 rounded-lg hover:bg-zinc-700 transition-colors"
+              className="p-2 bg-gray-200 dark:bg-zinc-800 text-zinc-700 dark:text-zinc-100 rounded-lg hover:bg-gray-300 dark:hover:bg-zinc-700 transition-colors"
               title="투표 목록으로"
             >
               <svg 
@@ -52,7 +52,7 @@ export default function DebateClient({ debate }: DebateProps) {
             </Link>
             <Link
               href={`/debates/${debate.id}/admin`}
-              className="p-2 bg-zinc-800 text-zinc-100 rounded-lg hover:bg-zinc-700 transition-colors"
+              className="p-2 bg-gray-200 dark:bg-zinc-800 text-zinc-700 dark:text-zinc-100 rounded-lg hover:bg-gray-300 dark:hover:bg-zinc-700 transition-colors"
               title="투표 관리"
             >
               <svg 
@@ -72,9 +72,9 @@ export default function DebateClient({ debate }: DebateProps) {
         {/* 설명 및 메타 정보 */}
         <div>
             {debate.description && (
-              <p className="text-zinc-400 text-sm sm:text-base lg:text-lg whitespace-pre-wrap">{debate.description}</p>
+              <p className="text-zinc-600 dark:text-zinc-400 text-sm sm:text-base lg:text-lg whitespace-pre-wrap">{debate.description}</p>
             )}
-            <div className="flex flex-wrap items-center gap-2 sm:gap-4 mt-3 text-xs sm:text-sm text-zinc-500">
+            <div className="flex flex-wrap items-center gap-2 sm:gap-4 mt-3 text-xs sm:text-sm text-zinc-600 dark:text-zinc-500">
               <span>작성자: {debate.author_nickname || '익명'}</span>
               <span>•</span>
               <span>
@@ -102,7 +102,7 @@ export default function DebateClient({ debate }: DebateProps) {
                 {debate.tags.map((tag, index) => (
                   <span 
                     key={index}
-                    className="inline-flex items-center px-2 py-0.5 rounded text-xs bg-zinc-800 text-zinc-400"
+                    className="inline-flex items-center px-2 py-0.5 rounded text-xs bg-gray-200 dark:bg-zinc-800 text-zinc-700 dark:text-zinc-400"
                   >
                     #{tag}
                   </span>

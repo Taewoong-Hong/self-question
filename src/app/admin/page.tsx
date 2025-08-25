@@ -62,23 +62,23 @@ export default function AdminLoginPage() {
   };
 
   return (
-    <div className="min-h-screen bg-zinc-950 flex items-center justify-center p-4">
-      <div className="bg-zinc-900/50 backdrop-blur-sm border border-zinc-800 rounded-xl p-8 w-full max-w-md">
+    <div className="min-h-screen bg-gray-50 dark:bg-zinc-950 flex items-center justify-center p-4">
+      <div className="bg-white dark:bg-zinc-900/50 backdrop-blur-sm border border-gray-200 dark:border-zinc-800 rounded-xl p-8 w-full max-w-md shadow-lg dark:shadow-none">
         <div className="text-center mb-8">
-          <h1 className="text-2xl font-bold text-zinc-100 mb-2">관리자 로그인</h1>
-          <p className="text-zinc-400 text-sm">Surbate 관리자 페이지</p>
+          <h1 className="text-2xl font-bold text-zinc-900 dark:text-zinc-100 mb-2">관리자 로그인</h1>
+          <p className="text-zinc-600 dark:text-zinc-400 text-sm">Surbate 관리자 페이지</p>
         </div>
         
         <form onSubmit={handleSubmit} className="space-y-6">
           <div>
-            <label className="block text-sm font-medium text-zinc-300 mb-2">
+            <label className="block text-sm font-medium text-zinc-700 dark:text-zinc-300 mb-2">
               아이디
             </label>
             <input
               type="text"
               value={username}
               onChange={(e) => setUsername(e.target.value)}
-              className="w-full px-4 py-2 bg-zinc-900 border border-zinc-800 rounded-lg text-zinc-100 placeholder-zinc-500 focus:outline-none focus:ring-2 focus:ring-surbate focus:border-transparent"
+              className="w-full px-4 py-2 bg-gray-50 dark:bg-zinc-900 border border-gray-300 dark:border-zinc-800 rounded-lg text-zinc-900 dark:text-zinc-100 placeholder-zinc-400 dark:placeholder-zinc-500 focus:outline-none focus:ring-2 focus:ring-surbate focus:border-transparent"
               placeholder="관리자 아이디"
               required
               autoFocus
@@ -86,22 +86,22 @@ export default function AdminLoginPage() {
           </div>
           
           <div>
-            <label className="block text-sm font-medium text-zinc-300 mb-2">
+            <label className="block text-sm font-medium text-zinc-700 dark:text-zinc-300 mb-2">
               비밀번호
             </label>
             <input
               type="password"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
-              className="w-full px-4 py-2 bg-zinc-900 border border-zinc-800 rounded-lg text-zinc-100 placeholder-zinc-500 focus:outline-none focus:ring-2 focus:ring-surbate focus:border-transparent"
+              className="w-full px-4 py-2 bg-gray-50 dark:bg-zinc-900 border border-gray-300 dark:border-zinc-800 rounded-lg text-zinc-900 dark:text-zinc-100 placeholder-zinc-400 dark:placeholder-zinc-500 focus:outline-none focus:ring-2 focus:ring-surbate focus:border-transparent"
               placeholder="비밀번호"
               required
             />
           </div>
           
           {error && (
-            <div className="bg-red-900/20 border border-red-900/50 rounded-lg p-3">
-              <p className="text-red-400 text-sm">{error}</p>
+            <div className="bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-900/50 rounded-lg p-3">
+              <p className="text-red-600 dark:text-red-400 text-sm">{error}</p>
             </div>
           )}
           
@@ -117,7 +117,7 @@ export default function AdminLoginPage() {
         <div className="mt-6 text-center">
           <Link
             href="/"
-            className="text-zinc-400 hover:text-zinc-100 text-sm transition-colors"
+            className="text-zinc-600 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-zinc-100 text-sm transition-colors"
           >
             ← 메인으로 돌아가기
           </Link>

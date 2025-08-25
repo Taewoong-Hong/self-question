@@ -76,7 +76,7 @@ export default function RequestDetailPage({ params }: { params: { id: string } }
   if (loading) {
     return (
       <div className="min-h-screen flex items-center justify-center">
-        <div className="inline-block animate-spin rounded-full h-8 w-8 border-b-2 border-zinc-100"></div>
+        <div className="inline-block animate-spin rounded-full h-8 w-8 border-b-2 border-zinc-700 dark:border-zinc-100"></div>
       </div>
     );
   }
@@ -92,7 +92,7 @@ export default function RequestDetailPage({ params }: { params: { id: string } }
         <div className="flex items-center justify-between mb-4">
           <Link
             href="/requests"
-            className="p-2 rounded-lg hover:bg-zinc-900 transition-colors"
+            className="p-2 rounded-lg hover:bg-gray-200 dark:hover:bg-zinc-900 transition-colors text-zinc-700 dark:text-zinc-300"
           >
             <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
@@ -104,13 +104,13 @@ export default function RequestDetailPage({ params }: { params: { id: string } }
               <>
                 <button
                   onClick={() => setIsEditing(true)}
-                  className="px-4 py-2 text-zinc-400 hover:text-zinc-200 transition-colors"
+                  className="px-4 py-2 text-zinc-600 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-zinc-200 transition-colors"
                 >
                   수정
                 </button>
                 <button
                   onClick={handleDelete}
-                  className="px-4 py-2 text-red-400 hover:text-red-300 transition-colors"
+                  className="px-4 py-2 text-red-600 dark:text-red-400 hover:text-red-700 dark:hover:text-red-300 transition-colors"
                 >
                   삭제
                 </button>
@@ -127,7 +127,7 @@ export default function RequestDetailPage({ params }: { params: { id: string } }
                       password: ''
                     });
                   }}
-                  className="px-4 py-2 text-zinc-400 hover:text-zinc-200 transition-colors"
+                  className="px-4 py-2 text-zinc-600 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-zinc-200 transition-colors"
                 >
                   취소
                 </button>
@@ -144,31 +144,31 @@ export default function RequestDetailPage({ params }: { params: { id: string } }
       </div>
 
       {/* 내용 */}
-      <div className="bg-zinc-900 rounded-lg border border-zinc-800 p-8">
+      <div className="bg-white dark:bg-zinc-900 rounded-lg border border-gray-200 dark:border-zinc-800 p-8 shadow-sm dark:shadow-none">
         {isEditing ? (
           // 수정 모드
           <div className="space-y-6">
             <div>
-              <label className="block text-sm font-medium text-zinc-400 mb-2">
+              <label className="block text-sm font-medium text-zinc-700 dark:text-zinc-400 mb-2">
                 제목
               </label>
               <input
                 type="text"
                 value={editData.title}
                 onChange={(e) => setEditData({ ...editData, title: e.target.value })}
-                className="w-full px-4 py-2 bg-zinc-800 border border-zinc-700 rounded-lg text-zinc-100 placeholder-zinc-500 focus:outline-none focus:ring-2 focus:ring-brand-500 focus:border-transparent"
+                className="w-full px-4 py-2 bg-gray-50 dark:bg-zinc-800 border border-gray-300 dark:border-zinc-700 rounded-lg text-zinc-900 dark:text-zinc-100 placeholder-zinc-400 dark:placeholder-zinc-500 focus:outline-none focus:ring-2 focus:ring-brand-500 focus:border-transparent"
                 maxLength={100}
               />
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-zinc-400 mb-2">
+              <label className="block text-sm font-medium text-zinc-700 dark:text-zinc-400 mb-2">
                 내용
               </label>
               <textarea
                 value={editData.content}
                 onChange={(e) => setEditData({ ...editData, content: e.target.value })}
-                className="w-full px-4 py-3 bg-zinc-800 border border-zinc-700 rounded-lg text-zinc-100 placeholder-zinc-500 focus:outline-none focus:ring-2 focus:ring-brand-500 focus:border-transparent resize-none"
+                className="w-full px-4 py-3 bg-gray-50 dark:bg-zinc-800 border border-gray-300 dark:border-zinc-700 rounded-lg text-zinc-900 dark:text-zinc-100 placeholder-zinc-400 dark:placeholder-zinc-500 focus:outline-none focus:ring-2 focus:ring-brand-500 focus:border-transparent resize-none"
                 rows={12}
                 maxLength={2000}
               />
@@ -180,31 +180,31 @@ export default function RequestDetailPage({ params }: { params: { id: string } }
                   type="checkbox"
                   checked={editData.is_public}
                   onChange={(e) => setEditData({ ...editData, is_public: e.target.checked })}
-                  className="w-4 h-4 bg-zinc-800 border-zinc-600 rounded text-brand-500 focus:ring-brand-500 focus:ring-offset-0"
+                  className="w-4 h-4 bg-gray-50 dark:bg-zinc-800 border-gray-300 dark:border-zinc-600 rounded text-brand-500 focus:ring-brand-500 focus:ring-offset-0"
                 />
-                <span className="text-sm text-zinc-300">공개 게시</span>
+                <span className="text-sm text-zinc-700 dark:text-zinc-300">공개 게시</span>
               </label>
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-zinc-400 mb-2">
-                비밀번호 <span className="text-red-400">*</span>
+              <label className="block text-sm font-medium text-zinc-700 dark:text-zinc-400 mb-2">
+                비밀번호 <span className="text-red-600 dark:text-red-400">*</span>
               </label>
               <input
                 type="password"
                 value={editData.password}
                 onChange={(e) => setEditData({ ...editData, password: e.target.value })}
                 placeholder="수정하려면 비밀번호를 입력하세요"
-                className="w-full max-w-xs px-4 py-2 bg-zinc-800 border border-zinc-700 rounded-lg text-zinc-100 placeholder-zinc-500 focus:outline-none focus:ring-2 focus:ring-brand-500 focus:border-transparent"
+                className="w-full max-w-xs px-4 py-2 bg-gray-50 dark:bg-zinc-800 border border-gray-300 dark:border-zinc-700 rounded-lg text-zinc-900 dark:text-zinc-100 placeholder-zinc-400 dark:placeholder-zinc-500 focus:outline-none focus:ring-2 focus:ring-brand-500 focus:border-transparent"
               />
             </div>
           </div>
         ) : (
           // 보기 모드
           <>
-            <div className="mb-6 pb-6 border-b border-zinc-800">
-              <h1 className="text-2xl font-bold mb-4">{request.title}</h1>
-              <div className="flex items-center gap-4 text-sm text-zinc-500">
+            <div className="mb-6 pb-6 border-b border-gray-200 dark:border-zinc-800">
+              <h1 className="text-2xl font-bold mb-4 text-zinc-900 dark:text-zinc-100">{request.title}</h1>
+              <div className="flex items-center gap-4 text-sm text-zinc-600 dark:text-zinc-500">
                 <span>작성자: {request.author_nickname}</span>
                 <span>•</span>
                 <span>조회 {request.views}</span>
@@ -218,25 +218,25 @@ export default function RequestDetailPage({ params }: { params: { id: string } }
                 {!request.is_public && (
                   <>
                     <span>•</span>
-                    <span className="text-zinc-400">🔒 비공개</span>
+                    <span className="text-zinc-500 dark:text-zinc-400">🔒 비공개</span>
                   </>
                 )}
               </div>
             </div>
 
             <div className="prose prose-invert max-w-none">
-              <p className="text-zinc-300 whitespace-pre-wrap">{request.content}</p>
+              <p className="text-zinc-700 dark:text-zinc-300 whitespace-pre-wrap">{request.content}</p>
             </div>
 
             {/* 관리자 답글 */}
             {request.admin_reply && (
-              <div className="mt-8 pt-8 border-t border-zinc-800">
-                <div className="bg-zinc-800/50 rounded-lg p-6">
+              <div className="mt-8 pt-8 border-t border-gray-200 dark:border-zinc-800">
+                <div className="bg-gray-100 dark:bg-zinc-800/50 rounded-lg p-6">
                   <div className="flex items-center gap-2 mb-3">
                     <span className="inline-flex items-center px-2.5 py-0.5 rounded text-xs font-medium bg-brand-500/20 text-brand-400">
                       관리자 답글
                     </span>
-                    <span className="text-xs text-zinc-500">
+                    <span className="text-xs text-zinc-600 dark:text-zinc-500">
                       {request.admin_reply.replied_by} • {' '}
                       {formatDistanceToNow(new Date(request.admin_reply.replied_at), {
                         addSuffix: true,
