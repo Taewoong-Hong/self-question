@@ -22,9 +22,9 @@ export async function POST(
       );
     }
     
-    if (!adminUser.isAdmin || !adminUser.isSuperAdmin) {
+    if (!adminUser.isAdmin) {
       return NextResponse.json(
-        { error: '슈퍼 관리자 권한이 필요합니다.' },
+        { error: '관리자 권한이 필요합니다.' },
         { status: 403 }
       );
     }
@@ -58,7 +58,7 @@ export async function POST(
     requestDoc.admin_reply = {
       content: content.trim(),
       replied_at: new Date(),
-      replied_by: adminUser.username || 'Super Admin'
+      replied_by: adminUser.username || 'Admin'
     };
     
     await requestDoc.save();
