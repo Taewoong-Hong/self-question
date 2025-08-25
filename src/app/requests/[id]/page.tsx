@@ -244,7 +244,7 @@ export default function RequestDetailPage({ params }: { params: { id: string } }
                       })}
                     </span>
                   </div>
-                  <p className="text-zinc-300 whitespace-pre-wrap">{request.admin_reply.content}</p>
+                  <p className="text-zinc-700 dark:text-zinc-300 whitespace-pre-wrap">{request.admin_reply.content}</p>
                 </div>
               </div>
             )}

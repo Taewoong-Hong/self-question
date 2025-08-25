@@ -68,7 +68,7 @@ function LayoutContent({ children }: { children: React.ReactNode }) {
                 />
                 <h1 className={`text-xl font-bold ${
                   theme === 'light' 
-                    ? 'text-gray-900 text-3d-light' 
+                    ? 'text-gradient-light' 
                     : 'text-surbate [text-shadow:_0_1px_3px_rgba(0,0,0,0.3)]'
                 }`}>
                   Surbate
@@ -121,7 +121,7 @@ function LayoutContent({ children }: { children: React.ReactNode }) {
                       />
                       <h1 className={`text-xl font-bold ${
                         theme === 'light' 
-                          ? 'text-gray-900 text-3d-light' 
+                          ? 'text-gradient-light' 
                           : 'text-surbate [text-shadow:_0_1px_3px_rgba(0,0,0,0.3)]'
                       }`}>
                         Surbate
