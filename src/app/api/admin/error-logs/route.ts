@@ -6,8 +6,13 @@ import { verifyAdminToken } from '@/lib/auth';
 // 에러 로그 조회
 export async function GET(request: NextRequest) {
   try {
+    console.log('Error logs API - Request received');
+    console.log('Cookies:', request.cookies.getAll());
+    
     // 관리자 인증 확인
     const isAdmin = await verifyAdminToken(request);
+    console.log('Error logs API - Admin verified:', isAdmin);
+    
     if (!isAdmin) {
       return NextResponse.json(
         { error: '관리자 권한이 필요합니다.' },
