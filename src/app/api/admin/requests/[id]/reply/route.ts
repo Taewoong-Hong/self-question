@@ -32,7 +32,7 @@ export async function POST(
     await dbConnect();
     
     const requestDoc = await Request.findOne({ 
-      $or: [{ _id: params.id }, { id: params.id }],
+      id: params.id,
       is_deleted: false
     });
     
