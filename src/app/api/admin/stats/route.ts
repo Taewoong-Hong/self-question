@@ -6,10 +6,11 @@ import { verifyAdminAuth } from '@/lib/adminAuthUtils';
 
 export const runtime = 'nodejs';
 export const dynamic = 'force-dynamic';
+export const revalidate = 0;
 
 export async function GET(request: NextRequest) {
   // 슈퍼 관리자 인증 확인 (헤더 또는 쿠키에서)
-  const adminUser = verifyAdminAuth(request);
+  const adminUser = await verifyAdminAuth(request);
   
   if (!adminUser) {
     return NextResponse.json({ error: '인증이 필요합니다' }, { status: 401 });

@@ -7,6 +7,7 @@ import { verifyAdminToken } from '@/lib/auth';
 
 export const runtime = 'nodejs';
 export const dynamic = 'force-dynamic';
+export const revalidate = 0;
 
 // 콘텐츠 목록 조회
 export async function GET(request: NextRequest) {
