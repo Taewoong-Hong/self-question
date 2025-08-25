@@ -65,7 +65,9 @@ export default function AdminErrorsPage() {
       if (filter.type) params.append('type', filter.type);
       if (filter.resolved) params.append('resolved', filter.resolved);
 
-      const response = await axios.get(`/api/admin/error-logs?${params}`);
+      const response = await axios.get(`/api/admin/error-logs?${params}`, {
+        withCredentials: true
+      });
       setErrors(response.data.logs);
     } catch (error) {
       console.error('에러 로그 조회 실패:', error);
@@ -82,7 +84,8 @@ export default function AdminErrorsPage() {
       await axios({
         method: endpoint.method,
         url: endpoint.url,
-        timeout: 5000
+        timeout: 5000,
+        withCredentials: true
       });
       setApiTestResults(prev => ({ ...prev, [endpoint.name]: 'success' }));
       toast.success(`${endpoint.name} API 정상 작동`);
@@ -104,6 +107,8 @@ export default function AdminErrorsPage() {
     try {
       await axios.patch(`/api/admin/error-logs/${errorId}`, {
         resolved: !currentStatus
+      }, {
+        withCredentials: true
       });
       toast.success('상태가 업데이트되었습니다.');
       fetchErrors();
