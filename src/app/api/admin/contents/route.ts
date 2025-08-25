@@ -100,7 +100,7 @@ export async function GET(request: NextRequest) {
         id: request.id || request._id.toString(),
         title: request.title,
         type: 'request',
-        status: 'open', // 요청은 항상 열림 상태
+        status: request.admin_reply ? 'answered' : 'open', // 답글이 있으면 답변 완료 상태
         created_at: request.created_at,
         start_at: null, // 요청은 시작 시간이 없음
         end_at: null, // 요청은 종료 시간이 없음
@@ -109,7 +109,12 @@ export async function GET(request: NextRequest) {
         participant_count: request.views || 0, // 조회수를 참여자로 표시
         is_reported: false, // TODO: 신고 기능 구현
         is_hidden: request.is_deleted || !request.is_public || false,
-        content: request.content
+        content: request.content,
+        adminAnswer: request.admin_reply ? {
+          content: request.admin_reply.content,
+          answeredAt: request.admin_reply.replied_at,
+          answeredBy: request.admin_reply.replied_by
+        } : undefined
       })));
     }
     

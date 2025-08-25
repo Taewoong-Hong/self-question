@@ -7,6 +7,11 @@ export interface RequestPost {
   views: number;
   created_at: string;
   updated_at: string;
+  admin_reply?: {
+    content: string;
+    replied_at: string;
+    replied_by: string;
+  };
 }
 
 export interface CreateRequestDto {

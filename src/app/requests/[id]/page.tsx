@@ -227,6 +227,27 @@ export default function RequestDetailPage({ params }: { params: { id: string } }
             <div className="prose prose-invert max-w-none">
               <p className="text-zinc-300 whitespace-pre-wrap">{request.content}</p>
             </div>
+
+            {/* 관리자 답글 */}
+            {request.admin_reply && (
+              <div className="mt-8 pt-8 border-t border-zinc-800">
+                <div className="bg-zinc-800/50 rounded-lg p-6">
+                  <div className="flex items-center gap-2 mb-3">
+                    <span className="inline-flex items-center px-2.5 py-0.5 rounded text-xs font-medium bg-brand-500/20 text-brand-400">
+                      관리자 답글
+                    </span>
+                    <span className="text-xs text-zinc-500">
+                      {request.admin_reply.replied_by} • {' '}
+                      {formatDistanceToNow(new Date(request.admin_reply.replied_at), {
+                        addSuffix: true,
+                        locale: ko
+                      })}
+                    </span>
+                  </div>
+                  <p className="text-zinc-300 whitespace-pre-wrap">{request.admin_reply.content}</p>
+                </div>
+              </div>
+            )}
           </>
         )}
       </div>

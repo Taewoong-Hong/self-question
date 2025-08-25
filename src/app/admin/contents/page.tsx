@@ -153,6 +153,17 @@ export default function AdminContentsPage() {
           throw new Error('Failed to submit reply');
         }
         
+        // 상태 업데이트
+        setContents(prev => prev.map(content => 
+          content.id === selectedQuestion.id 
+            ? { ...content, status: 'answered' as const, adminAnswer: {
+                content: answerContent.trim(),
+                answeredAt: new Date().toISOString(),
+                answeredBy: 'Admin'
+              }}
+            : content
+        ));
+        
         toast.success('답글이 등록되었습니다.');
       } else {
         // 질문에 대한 답변 처리
@@ -494,19 +505,27 @@ export default function AdminContentsPage() {
                       </button>
                     )}
                     {content.type === 'request' && (
-                      <button
-                        onClick={() => {
-                          setSelectedQuestion(content);
-                          setAnswerContent('');
-                          setShowAnswerModal(true);
-                        }}
-                        className="p-1.5 text-green-400 hover:text-green-300 transition-colors"
-                        title="답글 달기"
-                      >
-                        <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 5v-5z" />
-                        </svg>
-                      </button>
+                      content.status === 'answered' ? (
+                        <div className="p-1.5 text-green-400" title="답글 완료">
+                          <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 24 24">
+                            <path d="M9 16.2L4.8 12l-1.4 1.4L9 19 21 7l-1.4-1.4L9 16.2z" />
+                          </svg>
+                        </div>
+                      ) : (
+                        <button
+                          onClick={() => {
+                            setSelectedQuestion(content);
+                            setAnswerContent('');
+                            setShowAnswerModal(true);
+                          }}
+                          className="p-1.5 text-green-400 hover:text-green-300 transition-colors"
+                          title="답글 달기"
+                        >
+                          <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 5v-5z" />
+                          </svg>
+                        </button>
+                      )
                     )}
                   </div>
                 </div>
