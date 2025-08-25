@@ -48,7 +48,7 @@ export default function CreateRequestPage() {
         <div className="flex items-center gap-4 mb-4">
           <Link
             href="/requests"
-            className="p-2 rounded-lg hover:bg-zinc-900 transition-colors"
+            className="p-2 rounded-lg hover:bg-zinc-200 dark:hover:bg-zinc-900 transition-colors"
           >
             <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
@@ -60,10 +60,10 @@ export default function CreateRequestPage() {
 
       {/* 작성 폼 */}
       <form onSubmit={handleSubmit} className="space-y-6">
-        <div className="bg-zinc-900 rounded-lg border border-zinc-800 p-6 space-y-6">
+        <div className="bg-white dark:bg-zinc-900 rounded-lg border border-gray-200 dark:border-zinc-800 p-6 space-y-6">
           {/* 제목 */}
           <div>
-            <label className="block text-sm font-medium text-zinc-400 mb-2">
+            <label className="block text-sm font-medium text-zinc-700 dark:text-zinc-400 mb-2">
               제목 <span className="text-red-400">*</span>
             </label>
             <input
@@ -71,7 +71,7 @@ export default function CreateRequestPage() {
               value={formData.title}
               onChange={(e) => setFormData({ ...formData, title: e.target.value })}
               placeholder="제목을 입력하세요"
-              className="w-full px-4 py-2 bg-zinc-800 border border-zinc-700 rounded-lg text-zinc-100 placeholder-zinc-500 focus:outline-none focus:ring-2 focus:ring-brand-500 focus:border-transparent"
+              className="w-full px-4 py-2 bg-white dark:bg-zinc-800 border border-zinc-300 dark:border-zinc-700 rounded-lg text-zinc-900 dark:text-zinc-100 placeholder-zinc-500 focus:outline-none focus:ring-2 focus:ring-brand-500 focus:border-transparent"
               maxLength={100}
               required
             />
@@ -79,19 +79,19 @@ export default function CreateRequestPage() {
 
           {/* 내용 */}
           <div>
-            <label className="block text-sm font-medium text-zinc-400 mb-2">
+            <label className="block text-sm font-medium text-zinc-700 dark:text-zinc-400 mb-2">
               내용 <span className="text-red-400">*</span>
             </label>
             <textarea
               value={formData.content}
               onChange={(e) => setFormData({ ...formData, content: e.target.value })}
               placeholder="요청 내용을 자세히 작성해주세요"
-              className="w-full px-4 py-3 bg-zinc-800 border border-zinc-700 rounded-lg text-zinc-100 placeholder-zinc-500 focus:outline-none focus:ring-2 focus:ring-brand-500 focus:border-transparent resize-none"
+              className="w-full px-4 py-3 bg-white dark:bg-zinc-800 border border-zinc-300 dark:border-zinc-700 rounded-lg text-zinc-900 dark:text-zinc-100 placeholder-zinc-500 focus:outline-none focus:ring-2 focus:ring-brand-500 focus:border-transparent resize-none"
               rows={10}
               maxLength={2000}
               required
             />
-            <p className="mt-1 text-xs text-zinc-500">
+            <p className="mt-1 text-xs text-zinc-600 dark:text-zinc-500">
               {formData.content.length}/2000
             </p>
           </div>
@@ -103,9 +103,9 @@ export default function CreateRequestPage() {
                 type="checkbox"
                 checked={formData.is_public}
                 onChange={(e) => setFormData({ ...formData, is_public: e.target.checked })}
-                className="w-4 h-4 bg-zinc-800 border-zinc-600 rounded text-brand-500 focus:ring-brand-500 focus:ring-offset-0"
+                className="w-4 h-4 bg-white dark:bg-zinc-800 border-zinc-300 dark:border-zinc-600 rounded text-brand-500 focus:ring-brand-500 focus:ring-offset-0"
               />
-              <span className="text-sm text-zinc-300">
+              <span className="text-sm text-zinc-700 dark:text-zinc-300">
                 공개 게시 (체크 해제 시 비공개로 작성됩니다)
               </span>
             </label>
@@ -114,7 +114,7 @@ export default function CreateRequestPage() {
           {/* 작성자 정보 */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div>
-              <label className="block text-sm font-medium text-zinc-400 mb-2">
+              <label className="block text-sm font-medium text-zinc-700 dark:text-zinc-400 mb-2">
                 닉네임 <span className="text-red-400">*</span>
               </label>
               <input
@@ -122,14 +122,14 @@ export default function CreateRequestPage() {
                 value={formData.author_nickname}
                 onChange={(e) => setFormData({ ...formData, author_nickname: e.target.value })}
                 placeholder="닉네임을 입력하세요"
-                className="w-full px-4 py-2 bg-zinc-800 border border-zinc-700 rounded-lg text-zinc-100 placeholder-zinc-500 focus:outline-none focus:ring-2 focus:ring-brand-500 focus:border-transparent"
+                className="w-full px-4 py-2 bg-white dark:bg-zinc-800 border border-zinc-300 dark:border-zinc-700 rounded-lg text-zinc-900 dark:text-zinc-100 placeholder-zinc-500 focus:outline-none focus:ring-2 focus:ring-brand-500 focus:border-transparent"
                 maxLength={20}
                 required
               />
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-zinc-400 mb-2">
+              <label className="block text-sm font-medium text-zinc-700 dark:text-zinc-400 mb-2">
                 비밀번호 <span className="text-red-400">*</span>
               </label>
               <input
@@ -137,11 +137,11 @@ export default function CreateRequestPage() {
                 value={formData.password}
                 onChange={(e) => setFormData({ ...formData, password: e.target.value })}
                 placeholder="수정/삭제 시 필요합니다"
-                className="w-full px-4 py-2 bg-zinc-800 border border-zinc-700 rounded-lg text-zinc-100 placeholder-zinc-500 focus:outline-none focus:ring-2 focus:ring-brand-500 focus:border-transparent"
+                className="w-full px-4 py-2 bg-white dark:bg-zinc-800 border border-zinc-300 dark:border-zinc-700 rounded-lg text-zinc-900 dark:text-zinc-100 placeholder-zinc-500 focus:outline-none focus:ring-2 focus:ring-brand-500 focus:border-transparent"
                 minLength={4}
                 required
               />
-              <p className="mt-1 text-xs text-zinc-500">
+              <p className="mt-1 text-xs text-zinc-600 dark:text-zinc-500">
                 4자 이상 입력해주세요
               </p>
             </div>
@@ -152,7 +152,7 @@ export default function CreateRequestPage() {
         <div className="flex gap-3 justify-end">
           <Link
             href="/requests"
-            className="px-6 py-2 text-zinc-400 hover:text-zinc-200 transition-colors"
+            className="px-6 py-2 text-zinc-700 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-zinc-200 transition-colors"
           >
             취소
           </Link>

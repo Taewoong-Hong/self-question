@@ -496,10 +496,10 @@ export default function CreateSurveyPage() {
               minLength={8}
               value={formData.admin_password}
               onChange={(e) => setFormData({ ...formData, admin_password: e.target.value })}
-              className="w-full px-4 py-2 bg-zinc-900 border border-zinc-800 rounded-lg text-zinc-100 placeholder-zinc-500 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-transparent"
+              className="w-full px-4 py-2 bg-white dark:bg-zinc-900 border border-zinc-300 dark:border-zinc-800 rounded-lg text-zinc-900 dark:text-zinc-100 placeholder-zinc-500 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-transparent"
               placeholder="8자 이상의 비밀번호"
             />
-            <p className="mt-2 text-sm text-zinc-500">
+            <p className="mt-2 text-sm text-zinc-600 dark:text-zinc-500">
               이 비밀번호로 설문을 수정하거나 결과를 확인할 수 있습니다.
             </p>
           </div>
