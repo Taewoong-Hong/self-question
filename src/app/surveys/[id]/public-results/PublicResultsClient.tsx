@@ -160,7 +160,7 @@ export default function PublicResultsClient({ survey, results }: PublicResultsCl
           
           
           return (
-            <div key={questionId} className="bg-white dark:bg-zinc-900/50 backdrop-blur-sm border border-gray-200 dark:border-zinc-800 rounded-xl p-4 shadow-sm dark:shadow-none">
+            <div key={questionId} className="bg-white dark:bg-zinc-900/50 backdrop-blur-sm border border-gray-200 dark:border-zinc-800 rounded-xl p-4 shadow-sm dark:shadow-none overflow-hidden">
               <h3 className="text-sm sm:text-base font-medium mb-2 text-zinc-900 dark:text-zinc-100">
                 {index + 1}. {question.title}
               </h3>
@@ -201,7 +201,8 @@ export default function PublicResultsClient({ survey, results }: PublicResultsCl
 
                         {/* Victory 차트 렌더링 */}
                         {prepareVictoryData(questionStats).length > 0 && (
-                          <div className="w-[280px] h-[180px] sm:w-[320px] sm:h-[200px] lg:w-[380px] lg:h-[240px] mx-auto">
+                          <div className="overflow-x-auto">
+                            <div className="w-[280px] h-[180px] sm:w-[320px] sm:h-[200px] lg:w-[380px] lg:h-[240px] mx-auto">
                           {chartType === 'bar' ? (
                             <>
                               {/* 모바일 차트 */}
@@ -420,7 +421,8 @@ export default function PublicResultsClient({ survey, results }: PublicResultsCl
                             </div>
                           </>
                           )}
-                        </div>
+                            </div>
+                          </div>
                         )}
                       </div>
                       
@@ -429,7 +431,7 @@ export default function PublicResultsClient({ survey, results }: PublicResultsCl
                         {/* 차트 범례 - 선택지가 4개 이상일 때만 표시 */}
                         {prepareVictoryData(questionStats).length > 3 && (
                           <div className="mb-2">
-                            <p className="text-xs font-medium text-zinc-400 mb-1">선택지:</p>
+                            <p className="text-xs font-medium text-zinc-700 dark:text-zinc-400 mb-1">선택지:</p>
                             <div className="grid grid-cols-2 lg:grid-cols-3 gap-1">
                             {prepareVictoryData(questionStats).map((item, index) => (
                               <div key={index} className="flex items-center gap-1.5 text-xs">
@@ -437,7 +439,7 @@ export default function PublicResultsClient({ survey, results }: PublicResultsCl
                                   className="w-3 h-3 rounded" 
                                   style={{ backgroundColor: item.fill }}
                                 />
-                                <span className="text-zinc-300">
+                                <span className="text-zinc-700 dark:text-zinc-300">
                                   {item.x}. {item.originalLabel}
                                 </span>
                               </div>
@@ -466,12 +468,12 @@ export default function PublicResultsClient({ survey, results }: PublicResultsCl
                           return (
                             <div key={choiceId}>
                               <div className="flex justify-between items-start gap-2 mb-1">
-                                <span className="text-sm break-words flex-1">{choice.label}</span>
-                                <span className="text-sm text-zinc-400 whitespace-nowrap flex-shrink-0">
+                                <span className="text-sm text-zinc-700 dark:text-zinc-300 break-words flex-1">{choice.label}</span>
+                                <span className="text-sm text-zinc-600 dark:text-zinc-400 whitespace-nowrap flex-shrink-0">
                                   {choice.count || 0}명 ({percentage.toFixed(1)}%)
                                 </span>
                               </div>
-                              <div className="w-full bg-zinc-800 rounded-full h-2 overflow-hidden">
+                              <div className="w-full bg-gray-200 dark:bg-zinc-800 rounded-full h-2 overflow-hidden">
                                 <div 
                                   className="h-full transition-all duration-500"
                                   style={{ 
@@ -495,13 +497,13 @@ export default function PublicResultsClient({ survey, results }: PublicResultsCl
                         <p className="text-xl font-bold text-surbate mb-1">
                           {questionStats.text_response_count || 0}개
                         </p>
-                        <p className="text-xs text-zinc-400">텍스트 응답</p>
+                        <p className="text-xs text-zinc-600 dark:text-zinc-400">텍스트 응답</p>
                         
                         {/* 자세히 버튼 - 응답이 있을 때만 표시 */}
                         {questionStats.text_responses && questionStats.text_responses.length > 0 && (
                           <button
                             onClick={() => toggleExpanded(questionId)}
-                            className="mt-3 p-1 text-zinc-400 hover:text-zinc-200 transition-colors"
+                            className="mt-3 p-1 text-zinc-600 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-zinc-200 transition-colors"
                             title={expandedQuestions.has(questionId) ? '접기' : '펼치기'}
                           >
                             <svg
@@ -524,8 +526,8 @@ export default function PublicResultsClient({ survey, results }: PublicResultsCl
                       {expandedQuestions.has(questionId) && questionStats.text_responses && (
                         <div className="mt-3 space-y-2 max-h-96 overflow-y-auto">
                           {questionStats.text_responses.map((response: string, index: number) => (
-                            <div key={index} className="p-3 bg-zinc-800/30 rounded-lg text-sm">
-                              <p className="text-zinc-300 break-words">{response}</p>
+                            <div key={index} className="p-3 bg-gray-100 dark:bg-zinc-800/30 rounded-lg text-sm">
+                              <p className="text-zinc-800 dark:text-zinc-300 break-words">{response}</p>
                             </div>
                           ))}
                         </div>
@@ -554,14 +556,15 @@ export default function PublicResultsClient({ survey, results }: PublicResultsCl
                             </span>
                           ))}
                         </div>
-                        <p className="text-xs text-zinc-500">
+                        <p className="text-xs text-zinc-600 dark:text-zinc-500">
                           총 {questionStats.response_count || 0}명 응답
                         </p>
                       </div>
 
                       {/* 평점 분포 차트 */}
                       {questionStats.rating_distribution && (
-                        <div className="w-[280px] h-[160px] sm:w-[320px] sm:h-[180px] lg:w-[380px] lg:h-[220px] mx-auto">
+                        <div className="overflow-x-auto">
+                          <div className="w-[280px] h-[160px] sm:w-[320px] sm:h-[180px] lg:w-[380px] lg:h-[220px] mx-auto">
                           {/* 모바일 평점 차트 */}
                           <div className="block sm:hidden">
                             <VictoryChart
@@ -677,6 +680,7 @@ export default function PublicResultsClient({ survey, results }: PublicResultsCl
                                 barRatio={0.8}
                               />
                             </VictoryChart>
+                          </div>
                           </div>
                         </div>
                       )}
