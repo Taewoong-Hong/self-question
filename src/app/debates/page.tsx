@@ -54,18 +54,18 @@ export default function DebatesPage() {
       <div className="mb-8">
         <div className="flex items-center justify-between">
           <div className="pl-[3px]">
-            <h1 className="text-2xl font-bold">투표 목록</h1>
-            <p className="text-zinc-400 mt-1">찬성과 반대 의견을 수집하는 투표를 확인하세요</p>
+            <h1 className="text-2xl font-bold text-zinc-900 dark:text-zinc-100">투표 목록</h1>
+            <p className="text-zinc-600 dark:text-zinc-400 mt-1">찬성과 반대 의견을 수집하는 투표를 확인하세요</p>
           </div>
           <Link
             href="/debates/create"
-            className="relative p-3 border border-zinc-700 text-zinc-100 rounded-lg hover:border-zinc-500 hover:bg-zinc-800/50 transform hover:-translate-y-0.5 transition-all duration-200"
+            className="relative p-3 border border-gray-300 dark:border-zinc-700 text-zinc-700 dark:text-zinc-100 rounded-lg hover:border-gray-400 dark:hover:border-zinc-500 hover:bg-gray-100 dark:hover:bg-zinc-800/50 transform hover:-translate-y-0.5 transition-all duration-200"
             title="새 투표 만들기"
           >
             <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z" />
             </svg>
-            <div className="absolute -top-1 -left-1 w-4 h-4 bg-zinc-950 border border-zinc-100 rounded-full flex items-center justify-center">
+            <div className="absolute -top-1 -left-1 w-4 h-4 bg-white dark:bg-zinc-950 border border-zinc-700 dark:border-zinc-100 rounded-full flex items-center justify-center">
               <svg className="w-2.5 h-2.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M12 4v16m8-8H4" />
               </svg>
@@ -79,7 +79,7 @@ export default function DebatesPage() {
         {/* 검색 입력 */}
         <div className="relative max-w-md">
           <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-            <svg className="w-5 h-5 text-zinc-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <svg className="w-5 h-5 text-zinc-500 dark:text-zinc-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
             </svg>
           </div>
@@ -88,7 +88,7 @@ export default function DebatesPage() {
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
             placeholder="투표 검색..."
-            className="w-full pl-10 pr-4 py-2 bg-zinc-900 border border-zinc-800 rounded-lg text-zinc-100 placeholder-zinc-500 focus:outline-none focus:ring-2 focus:ring-brand-500 focus:border-transparent"
+            className="w-full pl-10 pr-4 py-2 bg-gray-50 dark:bg-zinc-900 border border-gray-300 dark:border-zinc-800 rounded-lg text-zinc-900 dark:text-zinc-100 placeholder-zinc-400 dark:placeholder-zinc-500 focus:outline-none focus:ring-2 focus:ring-brand-500 focus:border-transparent"
           />
         </div>
         
@@ -104,19 +104,19 @@ export default function DebatesPage() {
       {/* 메인 콘텐츠 */}
       {loading ? (
         <div className="text-center py-12">
-          <div className="inline-block animate-spin rounded-full h-8 w-8 border-b-2 border-zinc-100"></div>
+          <div className="inline-block animate-spin rounded-full h-8 w-8 border-b-2 border-zinc-700 dark:border-zinc-100"></div>
           <p className="mt-2 text-zinc-600">로딩 중...</p>
         </div>
       ) : (
         <>
           {/* 투표 리스트 - 바이브클럽 스타일 */}
-          <div className="bg-zinc-900/50 backdrop-blur-sm border border-zinc-800 rounded-xl overflow-hidden">
-            <div className="divide-y divide-zinc-800">
+          <div className="bg-white dark:bg-zinc-900/50 backdrop-blur-sm border border-gray-200 dark:border-zinc-800 rounded-xl overflow-hidden">
+            <div className="divide-y divide-gray-200 dark:divide-zinc-800">
               {debates.map((debate) => (
                 <Link
                   key={debate.id}
                   href={`/debates/${debate.id}`}
-                  className="block p-6 hover:bg-zinc-800/30 transition-all duration-200"
+                  className="block p-6 hover:bg-gray-50 dark:hover:bg-zinc-800/30 transition-all duration-200"
                 >
                   <div className="flex items-start justify-between mb-3">
                     <div className="flex items-center gap-3">
@@ -135,17 +135,17 @@ export default function DebatesPage() {
                     </div>
                   </div>
                   
-                  <h3 className="text-lg font-semibold text-zinc-100 mb-3">
+                  <h3 className="text-lg font-semibold text-zinc-900 dark:text-zinc-100 mb-3">
                     {debate.title}
                   </h3>
                   
                   {debate.description && (
-                    <p className="text-zinc-400 text-sm mb-3 line-clamp-1">
+                    <p className="text-zinc-600 dark:text-zinc-400 text-sm mb-3 line-clamp-1">
                       {debate.description}
                     </p>
                   )}
                   
-                  <div className="grid grid-cols-2 gap-x-4 gap-y-1 text-xs text-zinc-500">
+                  <div className="grid grid-cols-2 gap-x-4 gap-y-1 text-xs text-zinc-600 dark:text-zinc-500">
                     <div>
                       <span>참여 {debate.stats?.unique_voters || 0}명</span>
                     </div>
@@ -191,7 +191,7 @@ export default function DebatesPage() {
                       {debate.tags.slice(0, 3).map((tag, index) => (
                         <span 
                           key={index}
-                          className="inline-flex items-center px-2 py-0.5 rounded text-xs bg-zinc-800 text-zinc-400"
+                          className="inline-flex items-center px-2 py-0.5 rounded text-xs bg-gray-200 dark:bg-zinc-800 text-zinc-700 dark:text-zinc-400"
                         >
                           #{tag}
                         </span>
@@ -209,17 +209,17 @@ export default function DebatesPage() {
               <button
                 onClick={() => setPage(p => Math.max(1, p - 1))}
                 disabled={page === 1}
-                className="px-4 py-2 rounded-lg bg-zinc-900 hover:bg-zinc-800 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                className="px-4 py-2 rounded-lg bg-gray-200 dark:bg-zinc-900 hover:bg-gray-300 dark:hover:bg-zinc-800 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
               >
                 이전
               </button>
-              <span className="px-4 py-2 text-zinc-400">
+              <span className="px-4 py-2 text-zinc-600 dark:text-zinc-400">
                 {page} / {Math.ceil(total / limit)}
               </span>
               <button
                 onClick={() => setPage(p => Math.min(Math.ceil(total / limit), p + 1))}
                 disabled={page >= Math.ceil(total / limit)}
-                className="px-4 py-2 rounded-lg bg-zinc-900 hover:bg-zinc-800 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                className="px-4 py-2 rounded-lg bg-gray-200 dark:bg-zinc-900 hover:bg-gray-300 dark:hover:bg-zinc-800 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
               >
                 다음
               </button>
@@ -230,15 +230,15 @@ export default function DebatesPage() {
       
       {/* 결과 없음 메시지 */}
       {!loading && debates.length === 0 && (
-        <div className="bg-zinc-900 rounded-lg border border-zinc-800 p-12 text-center">
+        <div className="bg-gray-50 dark:bg-zinc-900 rounded-lg border border-gray-200 dark:border-zinc-800 p-12 text-center">
           <div className="flex flex-col items-center">
-            <svg className="w-12 h-12 text-zinc-600 mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <svg className="w-12 h-12 text-zinc-400 dark:text-zinc-600 mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9.172 16.172a4 4 0 015.656 0M9 10h.01M15 10h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
             </svg>
-            <p className="text-zinc-400 text-lg font-medium mb-2">
+            <p className="text-zinc-700 dark:text-zinc-400 text-lg font-medium mb-2">
               {searchQuery ? '검색 결과가 없습니다' : '아직 등록된 투표가 없습니다'}
             </p>
-            <p className="text-zinc-500 text-sm mb-6">
+            <p className="text-zinc-600 dark:text-zinc-500 text-sm mb-6">
               {searchQuery ? '다른 검색어를 입력해보세요' : '첫 번째 투표를 만들어보세요!'}
             </p>
             <Link

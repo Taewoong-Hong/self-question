@@ -131,7 +131,7 @@ export default function StickyNote({ note, onUpdatePosition, onDelete }: StickyN
       <div className={`note-actions absolute -top-2 -right-2 transition-opacity ${showActions ? 'opacity-100' : 'opacity-0'}`}>
         <button
           onClick={() => onDelete(note.id)}
-          className="w-6 h-6 bg-zinc-900 text-white rounded-full flex items-center justify-center hover:bg-zinc-800 transition-colors"
+          className="w-6 h-6 bg-zinc-800 dark:bg-zinc-900 text-white rounded-full flex items-center justify-center hover:bg-zinc-700 dark:hover:bg-zinc-800 transition-colors shadow-sm"
           title="삭제"
         >
           <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">

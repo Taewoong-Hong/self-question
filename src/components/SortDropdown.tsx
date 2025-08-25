@@ -43,7 +43,7 @@ export default function SortDropdown({ value, onChange, className }: SortDropdow
     <div className={`relative ${className}`} ref={dropdownRef}>
       <button
         onClick={() => setIsOpen(!isOpen)}
-        className="px-3 py-1.5 bg-zinc-900 border border-zinc-800 rounded-lg text-xs text-zinc-100 hover:bg-zinc-800 transition-colors flex items-center gap-2"
+        className="px-3 py-1.5 bg-gray-100 dark:bg-zinc-900 border border-gray-300 dark:border-zinc-800 rounded-lg text-xs text-zinc-700 dark:text-zinc-100 hover:bg-gray-200 dark:hover:bg-zinc-800 transition-colors flex items-center gap-2"
       >
         <span>{currentOption.label}</span>
         <svg className={`w-3 h-3 transition-transform ${isOpen ? 'rotate-180' : ''}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -52,66 +52,66 @@ export default function SortDropdown({ value, onChange, className }: SortDropdow
       </button>
 
       {isOpen && (
-        <div className="absolute right-0 mt-1 w-40 bg-zinc-900 border border-zinc-800 rounded-lg shadow-lg overflow-hidden z-50">
-          <div className="text-xs text-zinc-500 px-3 py-2 border-b border-zinc-800">
+        <div className="absolute right-0 mt-1 w-40 bg-white dark:bg-zinc-900 border border-gray-200 dark:border-zinc-800 rounded-lg shadow-lg overflow-hidden z-50">
+          <div className="text-xs text-zinc-600 dark:text-zinc-500 px-3 py-2 border-b border-gray-200 dark:border-zinc-800">
             정렬 기준
           </div>
           
           {/* 날짜 정렬 */}
-          <div className="border-b border-zinc-800">
-            <div className="text-xs text-zinc-400 px-3 py-1.5 bg-zinc-800/50">날짜</div>
+          <div className="border-b border-gray-200 dark:border-zinc-800">
+            <div className="text-xs text-zinc-500 dark:text-zinc-400 px-3 py-1.5 bg-gray-100 dark:bg-zinc-800/50">날짜</div>
             <button
               onClick={() => {
                 onChange('latest');
                 setIsOpen(false);
               }}
-              className={`w-full text-left px-3 py-2 text-xs hover:bg-zinc-800 transition-colors flex items-center justify-between ${
-                value === 'latest' ? 'text-brand-400 bg-zinc-800/50' : 'text-zinc-100'
+              className={`w-full text-left px-3 py-2 text-xs hover:bg-gray-100 dark:hover:bg-zinc-800 transition-colors flex items-center justify-between ${
+                value === 'latest' ? 'text-brand-600 dark:text-brand-400 bg-gray-100 dark:bg-zinc-800/50' : 'text-zinc-700 dark:text-zinc-100'
               }`}
             >
               <span>최신순</span>
-              <span className="text-zinc-500">↓</span>
+              <span className="text-zinc-600 dark:text-zinc-500">↓</span>
             </button>
             <button
               onClick={() => {
                 onChange('oldest');
                 setIsOpen(false);
               }}
-              className={`w-full text-left px-3 py-2 text-xs hover:bg-zinc-800 transition-colors flex items-center justify-between ${
-                value === 'oldest' ? 'text-brand-400 bg-zinc-800/50' : 'text-zinc-100'
+              className={`w-full text-left px-3 py-2 text-xs hover:bg-gray-100 dark:hover:bg-zinc-800 transition-colors flex items-center justify-between ${
+                value === 'oldest' ? 'text-brand-600 dark:text-brand-400 bg-gray-100 dark:bg-zinc-800/50' : 'text-zinc-700 dark:text-zinc-100'
               }`}
             >
               <span>오래된순</span>
-              <span className="text-zinc-500">↑</span>
+              <span className="text-zinc-600 dark:text-zinc-500">↑</span>
             </button>
           </div>
 
           {/* 인기 정렬 */}
           <div>
-            <div className="text-xs text-zinc-400 px-3 py-1.5 bg-zinc-800/50">참여</div>
+            <div className="text-xs text-zinc-500 dark:text-zinc-400 px-3 py-1.5 bg-gray-100 dark:bg-zinc-800/50">참여</div>
             <button
               onClick={() => {
                 onChange('popular');
                 setIsOpen(false);
               }}
-              className={`w-full text-left px-3 py-2 text-xs hover:bg-zinc-800 transition-colors flex items-center justify-between ${
-                value === 'popular' ? 'text-brand-400 bg-zinc-800/50' : 'text-zinc-100'
+              className={`w-full text-left px-3 py-2 text-xs hover:bg-gray-100 dark:hover:bg-zinc-800 transition-colors flex items-center justify-between ${
+                value === 'popular' ? 'text-brand-600 dark:text-brand-400 bg-gray-100 dark:bg-zinc-800/50' : 'text-zinc-700 dark:text-zinc-100'
               }`}
             >
               <span>인기순</span>
-              <span className="text-zinc-500">↓</span>
+              <span className="text-zinc-600 dark:text-zinc-500">↓</span>
             </button>
             <button
               onClick={() => {
                 onChange('unpopular');
                 setIsOpen(false);
               }}
-              className={`w-full text-left px-3 py-2 text-xs hover:bg-zinc-800 transition-colors flex items-center justify-between ${
-                value === 'unpopular' ? 'text-brand-400 bg-zinc-800/50' : 'text-zinc-100'
+              className={`w-full text-left px-3 py-2 text-xs hover:bg-gray-100 dark:hover:bg-zinc-800 transition-colors flex items-center justify-between ${
+                value === 'unpopular' ? 'text-brand-600 dark:text-brand-400 bg-gray-100 dark:bg-zinc-800/50' : 'text-zinc-700 dark:text-zinc-100'
               }`}
             >
               <span>인기낮은순</span>
-              <span className="text-zinc-500">↑</span>
+              <span className="text-zinc-600 dark:text-zinc-500">↑</span>
             </button>
           </div>
         </div>

@@ -148,7 +148,7 @@ function LayoutContent({ children }: { children: React.ReactNode }) {
                   <li>
                     <Link
                       href="/guestbook"
-                      className="flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-zinc-800 hover:text-brand-400 transition-all duration-200"
+                      className="flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-zinc-200 dark:hover:bg-zinc-800 hover:text-brand-600 dark:hover:text-brand-400 transition-all duration-200"
                       onClick={closeSidebar}
                     >
                       <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
