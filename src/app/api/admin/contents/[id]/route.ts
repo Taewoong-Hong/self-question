@@ -15,7 +15,7 @@ export async function PUT(
 ) {
   try {
     // Admin 인증 확인 (헤더 또는 쿠키에서)
-    const adminUser = verifyAdminAuth(request);
+    const adminUser = await verifyAdminAuth(request);
     
     if (!adminUser) {
       return NextResponse.json(
@@ -89,7 +89,7 @@ export async function DELETE(
 ) {
   try {
     // Admin 인증 확인 (헤더 또는 쿠키에서)
-    const adminUser = verifyAdminAuth(request);
+    const adminUser = await verifyAdminAuth(request);
     
     if (!adminUser) {
       return NextResponse.json(

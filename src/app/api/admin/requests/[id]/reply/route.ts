@@ -5,6 +5,7 @@ import { verifyAdminAuth } from '@/lib/adminAuthUtils';
 
 export const runtime = 'nodejs';
 export const dynamic = 'force-dynamic';
+export const revalidate = 0;
 
 // 요청 게시글에 답글 달기
 export async function POST(
@@ -13,7 +14,7 @@ export async function POST(
 ) {
   try {
     // Admin 인증 확인
-    const adminUser = verifyAdminAuth(request);
+    const adminUser = await verifyAdminAuth(request);
     
     if (!adminUser) {
       return NextResponse.json(
