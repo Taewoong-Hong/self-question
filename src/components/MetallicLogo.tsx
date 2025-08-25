@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useRef, useState, useCallback } from 'react';
 import { useTheme } from '@/contexts/ThemeContext';
 
 type ShaderParams = {
@@ -222,18 +222,13 @@ export default function MetallicLogo({ className = '' }: { className?: string })
   const lastRenderTime = useRef(0);
   const { theme } = useTheme();
 
-  // 라이트 모드에서만 표시
-  if (theme !== 'light') {
-    return null;
-  }
-
   useEffect(() => {
     // Surbate 텍스트를 이미지로 생성
     const textImage = createTextImage('Surbate');
     setImageData(textImage);
   }, []);
 
-  function updateUniforms() {
+  const updateUniforms = useCallback(() => {
     if (!gl || !uniforms) return;
     gl.uniform1f(uniforms.u_edge, defaultParams.edge);
     gl.uniform1f(uniforms.u_patternBlur, defaultParams.patternBlur);
@@ -241,7 +236,7 @@ export default function MetallicLogo({ className = '' }: { className?: string })
     gl.uniform1f(uniforms.u_patternScale, defaultParams.patternScale);
     gl.uniform1f(uniforms.u_refraction, defaultParams.refraction);
     gl.uniform1f(uniforms.u_liquid, defaultParams.liquid);
-  }
+  }, [gl, uniforms]);
 
   useEffect(() => {
     if (!imageData) return;
@@ -342,12 +337,12 @@ export default function MetallicLogo({ className = '' }: { className?: string })
 
     initShader();
     updateUniforms();
-  }, [imageData]);
+  }, [imageData, updateUniforms]);
 
   useEffect(() => {
     if (!gl || !uniforms) return;
     updateUniforms();
-  }, [gl, defaultParams, uniforms]);
+  }, [gl, uniforms, updateUniforms]);
 
   useEffect(() => {
     if (!gl || !uniforms) return;
@@ -370,7 +365,7 @@ export default function MetallicLogo({ className = '' }: { className?: string })
     return () => {
       cancelAnimationFrame(renderId);
     };
-  }, [gl, defaultParams.speed]);
+  }, [gl, uniforms]);
 
   useEffect(() => {
     const canvasEl = canvasRef.current;
@@ -444,6 +439,11 @@ export default function MetallicLogo({ className = '' }: { className?: string })
       }
     };
   }, [gl, uniforms, imageData]);
+
+  // 라이트 모드에서만 표시
+  if (theme !== 'light') {
+    return null;
+  }
 
   return (
     <canvas 
