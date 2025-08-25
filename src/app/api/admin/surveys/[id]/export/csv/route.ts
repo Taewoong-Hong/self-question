@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import dbConnect from '@/lib/mongodb';
 import Survey from '@/models/Survey';
-import SurveyResponse from '@/models/SurveyResponse';
+import Response from '@/models/Response';
 import jwt from 'jsonwebtoken';
 
 const JWT_SECRET = process.env.JWT_SECRET || 'your-secret-key';
@@ -51,7 +51,7 @@ export async function GET(
     }
 
     // 응답 조회
-    const responses = await SurveyResponse.find({ survey_id: params.id })
+    const responses = await Response.find({ survey_id: params.id })
       .sort({ created_at: -1 });
 
     // CSV 헤더 생성

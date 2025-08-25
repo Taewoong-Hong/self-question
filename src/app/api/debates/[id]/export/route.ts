@@ -1,8 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import dbConnect from '@/lib/mongodb';
 import Debate from '@/models/Debate';
-import DebateVote from '@/models/DebateVote';
-import DebateOpinion from '@/models/DebateOpinion';
+import Vote from '@/models/Vote';
 import jwt from 'jsonwebtoken';
 
 const JWT_SECRET = process.env.JWT_SECRET || 'your-secret-key';
@@ -52,52 +51,36 @@ export async function GET(
     }
 
     // 투표 기록 조회
-    const votes = await DebateVote.find({ debate_id: params.id })
+    const votes = await Vote.find({ debate_id: params.id })
       .sort({ created_at: -1 });
 
-    // 의견 조회
-    const opinions = await DebateOpinion.find({ debate_id: params.id })
-      .sort({ created_at: -1 });
+    // 의견이 있는 투표 필터링
+    const opinions = votes.filter((vote: any) => vote.opinion);
 
     // CSV 데이터 생성 - 투표 기록
     const voteHeaders = ['투표ID', '투표일시', '투표자명', 'IP주소', '선택'];
-    const voteRows = votes.map((vote: any) => {
-      const choice = debate.vote_options.find((opt: any) => 
-        vote.selected_options.includes(opt._id.toString())
-      );
-      
-      return [
-        vote._id.toString(),
-        new Date(vote.created_at).toLocaleString('ko-KR'),
-        vote.user_nickname || '익명',
-        vote.voter_ip || '',
-        choice?.label || ''
-      ];
-    });
+    const voteRows = votes.map((vote: any) => [
+      vote._id.toString(),
+      new Date(vote.created_at).toLocaleString('ko-KR'),
+      vote.voter_name || '익명',
+      vote.voter_ip || '',
+      vote.vote_type === 'agree' ? '찬성' : '반대'
+    ]);
 
     // CSV 데이터 생성 - 의견
     const opinionHeaders = ['의견ID', '작성일시', '작성자명', 'IP주소', '의견내용'];
     const opinionRows = opinions.map((opinion: any) => [
       opinion._id.toString(),
       new Date(opinion.created_at).toLocaleString('ko-KR'),
-      opinion.author_nickname || '익명',
-      opinion.author_ip || '',
-      opinion.content || ''
+      opinion.voter_name || '익명',
+      opinion.voter_ip || '',
+      opinion.opinion || ''
     ]);
 
     // 통계 정보
     const statsHeaders = ['항목', '수치'];
-    const agreeCount = votes.filter((v: any) => 
-      v.selected_options.some((opt: string) => 
-        debate.vote_options.find((o: any) => o._id.toString() === opt && o.label === '찬성')
-      )
-    ).length;
-    
-    const disagreeCount = votes.filter((v: any) => 
-      v.selected_options.some((opt: string) => 
-        debate.vote_options.find((o: any) => o._id.toString() === opt && o.label === '반대')
-      )
-    ).length;
+    const agreeCount = votes.filter((v: any) => v.vote_type === 'agree').length;
+    const disagreeCount = votes.filter((v: any) => v.vote_type === 'disagree').length;
 
     const statsRows = [
       ['총 투표 수', votes.length.toString()],
