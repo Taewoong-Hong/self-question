@@ -1,9 +1,8 @@
 import { NextApiRequest, NextApiResponse } from 'next';
-import jwt from 'jsonwebtoken';
+import { signJwt, verifyJwt } from '../jwt';
 
 const ADMIN_USERNAME = process.env.ADMIN_USERNAME || 'admin';
 const ADMIN_PASSWORD = process.env.ADMIN_PASSWORD || 'admin123!@#';
-const JWT_SECRET = process.env.JWT_SECRET || 'your-secret-key';
 
 export interface AdminTokenPayload {
   isAdmin: boolean;
@@ -16,12 +15,12 @@ export function generateAdminToken(): string {
     username: ADMIN_USERNAME
   };
   
-  return jwt.sign(payload, JWT_SECRET, { expiresIn: '24h' });
+  return signJwt(payload, '7d'); // 7일로 연장
 }
 
 export function verifyAdminToken(token: string): AdminTokenPayload | null {
   try {
-    return jwt.verify(token, JWT_SECRET) as AdminTokenPayload;
+    return verifyJwt(token) as AdminTokenPayload;
   } catch (error) {
     return null;
   }

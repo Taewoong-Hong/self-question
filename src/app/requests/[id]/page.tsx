@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { requestApi } from '@/lib/api';
@@ -20,11 +20,7 @@ export default function RequestDetailPage({ params }: { params: { id: string } }
     password: ''
   });
 
-  useEffect(() => {
-    fetchRequest();
-  }, [params.id]);
-
-  const fetchRequest = async () => {
+  const fetchRequest = useCallback(async () => {
     try {
       setLoading(true);
       const data = await requestApi.get(params.id);
@@ -41,7 +37,11 @@ export default function RequestDetailPage({ params }: { params: { id: string } }
     } finally {
       setLoading(false);
     }
-  };
+  }, [params.id, router]);
+
+  useEffect(() => {
+    fetchRequest();
+  }, [fetchRequest]);
 
   const handleUpdate = async () => {
     if (!editData.password) {

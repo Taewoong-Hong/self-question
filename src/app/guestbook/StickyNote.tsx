@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useRef, useEffect } from 'react';
+import { useState, useRef, useEffect, useCallback } from 'react';
 import { GuestbookNote } from '@/types/guestbook';
 import { formatDistanceToNow } from 'date-fns';
 import { ko } from 'date-fns/locale';
@@ -35,7 +35,7 @@ export default function StickyNote({ note, onUpdatePosition, onDelete }: StickyN
     }
   };
 
-  const handleMouseMove = (e: MouseEvent) => {
+  const handleMouseMove = useCallback((e: MouseEvent) => {
     if (!isDragging || !noteRef.current) return;
 
     const rect = noteRef.current.parentElement?.getBoundingClientRect();
@@ -49,14 +49,14 @@ export default function StickyNote({ note, onUpdatePosition, onDelete }: StickyN
     const boundedY = Math.max(0, Math.min(85, newY));
 
     setPosition({ x: boundedX, y: boundedY });
-  };
+  }, [isDragging]);
 
-  const handleMouseUp = () => {
+  const handleMouseUp = useCallback(() => {
     if (isDragging) {
       setIsDragging(false);
       onUpdatePosition(note.id, position.x, position.y);
     }
-  };
+  }, [isDragging, note.id, position.x, position.y, onUpdatePosition]);
 
   useEffect(() => {
     if (isDragging) {
@@ -67,7 +67,7 @@ export default function StickyNote({ note, onUpdatePosition, onDelete }: StickyN
         document.removeEventListener('mouseup', handleMouseUp);
       };
     }
-  }, [isDragging, position]);
+  }, [isDragging, handleMouseMove, handleMouseUp]);
 
   // 터치 이벤트 핸들러
   const handleTouchStart = (e: React.TouchEvent) => {
