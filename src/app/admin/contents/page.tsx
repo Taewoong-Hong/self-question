@@ -267,8 +267,8 @@ export default function AdminContentsPage() {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-zinc-950 flex items-center justify-center">
-        <div className="inline-block animate-spin rounded-full h-8 w-8 border-b-2 border-zinc-100"></div>
+      <div className="min-h-screen bg-white dark:bg-zinc-950 flex items-center justify-center">
+        <div className="inline-block animate-spin rounded-full h-8 w-8 border-b-2 border-zinc-700 dark:border-zinc-100"></div>
       </div>
     );
   }
@@ -277,12 +277,12 @@ export default function AdminContentsPage() {
     <div className="min-h-screen">
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <div className="mb-8">
-          <h2 className="text-2xl font-bold text-zinc-100">콘텐츠 관리</h2>
-          <p className="text-zinc-400 mt-1">투표와 설문을 관리하고 신고된 콘텐츠를 확인하세요</p>
+          <h2 className="text-2xl font-bold text-zinc-900 dark:text-zinc-100">콘텐츠 관리</h2>
+          <p className="text-zinc-600 dark:text-zinc-400 mt-1">투표와 설문을 관리하고 신고된 콘텐츠를 확인하세요</p>
         </div>
 
         {/* 필터 및 검색 */}
-        <div className="bg-zinc-900/50 backdrop-blur-sm border border-zinc-800 rounded p-2 mb-3">
+        <div className="bg-white dark:bg-zinc-900/50 backdrop-blur-sm border border-gray-200 dark:border-zinc-800 rounded p-2 mb-3 shadow-sm dark:shadow-none">
           <div className="flex flex-col sm:flex-row gap-1.5">
             <div className="flex gap-1">
               <button
@@ -290,7 +290,7 @@ export default function AdminContentsPage() {
                 className={`px-2 py-1 rounded text-[11px] font-medium transition-colors ${
                   filter === 'all' 
                     ? 'bg-surbate text-zinc-900' 
-                    : 'bg-zinc-800 text-zinc-400 hover:text-zinc-100'
+                    : 'bg-gray-200 dark:bg-zinc-800 text-zinc-700 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-zinc-100'
                 }`}
               >
                 전체
@@ -300,7 +300,7 @@ export default function AdminContentsPage() {
                 className={`px-2 py-1 rounded text-[11px] font-medium transition-colors ${
                   filter === 'debate' 
                     ? 'bg-surbate text-zinc-900' 
-                    : 'bg-zinc-800 text-zinc-400 hover:text-zinc-100'
+                    : 'bg-gray-200 dark:bg-zinc-800 text-zinc-700 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-zinc-100'
                 }`}
               >
                 투표
@@ -310,7 +310,7 @@ export default function AdminContentsPage() {
                 className={`px-2 py-1 rounded text-[11px] font-medium transition-colors ${
                   filter === 'survey' 
                     ? 'bg-surbate text-zinc-900' 
-                    : 'bg-zinc-800 text-zinc-400 hover:text-zinc-100'
+                    : 'bg-gray-200 dark:bg-zinc-800 text-zinc-700 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-zinc-100'
                 }`}
               >
                 설문
@@ -320,7 +320,7 @@ export default function AdminContentsPage() {
                 className={`px-2 py-1 rounded text-[11px] font-medium transition-colors ${
                   filter === 'question' 
                     ? 'bg-surbate text-zinc-900' 
-                    : 'bg-zinc-800 text-zinc-400 hover:text-zinc-100'
+                    : 'bg-gray-200 dark:bg-zinc-800 text-zinc-700 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-zinc-100'
                 }`}
               >
                 질문
@@ -330,7 +330,7 @@ export default function AdminContentsPage() {
                 className={`px-2 py-1 rounded text-[11px] font-medium transition-colors ${
                   filter === 'request' 
                     ? 'bg-surbate text-zinc-900' 
-                    : 'bg-zinc-800 text-zinc-400 hover:text-zinc-100'
+                    : 'bg-gray-200 dark:bg-zinc-800 text-zinc-700 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-zinc-100'
                 }`}
               >
                 요청
@@ -340,7 +340,7 @@ export default function AdminContentsPage() {
                 className={`px-2 py-1 rounded text-[11px] font-medium transition-colors ${
                   filter === 'reported' 
                     ? 'bg-red-600 text-white' 
-                    : 'bg-zinc-800 text-zinc-400 hover:text-zinc-100'
+                    : 'bg-gray-200 dark:bg-zinc-800 text-zinc-700 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-zinc-100'
                 }`}
               >
                 신고됨
@@ -353,7 +353,7 @@ export default function AdminContentsPage() {
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
                 placeholder="제목으로 검색..."
-                className="w-full px-2 py-1 bg-zinc-900 border border-zinc-800 rounded text-xs text-zinc-100 placeholder-zinc-500 focus:outline-none focus:ring-1 focus:ring-surbate focus:border-transparent"
+                className="w-full px-2 py-1 bg-gray-50 dark:bg-zinc-900 border border-gray-300 dark:border-zinc-800 rounded text-xs text-zinc-900 dark:text-zinc-100 placeholder-zinc-400 dark:placeholder-zinc-500 focus:outline-none focus:ring-1 focus:ring-surbate focus:border-transparent"
               />
             </div>
 
@@ -361,13 +361,13 @@ export default function AdminContentsPage() {
               <div className="flex gap-1">
                 <button
                   onClick={() => handleBulkAction('hide')}
-                  className="px-2 py-1 bg-zinc-800 text-zinc-100 rounded hover:bg-zinc-700 transition-colors text-[11px]"
+                  className="px-2 py-1 bg-gray-200 dark:bg-zinc-800 text-zinc-700 dark:text-zinc-100 rounded hover:bg-gray-300 dark:hover:bg-zinc-700 transition-colors text-[11px]"
                 >
                   숨기기
                 </button>
                 <button
                   onClick={() => handleBulkAction('show')}
-                  className="px-2 py-1 bg-zinc-800 text-zinc-100 rounded hover:bg-zinc-700 transition-colors text-[11px]"
+                  className="px-2 py-1 bg-gray-200 dark:bg-zinc-800 text-zinc-700 dark:text-zinc-100 rounded hover:bg-gray-300 dark:hover:bg-zinc-700 transition-colors text-[11px]"
                 >
                   공개
                 </button>
@@ -383,12 +383,12 @@ export default function AdminContentsPage() {
         </div>
 
         {/* 콘텐츠 목록 - 카드 형태로 변경 */}
-        <div className="bg-zinc-900/50 backdrop-blur-sm border border-zinc-800 rounded-xl overflow-hidden">
-          <div className="divide-y divide-zinc-800">
+        <div className="bg-white dark:bg-zinc-900/50 backdrop-blur-sm border border-gray-200 dark:border-zinc-800 rounded-xl overflow-hidden shadow-sm dark:shadow-none">
+          <div className="divide-y divide-gray-200 dark:divide-zinc-800">
             {filteredContents.map((content) => (
               <div
                 key={content.id}
-                className={`block p-6 hover:bg-zinc-800/30 transition-all duration-200 ${content.is_hidden ? 'opacity-50' : ''}`}
+                className={`block p-6 hover:bg-gray-50 dark:hover:bg-zinc-800/30 transition-all duration-200 ${content.is_hidden ? 'opacity-50' : ''}`}
               >
                 <div className="flex items-start justify-between mb-3">
                   <div className="flex items-center gap-3">
@@ -402,7 +402,7 @@ export default function AdminContentsPage() {
                           setSelectedItems(selectedItems.filter(id => id !== content.id));
                         }
                       }}
-                      className="rounded text-surbate bg-zinc-900 border-zinc-700"
+                      className="rounded text-surbate bg-gray-50 dark:bg-zinc-900 border-gray-300 dark:border-zinc-700"
                     />
                     <span className={`inline-flex items-center px-2.5 py-0.5 rounded text-xs font-medium ${
                       content.type === 'debate' 
@@ -447,7 +447,7 @@ export default function AdminContentsPage() {
                   <div className="flex gap-2">
                     <Link
                       href={`/${content.type}s/${content.id}`}
-                      className="p-1.5 text-zinc-400 hover:text-zinc-100 transition-colors"
+                      className="p-1.5 text-zinc-600 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-zinc-100 transition-colors"
                       title="보기"
                     >
                       <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -457,7 +457,7 @@ export default function AdminContentsPage() {
                     </Link>
                     <button
                       onClick={() => handleToggleHide(content.id)}
-                      className="p-1.5 text-zinc-400 hover:text-zinc-100 transition-colors"
+                      className="p-1.5 text-zinc-600 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-zinc-100 transition-colors"
                       title={content.is_hidden ? '공개' : '숨기기'}
                     >
                       <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -470,7 +470,7 @@ export default function AdminContentsPage() {
                     </button>
                     <button
                       onClick={() => handleDelete(content.id)}
-                      className="p-1.5 text-red-400 hover:text-red-300 transition-colors"
+                      className="p-1.5 text-red-600 dark:text-red-400 hover:text-red-700 dark:hover:text-red-300 transition-colors"
                       title="삭제"
                     >
                       <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -480,7 +480,7 @@ export default function AdminContentsPage() {
                     {content.type === 'survey' && (
                       <Link
                         href={`/admin/contents/${content.id}/edit-results`}
-                        className="p-1.5 text-brand-400 hover:text-brand-300 transition-colors"
+                        className="p-1.5 text-brand-600 dark:text-brand-400 hover:text-brand-700 dark:hover:text-brand-300 transition-colors"
                         title="결과 수정 (슈퍼관리자 전용)"
                       >
                         <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -491,7 +491,7 @@ export default function AdminContentsPage() {
                     {content.type === 'debate' && (
                       <Link
                         href={`/admin/contents/${content.id}/edit-debate-results`}
-                        className="p-1.5 text-blue-400 hover:text-blue-300 transition-colors"
+                        className="p-1.5 text-blue-600 dark:text-blue-400 hover:text-blue-700 dark:hover:text-blue-300 transition-colors"
                         title="결과 수정 (슈퍼관리자 전용)"
                       >
                         <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -506,7 +506,7 @@ export default function AdminContentsPage() {
                           setAnswerContent(content.adminAnswer?.content || '');
                           setShowAnswerModal(true);
                         }}
-                        className="p-1.5 text-green-400 hover:text-green-300 transition-colors"
+                        className="p-1.5 text-green-600 dark:text-green-400 hover:text-green-700 dark:hover:text-green-300 transition-colors"
                         title="답변하기"
                       >
                         <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -516,7 +516,7 @@ export default function AdminContentsPage() {
                     )}
                     {content.type === 'request' && (
                       content.status === 'answered' ? (
-                        <div className="p-1.5 text-green-400" title="답글 완료">
+                        <div className="p-1.5 text-green-600 dark:text-green-400" title="답글 완료">
                           <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 24 24">
                             <path d="M9 16.2L4.8 12l-1.4 1.4L9 19 21 7l-1.4-1.4L9 16.2z" />
                           </svg>
@@ -528,7 +528,7 @@ export default function AdminContentsPage() {
                             setAnswerContent('');
                             setShowAnswerModal(true);
                           }}
-                          className="p-1.5 text-green-400 hover:text-green-300 transition-colors"
+                          className="p-1.5 text-green-600 dark:text-green-400 hover:text-green-700 dark:hover:text-green-300 transition-colors"
                           title="답글 달기"
                         >
                           <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -540,17 +540,17 @@ export default function AdminContentsPage() {
                   </div>
                 </div>
                 
-                <h3 className="text-lg font-semibold text-zinc-100 mb-3">
+                <h3 className="text-lg font-semibold text-zinc-900 dark:text-zinc-100 mb-3">
                   {content.title}
                 </h3>
                 
                 {content.type === 'question' && content.content && (
-                  <p className="text-zinc-400 text-sm mb-3 line-clamp-2">
+                  <p className="text-zinc-600 dark:text-zinc-400 text-sm mb-3 line-clamp-2">
                     {content.content}
                   </p>
                 )}
                 
-                <div className="grid grid-cols-2 gap-x-4 gap-y-1 text-xs text-zinc-500">
+                <div className="grid grid-cols-2 gap-x-4 gap-y-1 text-xs text-zinc-600 dark:text-zinc-500">
                   <div>
                     <span>참여 {content.participant_count}명</span>
                   </div>
@@ -605,18 +605,18 @@ export default function AdminContentsPage() {
       {/* 답변/답글 모달 */}
       {showAnswerModal && selectedQuestion && (
         <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
-          <div className="bg-zinc-900 border border-zinc-800 rounded-lg p-6 w-full max-w-2xl max-h-[80vh] overflow-y-auto">
-            <h3 className="text-xl font-semibold mb-4">
+          <div className="bg-white dark:bg-zinc-900 border border-gray-200 dark:border-zinc-800 rounded-lg p-6 w-full max-w-2xl max-h-[80vh] overflow-y-auto shadow-lg dark:shadow-none">
+            <h3 className="text-xl font-semibold mb-4 text-zinc-900 dark:text-zinc-100">
               {selectedQuestion.type === 'request' ? '요청에 답글 달기' : '질문 답변하기'}
             </h3>
             
             {/* 질문 내용 */}
-            <div className="mb-4 bg-zinc-800/50 rounded-lg p-4">
-              <h4 className="text-lg font-medium text-zinc-100 mb-2">{selectedQuestion.title}</h4>
+            <div className="mb-4 bg-gray-100 dark:bg-zinc-800/50 rounded-lg p-4">
+              <h4 className="text-lg font-medium text-zinc-900 dark:text-zinc-100 mb-2">{selectedQuestion.title}</h4>
               {selectedQuestion.content && (
-                <p className="text-zinc-400 text-sm whitespace-pre-wrap">{selectedQuestion.content}</p>
+                <p className="text-zinc-600 dark:text-zinc-400 text-sm whitespace-pre-wrap">{selectedQuestion.content}</p>
               )}
-              <div className="mt-2 text-xs text-zinc-500">
+              <div className="mt-2 text-xs text-zinc-600 dark:text-zinc-500">
                 작성자: {selectedQuestion.author_nickname} • {' '}
                 {new Date(selectedQuestion.created_at).toLocaleDateString('ko-KR', {
                   year: 'numeric',
@@ -630,13 +630,13 @@ export default function AdminContentsPage() {
 
             {/* 답변/답글 입력 */}
             <div className="mb-4">
-              <label className="block text-sm font-medium text-zinc-300 mb-2">
+              <label className="block text-sm font-medium text-zinc-700 dark:text-zinc-300 mb-2">
                 {selectedQuestion.type === 'request' ? '답글 내용' : '답변 내용'}
               </label>
               <textarea
                 value={answerContent}
                 onChange={(e) => setAnswerContent(e.target.value)}
-                className="w-full px-4 py-2 bg-zinc-800 border border-zinc-700 rounded-lg text-zinc-100 placeholder-zinc-500 focus:outline-none focus:ring-2 focus:ring-brand-500 focus:border-transparent resize-none"
+                className="w-full px-4 py-2 bg-gray-50 dark:bg-zinc-800 border border-gray-300 dark:border-zinc-700 rounded-lg text-zinc-900 dark:text-zinc-100 placeholder-zinc-400 dark:placeholder-zinc-500 focus:outline-none focus:ring-2 focus:ring-brand-500 focus:border-transparent resize-none"
                 placeholder={selectedQuestion.type === 'request' ? '답글을 입력하세요...' : '답변을 입력하세요...'}
                 rows={8}
               />
@@ -656,7 +656,7 @@ export default function AdminContentsPage() {
                   setSelectedQuestion(null);
                   setAnswerContent('');
                 }}
-                className="flex-1 px-4 py-2 bg-zinc-800 text-zinc-300 rounded-lg hover:bg-zinc-700"
+                className="flex-1 px-4 py-2 bg-gray-200 dark:bg-zinc-800 text-zinc-700 dark:text-zinc-300 rounded-lg hover:bg-gray-300 dark:hover:bg-zinc-700"
               >
                 취소
               </button>

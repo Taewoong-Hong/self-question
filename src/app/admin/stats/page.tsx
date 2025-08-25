@@ -135,8 +135,8 @@ export default function AdminStatsPage() {
 
   if (loading || !stats) {
     return (
-      <div className="min-h-screen bg-zinc-950 flex items-center justify-center">
-        <div className="inline-block animate-spin rounded-full h-8 w-8 border-b-2 border-zinc-100"></div>
+      <div className="min-h-screen bg-white dark:bg-zinc-950 flex items-center justify-center">
+        <div className="inline-block animate-spin rounded-full h-8 w-8 border-b-2 border-zinc-700 dark:border-zinc-100"></div>
       </div>
     );
   }
@@ -154,16 +154,16 @@ export default function AdminStatsPage() {
   }));
 
   return (
-    <div className="min-h-screen bg-zinc-950">
+    <div className="min-h-screen bg-gray-50 dark:bg-zinc-950">
       {/* 헤더 */}
-      <header className="bg-zinc-900/50 backdrop-blur-sm border-b border-zinc-800">
+      <header className="bg-white dark:bg-zinc-900/50 backdrop-blur-sm border-b border-gray-200 dark:border-zinc-800">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex items-center justify-between h-16">
             <div className="flex items-center gap-4">
-              <Link href="/admin/dashboard" className="text-zinc-400 hover:text-zinc-100">
+              <Link href="/admin/dashboard" className="text-zinc-600 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-zinc-100">
                 ← 대시보드
               </Link>
-              <h1 className="text-xl font-semibold text-zinc-100">통계 분석</h1>
+              <h1 className="text-xl font-semibold text-zinc-900 dark:text-zinc-100">통계 분석</h1>
             </div>
             <div className="flex items-center gap-3">
               <select
@@ -193,53 +193,53 @@ export default function AdminStatsPage() {
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         {/* 활성 사용자 섹션 */}
         <section className="mb-8">
-          <h2 className="text-xl font-bold text-zinc-100 mb-4">활성 사용자</h2>
+          <h2 className="text-xl font-bold text-zinc-900 dark:text-zinc-100 mb-4">활성 사용자</h2>
           
           {/* 핵심 지표 카드 */}
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
-            <div className="bg-zinc-900/50 backdrop-blur-sm border border-zinc-800 rounded-xl p-6">
+            <div className="bg-white dark:bg-zinc-900/50 backdrop-blur-sm border border-gray-200 dark:border-zinc-800 rounded-xl p-6 shadow-sm dark:shadow-none">
               <div className="flex items-center justify-between mb-2">
-                <h3 className="text-zinc-400 text-sm">DAU (일간 활성 사용자)</h3>
+                <h3 className="text-zinc-600 dark:text-zinc-400 text-sm">DAU (일간 활성 사용자)</h3>
                 <span className={`text-sm ${stats.activeUsers.dauTrend >= 0 ? 'text-green-400' : 'text-red-400'}`}>
                   {stats.activeUsers.dauTrend >= 0 ? '+' : ''}{stats.activeUsers.dauTrend}%
                 </span>
               </div>
-              <div className="text-3xl font-bold text-zinc-100">
+              <div className="text-3xl font-bold text-zinc-900 dark:text-zinc-100">
                 {stats.activeUsers.currentDAU.toLocaleString()}
               </div>
-              <p className="text-zinc-500 text-sm mt-1">전일 대비</p>
+              <p className="text-zinc-600 dark:text-zinc-500 text-sm mt-1">전일 대비</p>
             </div>
 
-            <div className="bg-zinc-900/50 backdrop-blur-sm border border-zinc-800 rounded-xl p-6">
+            <div className="bg-white dark:bg-zinc-900/50 backdrop-blur-sm border border-gray-200 dark:border-zinc-800 rounded-xl p-6 shadow-sm dark:shadow-none">
               <div className="flex items-center justify-between mb-2">
-                <h3 className="text-zinc-400 text-sm">WAU (주간 활성 사용자)</h3>
+                <h3 className="text-zinc-600 dark:text-zinc-400 text-sm">WAU (주간 활성 사용자)</h3>
                 <span className={`text-sm ${stats.activeUsers.wauTrend >= 0 ? 'text-green-400' : 'text-red-400'}`}>
                   {stats.activeUsers.wauTrend >= 0 ? '+' : ''}{stats.activeUsers.wauTrend}%
                 </span>
               </div>
-              <div className="text-3xl font-bold text-zinc-100">
+              <div className="text-3xl font-bold text-zinc-900 dark:text-zinc-100">
                 {stats.activeUsers.currentWAU.toLocaleString()}
               </div>
-              <p className="text-zinc-500 text-sm mt-1">전주 대비</p>
+              <p className="text-zinc-600 dark:text-zinc-500 text-sm mt-1">전주 대비</p>
             </div>
 
-            <div className="bg-zinc-900/50 backdrop-blur-sm border border-zinc-800 rounded-xl p-6">
+            <div className="bg-white dark:bg-zinc-900/50 backdrop-blur-sm border border-gray-200 dark:border-zinc-800 rounded-xl p-6 shadow-sm dark:shadow-none">
               <div className="flex items-center justify-between mb-2">
-                <h3 className="text-zinc-400 text-sm">MAU (월간 활성 사용자)</h3>
+                <h3 className="text-zinc-600 dark:text-zinc-400 text-sm">MAU (월간 활성 사용자)</h3>
                 <span className={`text-sm ${stats.activeUsers.mauTrend >= 0 ? 'text-green-400' : 'text-red-400'}`}>
                   {stats.activeUsers.mauTrend >= 0 ? '+' : ''}{stats.activeUsers.mauTrend}%
                 </span>
               </div>
-              <div className="text-3xl font-bold text-zinc-100">
+              <div className="text-3xl font-bold text-zinc-900 dark:text-zinc-100">
                 {stats.activeUsers.currentMAU.toLocaleString()}
               </div>
-              <p className="text-zinc-500 text-sm mt-1">전월 대비</p>
+              <p className="text-zinc-600 dark:text-zinc-500 text-sm mt-1">전월 대비</p>
             </div>
           </div>
 
           {/* DAU 트렌드 차트 */}
           <div className="bg-zinc-900/50 backdrop-blur-sm border border-zinc-800 rounded-xl p-6">
-            <h3 className="text-lg font-semibold text-zinc-100 mb-4">DAU 트렌드 (최근 30일)</h3>
+            <h3 className="text-lg font-semibold text-zinc-900 dark:text-zinc-100 mb-4">DAU 트렌드 (최근 30일)</h3>
             <div className="h-64">
               <ResponsiveContainer width="100%" height="100%">
                 <AreaChart data={dauChartData}>
@@ -265,43 +265,43 @@ export default function AdminStatsPage() {
 
         {/* 콘텐츠 통계 섹션 */}
         <section className="mb-8">
-          <h2 className="text-xl font-bold text-zinc-100 mb-4">콘텐츠 통계</h2>
+          <h2 className="text-xl font-bold text-zinc-900 dark:text-zinc-100 mb-4">콘텐츠 통계</h2>
           
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
             {/* 콘텐츠 현황 */}
-            <div className="bg-zinc-900/50 backdrop-blur-sm border border-zinc-800 rounded-xl p-6">
-              <h3 className="text-lg font-semibold text-zinc-100 mb-4">콘텐츠 현황</h3>
+            <div className="bg-white dark:bg-zinc-900/50 backdrop-blur-sm border border-gray-200 dark:border-zinc-800 rounded-xl p-6 shadow-sm dark:shadow-none">
+              <h3 className="text-lg font-semibold text-zinc-900 dark:text-zinc-100 mb-4">콘텐츠 현황</h3>
               <div className="space-y-4">
                 <div className="flex justify-between items-center">
-                  <span className="text-zinc-400">총 투표수</span>
-                  <span className="text-zinc-100 font-semibold">{stats.contentStats.totalDebates}</span>
+                  <span className="text-zinc-600 dark:text-zinc-400">총 투표수</span>
+                  <span className="text-zinc-900 dark:text-zinc-100 font-semibold">{stats.contentStats.totalDebates}</span>
                 </div>
                 <div className="flex justify-between items-center">
-                  <span className="text-zinc-400">총 설문수</span>
-                  <span className="text-zinc-100 font-semibold">{stats.contentStats.totalSurveys}</span>
+                  <span className="text-zinc-600 dark:text-zinc-400">총 설문수</span>
+                  <span className="text-zinc-900 dark:text-zinc-100 font-semibold">{stats.contentStats.totalSurveys}</span>
                 </div>
                 <div className="flex justify-between items-center">
-                  <span className="text-zinc-400">진행중인 투표</span>
-                  <span className="text-zinc-100 font-semibold">{stats.contentStats.activeDebates}</span>
+                  <span className="text-zinc-600 dark:text-zinc-400">진행중인 투표</span>
+                  <span className="text-zinc-900 dark:text-zinc-100 font-semibold">{stats.contentStats.activeDebates}</span>
                 </div>
                 <div className="flex justify-between items-center">
-                  <span className="text-zinc-400">진행중인 설문</span>
-                  <span className="text-zinc-100 font-semibold">{stats.contentStats.activeSurveys}</span>
+                  <span className="text-zinc-600 dark:text-zinc-400">진행중인 설문</span>
+                  <span className="text-zinc-900 dark:text-zinc-100 font-semibold">{stats.contentStats.activeSurveys}</span>
                 </div>
                 <div className="flex justify-between items-center">
-                  <span className="text-zinc-400">오늘 생성된 투표</span>
-                  <span className="text-zinc-100 font-semibold">{stats.contentStats.todayDebates}</span>
+                  <span className="text-zinc-600 dark:text-zinc-400">오늘 생성된 투표</span>
+                  <span className="text-zinc-900 dark:text-zinc-100 font-semibold">{stats.contentStats.todayDebates}</span>
                 </div>
                 <div className="flex justify-between items-center">
-                  <span className="text-zinc-400">오늘 생성된 설문</span>
-                  <span className="text-zinc-100 font-semibold">{stats.contentStats.todaySurveys}</span>
+                  <span className="text-zinc-600 dark:text-zinc-400">오늘 생성된 설문</span>
+                  <span className="text-zinc-900 dark:text-zinc-100 font-semibold">{stats.contentStats.todaySurveys}</span>
                 </div>
               </div>
             </div>
 
             {/* 주간 콘텐츠 생성 추이 */}
-            <div className="bg-zinc-900/50 backdrop-blur-sm border border-zinc-800 rounded-xl p-6">
-              <h3 className="text-lg font-semibold text-zinc-100 mb-4">주간 콘텐츠 생성 추이</h3>
+            <div className="bg-white dark:bg-zinc-900/50 backdrop-blur-sm border border-gray-200 dark:border-zinc-800 rounded-xl p-6 shadow-sm dark:shadow-none">
+              <h3 className="text-lg font-semibold text-zinc-900 dark:text-zinc-100 mb-4">주간 콘텐츠 생성 추이</h3>
               <div className="h-64">
                 <ResponsiveContainer width="100%" height="100%">
                   <BarChart data={stats.contentStats.weeklyContent}>
@@ -324,21 +324,21 @@ export default function AdminStatsPage() {
 
         {/* 참여율 및 활동 패턴 */}
         <section className="mb-8">
-          <h2 className="text-xl font-bold text-zinc-100 mb-4">참여율 및 활동 패턴</h2>
+          <h2 className="text-xl font-bold text-zinc-900 dark:text-zinc-100 mb-4">참여율 및 활동 패턴</h2>
           
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
             {/* 참여율 지표 */}
-            <div className="bg-zinc-900/50 backdrop-blur-sm border border-zinc-800 rounded-xl p-6">
-              <h3 className="text-lg font-semibold text-zinc-100 mb-4">참여율 지표</h3>
+            <div className="bg-white dark:bg-zinc-900/50 backdrop-blur-sm border border-gray-200 dark:border-zinc-800 rounded-xl p-6 shadow-sm dark:shadow-none">
+              <h3 className="text-lg font-semibold text-zinc-900 dark:text-zinc-100 mb-4">참여율 지표</h3>
               <div className="space-y-4">
                 <div>
                   <div className="flex justify-between items-center mb-1">
-                    <span className="text-zinc-400 text-sm">평균 투표 참여율</span>
-                    <span className="text-zinc-100 text-sm font-semibold">
+                    <span className="text-zinc-600 dark:text-zinc-400 text-sm">평균 투표 참여율</span>
+                    <span className="text-zinc-900 dark:text-zinc-100 text-sm font-semibold">
                       {stats.engagementStats.avgDebateParticipation}%
                     </span>
                   </div>
-                  <div className="w-full bg-zinc-800 rounded-full h-2">
+                  <div className="w-full bg-gray-200 dark:bg-zinc-800 rounded-full h-2">
                     <div 
                       className="bg-gradient-to-r from-surbate to-brand-600 h-2 rounded-full transition-all duration-500"
                       style={{ width: `${stats.engagementStats.avgDebateParticipation}%` }}
@@ -348,12 +348,12 @@ export default function AdminStatsPage() {
 
                 <div>
                   <div className="flex justify-between items-center mb-1">
-                    <span className="text-zinc-400 text-sm">평균 설문 완료율</span>
-                    <span className="text-zinc-100 text-sm font-semibold">
+                    <span className="text-zinc-600 dark:text-zinc-400 text-sm">평균 설문 완료율</span>
+                    <span className="text-zinc-900 dark:text-zinc-100 text-sm font-semibold">
                       {stats.engagementStats.avgSurveyCompletion}%
                     </span>
                   </div>
-                  <div className="w-full bg-zinc-800 rounded-full h-2">
+                  <div className="w-full bg-gray-200 dark:bg-zinc-800 rounded-full h-2">
                     <div 
                       className="bg-gradient-to-r from-brand-400 to-brand-600 h-2 rounded-full transition-all duration-500"
                       style={{ width: `${stats.engagementStats.avgSurveyCompletion}%` }}
@@ -363,14 +363,14 @@ export default function AdminStatsPage() {
 
                 <div className="pt-4 space-y-2">
                   <div className="flex justify-between items-center">
-                    <span className="text-zinc-400">총 투표 수</span>
-                    <span className="text-zinc-100 font-semibold">
+                    <span className="text-zinc-600 dark:text-zinc-400">총 투표 수</span>
+                    <span className="text-zinc-900 dark:text-zinc-100 font-semibold">
                       {stats.engagementStats.totalVotes.toLocaleString()}
                     </span>
                   </div>
                   <div className="flex justify-between items-center">
-                    <span className="text-zinc-400">총 설문 응답 수</span>
-                    <span className="text-zinc-100 font-semibold">
+                    <span className="text-zinc-600 dark:text-zinc-400">총 설문 응답 수</span>
+                    <span className="text-zinc-900 dark:text-zinc-100 font-semibold">
                       {stats.engagementStats.totalResponses.toLocaleString()}
                     </span>
                   </div>
@@ -379,8 +379,8 @@ export default function AdminStatsPage() {
             </div>
 
             {/* 시간별 활동 패턴 */}
-            <div className="bg-zinc-900/50 backdrop-blur-sm border border-zinc-800 rounded-xl p-6">
-              <h3 className="text-lg font-semibold text-zinc-100 mb-4">시간별 활동 패턴</h3>
+            <div className="bg-white dark:bg-zinc-900/50 backdrop-blur-sm border border-gray-200 dark:border-zinc-800 rounded-xl p-6 shadow-sm dark:shadow-none">
+              <h3 className="text-lg font-semibold text-zinc-900 dark:text-zinc-100 mb-4">시간별 활동 패턴</h3>
               <div className="h-64">
                 <ResponsiveContainer width="100%" height="100%">
                   <LineChart data={hourlyData}>
@@ -407,12 +407,12 @@ export default function AdminStatsPage() {
 
         {/* 트래픽 및 디바이스 분석 */}
         <section>
-          <h2 className="text-xl font-bold text-zinc-100 mb-4">트래픽 및 디바이스 분석</h2>
+          <h2 className="text-xl font-bold text-zinc-900 dark:text-zinc-100 mb-4">트래픽 및 디바이스 분석</h2>
           
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
             {/* 트래픽 소스 */}
-            <div className="bg-zinc-900/50 backdrop-blur-sm border border-zinc-800 rounded-xl p-6">
-              <h3 className="text-lg font-semibold text-zinc-100 mb-4">트래픽 소스</h3>
+            <div className="bg-white dark:bg-zinc-900/50 backdrop-blur-sm border border-gray-200 dark:border-zinc-800 rounded-xl p-6 shadow-sm dark:shadow-none">
+              <h3 className="text-lg font-semibold text-zinc-900 dark:text-zinc-100 mb-4">트래픽 소스</h3>
               <div className="h-64">
                 <ResponsiveContainer width="100%" height="100%">
                   <PieChart>
@@ -440,8 +440,8 @@ export default function AdminStatsPage() {
             </div>
 
             {/* 디바이스 통계 */}
-            <div className="bg-zinc-900/50 backdrop-blur-sm border border-zinc-800 rounded-xl p-6">
-              <h3 className="text-lg font-semibold text-zinc-100 mb-4">디바이스 통계</h3>
+            <div className="bg-white dark:bg-zinc-900/50 backdrop-blur-sm border border-gray-200 dark:border-zinc-800 rounded-xl p-6 shadow-sm dark:shadow-none">
+              <h3 className="text-lg font-semibold text-zinc-900 dark:text-zinc-100 mb-4">디바이스 통계</h3>
               <div className="h-64">
                 <ResponsiveContainer width="100%" height="100%">
                   <BarChart data={stats.deviceStats} layout="vertical">
