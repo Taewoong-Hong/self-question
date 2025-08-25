@@ -3,9 +3,11 @@
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
+import { useAdminAuth } from '@/contexts/AdminAuthContext';
 
 export default function AdminLoginPage() {
   const router = useRouter();
+  const { checkAdminAuth } = useAdminAuth();
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const [loading, setLoading] = useState(false);
@@ -45,7 +47,13 @@ export default function AdminLoginPage() {
       localStorage.setItem('admin_user', JSON.stringify(data.user));
       localStorage.setItem('admin_username', data.user.username);
       
-      router.push('/admin/dashboard');
+      // AdminAuthContext 상태 업데이트
+      checkAdminAuth();
+      
+      // 약간의 지연 후 리다이렉트
+      setTimeout(() => {
+        router.push('/admin/dashboard');
+      }, 100);
     } catch (error) {
       setError('로그인 처리 중 오류가 발생했습니다');
     } finally {

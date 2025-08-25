@@ -15,6 +15,8 @@ function LayoutContent({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
   const isAdminPage = pathname?.startsWith('/admin');
   const { isAdminLoggedIn, adminUsername, logout } = useAdminAuth();
+  
+  console.log('Layout State:', { isAdminLoggedIn, adminUsername, isAdminPage });
 
   // 화면 크기 변경 시 사이드바 상태 업데이트
   useEffect(() => {
