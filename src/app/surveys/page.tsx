@@ -56,17 +56,12 @@ export default function SurveysPage() {
           </div>
           <Link
             href="/surveys/create"
-            className="relative p-3 border border-gray-300 dark:border-zinc-700 text-zinc-700 dark:text-zinc-100 rounded-lg hover:border-gray-400 dark:hover:border-zinc-500 hover:bg-gray-100 dark:hover:bg-zinc-800/50 transform hover:-translate-y-0.5 transition-all duration-200"
+            className="w-12 h-12 border-2 border-gray-300 dark:border-zinc-700 text-zinc-700 dark:text-zinc-100 rounded-full hover:border-gray-400 dark:hover:border-zinc-500 hover:bg-gray-100 dark:hover:bg-zinc-800/50 transform hover:-translate-y-0.5 transition-all duration-200 flex items-center justify-center"
             title="새 설문 만들기"
           >
-            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z" />
+            <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M12 4v16m8-8H4" />
             </svg>
-            <div className="absolute -top-1 -left-1 w-4 h-4 bg-white dark:bg-zinc-950 border border-zinc-700 dark:border-zinc-100 rounded-full flex items-center justify-center">
-              <svg className="w-2.5 h-2.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M12 4v16m8-8H4" />
-              </svg>
-            </div>
           </Link>
         </div>
       </div>

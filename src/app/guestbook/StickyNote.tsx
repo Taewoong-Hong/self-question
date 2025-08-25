@@ -142,11 +142,11 @@ export default function StickyNote({ note, onUpdatePosition, onDelete }: StickyN
 
       {/* 내용 */}
       <div className="h-full flex flex-col">
-        <p className="text-zinc-900 text-base flex-1 break-words overflow-hidden">
+        <p className="text-zinc-900 dark:text-zinc-900 text-base flex-1 break-words overflow-hidden">
           {note.content}
         </p>
         
-        <div className="mt-3 text-sm text-zinc-700 space-y-1">
+        <div className="mt-3 text-sm text-zinc-700 dark:text-zinc-700 space-y-1">
           {note.author_nickname && (
             <p className="font-medium">- {note.author_nickname}</p>
           )}
