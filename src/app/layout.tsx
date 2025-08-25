@@ -16,7 +16,7 @@ function LayoutContent({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
   const isAdminPage = pathname?.startsWith('/admin');
   const { isAdminLoggedIn, adminUsername, logout } = useAdminAuth();
-  const { theme, toggleTheme } = useTheme();
+  const { theme, toggleTheme, mounted } = useTheme();
 
   // 화면 크기 변경 시 사이드바 상태 업데이트
   useEffect(() => {
@@ -53,21 +53,23 @@ function LayoutContent({ children }: { children: React.ReactNode }) {
                 <img src="/images/logo_surbate.png" alt="Surbate" className="h-7 w-7" />
                 <h1 className="text-xl font-bold text-surbate">Surbate</h1>
               </Link>
-              <button
-                onClick={toggleTheme}
-                className="p-2 rounded-lg hover:bg-zinc-100 dark:hover:bg-zinc-900 transition-colors"
-                title={theme === 'dark' ? '라이트 모드로 전환' : '다크 모드로 전환'}
-              >
-                {theme === 'dark' ? (
-                  <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z" />
-                  </svg>
-                ) : (
-                  <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z" />
-                  </svg>
-                )}
-              </button>
+              {mounted && (
+                <button
+                  onClick={toggleTheme}
+                  className="p-2 rounded-lg hover:bg-zinc-100 dark:hover:bg-zinc-900 transition-colors"
+                  title={theme === 'dark' ? '라이트 모드로 전환' : '다크 모드로 전환'}
+                >
+                  {theme === 'dark' ? (
+                    <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z" />
+                    </svg>
+                  ) : (
+                    <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z" />
+                    </svg>
+                  )}
+                </button>
+              )}
             </div>
           </header>
 
@@ -97,21 +99,23 @@ function LayoutContent({ children }: { children: React.ReactNode }) {
                   </Link>
                   <div className="flex items-center gap-2">
                     {/* 데스크톱 테마 토글 버튼 */}
-                    <button
-                      onClick={toggleTheme}
-                      className="hidden lg:block p-2 rounded-lg hover:bg-zinc-200 dark:hover:bg-zinc-800 transition-colors"
-                      title={theme === 'dark' ? '라이트 모드로 전환' : '다크 모드로 전환'}
-                    >
-                      {theme === 'dark' ? (
-                        <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z" />
-                        </svg>
-                      ) : (
-                        <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z" />
-                        </svg>
-                      )}
-                    </button>
+                    {mounted && (
+                      <button
+                        onClick={toggleTheme}
+                        className="hidden lg:block p-2 rounded-lg hover:bg-zinc-200 dark:hover:bg-zinc-800 transition-colors"
+                        title={theme === 'dark' ? '라이트 모드로 전환' : '다크 모드로 전환'}
+                      >
+                        {theme === 'dark' ? (
+                          <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z" />
+                          </svg>
+                        ) : (
+                          <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z" />
+                          </svg>
+                        )}
+                      </button>
+                    )}
                     {/* 모바일 닫기 버튼 */}
                     <button
                       className="lg:hidden p-1 rounded hover:bg-zinc-200 dark:hover:bg-zinc-800 transition-colors"
@@ -333,9 +337,9 @@ function LayoutContent({ children }: { children: React.ReactNode }) {
           toastOptions={{
             duration: 3000,
             style: {
-              background: theme === 'dark' ? '#18181b' : '#ffffff',
-              color: theme === 'dark' ? '#fafafa' : '#18181b',
-              border: theme === 'dark' ? '1px solid #27272a' : '1px solid #e5e5e5',
+              background: mounted && theme === 'light' ? '#ffffff' : '#18181b',
+              color: mounted && theme === 'light' ? '#18181b' : '#fafafa',
+              border: mounted && theme === 'light' ? '1px solid #e5e5e5' : '1px solid #27272a',
               borderRadius: '0.5rem',
               fontSize: '14px',
               padding: '12px 16px',

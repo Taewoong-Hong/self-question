@@ -7,6 +7,7 @@ type Theme = 'dark' | 'light';
 interface ThemeContextType {
   theme: Theme;
   toggleTheme: () => void;
+  mounted: boolean;
 }
 
 const ThemeContext = createContext<ThemeContextType | undefined>(undefined);
@@ -32,13 +33,8 @@ export function ThemeProvider({ children }: { children: ReactNode }) {
     document.documentElement.classList.toggle('light');
   };
 
-  // 하이드레이션 문제 방지
-  if (!mounted) {
-    return <>{children}</>;
-  }
-
   return (
-    <ThemeContext.Provider value={{ theme, toggleTheme }}>
+    <ThemeContext.Provider value={{ theme, toggleTheme, mounted }}>
       {children}
     </ThemeContext.Provider>
   );
@@ -49,7 +45,7 @@ export function useTheme() {
   if (context === undefined) {
     // 서버 사이드 렌더링 중에는 기본값 반환
     if (typeof window === 'undefined') {
-      return { theme: 'dark' as Theme, toggleTheme: () => {} };
+      return { theme: 'dark' as Theme, toggleTheme: () => {}, mounted: false };
     }
     throw new Error('useTheme must be used within a ThemeProvider');
   }
