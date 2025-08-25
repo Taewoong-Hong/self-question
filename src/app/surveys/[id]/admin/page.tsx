@@ -149,7 +149,7 @@ export default function SurveyAdminPage() {
   if (!survey) {
     return (
       <div className="min-h-screen flex items-center justify-center">
-        <p className="text-zinc-400">설문을 찾을 수 없습니다.</p>
+        <p className="text-zinc-600 dark:text-zinc-400">설문을 찾을 수 없습니다.</p>
       </div>
     );
   }
@@ -158,18 +158,18 @@ export default function SurveyAdminPage() {
   if (!isAuthenticated) {
     return (
       <div className="min-h-screen flex items-center justify-center">
-        <div className="bg-zinc-900/50 backdrop-blur-sm border border-zinc-800 rounded-xl p-8 w-full max-w-md">
-          <h2 className="text-2xl font-bold mb-6 text-center">작성자 인증</h2>
+        <div className="bg-white dark:bg-zinc-900/50 backdrop-blur-sm border border-gray-200 dark:border-zinc-800 rounded-xl p-8 w-full max-w-md shadow-lg dark:shadow-none">
+          <h2 className="text-2xl font-bold mb-6 text-center text-zinc-900 dark:text-zinc-100">작성자 인증</h2>
           <form onSubmit={handleVerify} className="space-y-4">
             <div>
-              <label className="block text-sm font-medium text-zinc-300 mb-2">
+              <label className="block text-sm font-medium text-zinc-700 dark:text-zinc-300 mb-2">
                 작성자 비밀번호
               </label>
               <input
                 type="password"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
-                className="w-full px-4 py-2 bg-zinc-900 border border-zinc-800 rounded-lg text-zinc-100 placeholder-zinc-500 focus:outline-none focus:ring-2 focus:ring-surbate focus:border-transparent"
+                className="w-full px-4 py-2 bg-gray-50 dark:bg-zinc-900 border border-gray-300 dark:border-zinc-800 rounded-lg text-zinc-900 dark:text-zinc-100 placeholder-zinc-400 dark:placeholder-zinc-500 focus:outline-none focus:ring-2 focus:ring-surbate focus:border-transparent"
                 placeholder="비밀번호를 입력하세요"
                 required
                 autoFocus
@@ -184,7 +184,7 @@ export default function SurveyAdminPage() {
             </button>
             <Link
               href={`/surveys/${surveyId}`}
-              className="block text-center text-zinc-400 hover:text-zinc-100"
+              className="block text-center text-zinc-600 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-zinc-100"
             >
               설문으로 돌아가기
             </Link>
@@ -201,8 +201,8 @@ export default function SurveyAdminPage() {
       <div className="mb-8">
         <div className="flex items-start justify-between mb-4">
           <div className="flex-1">
-            <h1 className="text-xl font-bold mb-2">{survey.title} - 관리</h1>
-            <div className="flex items-center gap-4 text-sm text-zinc-500">
+            <h1 className="text-xl font-bold mb-2 text-zinc-900 dark:text-zinc-100">{survey.title} - 관리</h1>
+            <div className="flex items-center gap-4 text-sm text-zinc-600 dark:text-zinc-500">
               <span>작성자: {survey.author_nickname || '익명'}</span>
               {survey.created_at && (
                 <>
@@ -222,10 +222,10 @@ export default function SurveyAdminPage() {
           </div>
           <Link 
             href={`/surveys/${surveyId}`} 
-            className="p-2 bg-zinc-800 hover:bg-zinc-700 rounded-lg transition-colors"
+            className="p-2 bg-gray-200 dark:bg-zinc-800 hover:bg-gray-300 dark:hover:bg-zinc-700 rounded-lg transition-colors"
             title="설문으로 돌아가기"
           >
-            <svg className="w-5 h-5 text-zinc-100" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <svg className="w-5 h-5 text-zinc-700 dark:text-zinc-100" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 19l-7-7m0 0l7-7m-7 7h18" />
             </svg>
           </Link>
@@ -235,11 +235,11 @@ export default function SurveyAdminPage() {
       {/* 관리 옵션 */}
       <div className="space-y-6">
         {/* 상태 관리 */}
-        <div className="bg-zinc-900/50 backdrop-blur-sm border border-zinc-800 rounded-xl p-6">
-          <h2 className="text-lg font-semibold mb-4">설문 상태 관리</h2>
+        <div className="bg-white dark:bg-zinc-900/50 backdrop-blur-sm border border-gray-200 dark:border-zinc-800 rounded-xl p-6 shadow-sm dark:shadow-none">
+          <h2 className="text-lg font-semibold mb-4 text-zinc-900 dark:text-zinc-100">설문 상태 관리</h2>
           <div className="flex items-center justify-between">
             <div>
-              <p className="text-zinc-300">
+              <p className="text-zinc-700 dark:text-zinc-300">
                 현재 상태: 
                 <span className={`ml-2 inline-flex items-center px-2.5 py-0.5 rounded text-xs font-medium ${
                   survey.status === 'open' 
@@ -249,7 +249,7 @@ export default function SurveyAdminPage() {
                   {survey.status === 'open' ? '진행중' : '종료'}
                 </span>
               </p>
-              <p className="text-sm text-zinc-500 mt-1">
+              <p className="text-sm text-zinc-600 dark:text-zinc-500 mt-1">
                 {survey.status === 'open' 
                   ? '설문을 종료하면 더 이상 응답을 받지 않습니다.' 
                   : '설문을 다시 열면 응답을 받을 수 있습니다.'}
@@ -279,32 +279,32 @@ export default function SurveyAdminPage() {
         </div>
 
         {/* 결과 및 데이터 */}
-        <div className="bg-zinc-900/50 backdrop-blur-sm border border-zinc-800 rounded-xl p-6">
-          <h2 className="text-lg font-semibold mb-4">결과 및 데이터</h2>
+        <div className="bg-white dark:bg-zinc-900/50 backdrop-blur-sm border border-gray-200 dark:border-zinc-800 rounded-xl p-6 shadow-sm dark:shadow-none">
+          <h2 className="text-lg font-semibold mb-4 text-zinc-900 dark:text-zinc-100">결과 및 데이터</h2>
           <div className="space-y-3">
             <Link
               href={`/surveys/${surveyId}/public-results`}
-              className="flex items-center justify-between p-3 bg-zinc-800/50 rounded-lg hover:bg-zinc-800 transition-colors"
+              className="flex items-center justify-between p-3 bg-gray-100 dark:bg-zinc-800/50 rounded-lg hover:bg-gray-200 dark:hover:bg-zinc-800 transition-colors"
             >
               <span>결과 통계 보기</span>
-              <span className="text-zinc-400">→</span>
+              <span className="text-zinc-600 dark:text-zinc-400">→</span>
             </Link>
             <button
               onClick={() => adminToken && surveyApi.exportCSV(surveyId, adminToken)}
-              className="w-full flex items-center justify-between p-3 bg-zinc-800/50 rounded-lg hover:bg-zinc-800 transition-colors"
+              className="w-full flex items-center justify-between p-3 bg-gray-100 dark:bg-zinc-800/50 rounded-lg hover:bg-gray-200 dark:hover:bg-zinc-800 transition-colors"
             >
               <span>응답 데이터 CSV 다운로드</span>
-              <span className="text-zinc-400">↓</span>
+              <span className="text-zinc-600 dark:text-zinc-400">↓</span>
             </button>
           </div>
         </div>
 
         {/* 공유 링크 */}
-        <div className="bg-zinc-900/50 backdrop-blur-sm border border-zinc-800 rounded-xl p-6">
-          <h2 className="text-lg font-semibold mb-4">공유 링크</h2>
+        <div className="bg-white dark:bg-zinc-900/50 backdrop-blur-sm border border-gray-200 dark:border-zinc-800 rounded-xl p-6 shadow-sm dark:shadow-none">
+          <h2 className="text-lg font-semibold mb-4 text-zinc-900 dark:text-zinc-100">공유 링크</h2>
           <div className="space-y-3">
             <div>
-              <label className="block text-sm font-medium text-zinc-300 mb-2">
+              <label className="block text-sm font-medium text-zinc-700 dark:text-zinc-300 mb-2">
                 설문 참여 링크
               </label>
               <div className="flex gap-2">
@@ -312,14 +312,14 @@ export default function SurveyAdminPage() {
                   type="text"
                   value={`${process.env.NEXT_PUBLIC_APP_URL || window.location.origin}/surveys/${surveyId}`}
                   readOnly
-                  className="flex-1 px-4 py-2 bg-zinc-900 border border-zinc-800 rounded-lg text-zinc-100"
+                  className="flex-1 px-4 py-2 bg-gray-50 dark:bg-zinc-900 border border-gray-300 dark:border-zinc-800 rounded-lg text-zinc-900 dark:text-zinc-100"
                 />
                 <button
                   onClick={() => {
                     navigator.clipboard.writeText(`${process.env.NEXT_PUBLIC_APP_URL || window.location.origin}/surveys/${surveyId}`);
                     toast.success('링크가 복사되었습니다.');
                   }}
-                  className="p-2 bg-zinc-800 text-zinc-100 rounded-lg hover:bg-zinc-700 transition-colors"
+                  className="p-2 bg-gray-200 dark:bg-zinc-800 text-zinc-700 dark:text-zinc-100 rounded-lg hover:bg-gray-300 dark:hover:bg-zinc-700 transition-colors"
                   title="링크 복사"
                 >
                   <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -338,7 +338,7 @@ export default function SurveyAdminPage() {
                       link.href = qrCodeUrl;
                       link.click();
                     }}
-                    className="mt-2 text-sm text-zinc-400 hover:text-zinc-100 transition-colors"
+                    className="mt-2 text-sm text-zinc-600 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-zinc-100 transition-colors"
                   >
                     QR 코드 다운로드
                   </button>
@@ -346,7 +346,7 @@ export default function SurveyAdminPage() {
               )}
             </div>
             <div>
-              <label className="block text-sm font-medium text-zinc-300 mb-2">
+              <label className="block text-sm font-medium text-zinc-700 dark:text-zinc-300 mb-2">
                 작성자 페이지 링크
               </label>
               <div className="flex gap-2">
@@ -354,14 +354,14 @@ export default function SurveyAdminPage() {
                   type="text"
                   value={`${process.env.NEXT_PUBLIC_APP_URL || window.location.origin}/surveys/${surveyId}/admin`}
                   readOnly
-                  className="flex-1 px-4 py-2 bg-zinc-900 border border-zinc-800 rounded-lg text-zinc-100"
+                  className="flex-1 px-4 py-2 bg-gray-50 dark:bg-zinc-900 border border-gray-300 dark:border-zinc-800 rounded-lg text-zinc-900 dark:text-zinc-100"
                 />
                 <button
                   onClick={() => {
                     navigator.clipboard.writeText(`${process.env.NEXT_PUBLIC_APP_URL || window.location.origin}/surveys/${surveyId}/admin`);
                     toast.success('링크가 복사되었습니다.');
                   }}
-                  className="p-2 bg-zinc-800 text-zinc-100 rounded-lg hover:bg-zinc-700 transition-colors"
+                  className="p-2 bg-gray-200 dark:bg-zinc-800 text-zinc-700 dark:text-zinc-100 rounded-lg hover:bg-gray-300 dark:hover:bg-zinc-700 transition-colors"
                   title="링크 복사"
                 >
                   <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -374,13 +374,13 @@ export default function SurveyAdminPage() {
         </div>
 
         {/* 설문 삭제 */}
-        <div className="bg-zinc-900/50 backdrop-blur-sm border border-zinc-800 rounded-xl p-6">
+        <div className="bg-white dark:bg-zinc-900/50 backdrop-blur-sm border border-gray-200 dark:border-zinc-800 rounded-xl p-6 shadow-sm dark:shadow-none">
           <div className="flex items-center justify-between">
             <div>
-              <p className="text-zinc-300">
+              <p className="text-zinc-700 dark:text-zinc-300">
                 설문 삭제
               </p>
-              <p className="text-sm text-zinc-500 mt-1">
+              <p className="text-sm text-zinc-600 dark:text-zinc-500 mt-1">
                 이 작업은 되돌릴 수 없으며, 모든 응답 데이터가 함께 삭제됩니다.
               </p>
             </div>

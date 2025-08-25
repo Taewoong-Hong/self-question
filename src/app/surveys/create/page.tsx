@@ -179,7 +179,7 @@ export default function CreateSurveyPage() {
       </div>
 
       <form onSubmit={handleSubmit} className="space-y-6 max-w-2xl">
-        <div className="bg-zinc-900/50 backdrop-blur-sm border border-zinc-800 rounded-xl p-6">
+        <div className="bg-white dark:bg-zinc-900/50 backdrop-blur-sm border border-gray-200 dark:border-zinc-800 rounded-xl p-6 shadow-sm dark:shadow-none">
           <h2 className="text-lg font-semibold mb-4">기본 정보</h2>
           
           <div className="space-y-4">
@@ -276,7 +276,7 @@ export default function CreateSurveyPage() {
         </div>
 
         {/* 질문 섹션 */}
-        <div className="bg-zinc-900/50 backdrop-blur-sm border border-zinc-800 rounded-xl p-6">
+        <div className="bg-white dark:bg-zinc-900/50 backdrop-blur-sm border border-gray-200 dark:border-zinc-800 rounded-xl p-6 shadow-sm dark:shadow-none">
           <div className="flex justify-between items-center mb-4">
             <h2 className="text-lg font-semibold">질문</h2>
             <button
@@ -290,7 +290,7 @@ export default function CreateSurveyPage() {
 
           <div className="space-y-6">
             {formData.questions.map((question, qIndex) => (
-              <div key={qIndex} className="bg-zinc-800/50 rounded-lg p-4">
+              <div key={qIndex} className="bg-gray-100 dark:bg-zinc-800/50 rounded-lg p-4">
                 <div className="flex justify-between items-start mb-4">
                   <h3 className="text-sm font-medium text-zinc-300">질문 {qIndex + 1}</h3>
                   {formData.questions.length > 1 && (
@@ -487,7 +487,7 @@ export default function CreateSurveyPage() {
         </div>
 
         {/* 작성자 설정 */}
-        <div className="bg-zinc-900/50 backdrop-blur-sm border border-zinc-800 rounded-xl p-6">
+        <div className="bg-white dark:bg-zinc-900/50 backdrop-blur-sm border border-gray-200 dark:border-zinc-800 rounded-xl p-6 shadow-sm dark:shadow-none">
           <h2 className="text-lg font-semibold mb-4">작성자 설정</h2>
           
           <div>

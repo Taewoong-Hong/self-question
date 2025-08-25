@@ -151,7 +151,7 @@ export default function QuestionsPage() {
       ) : (
         <div className="space-y-4">
           {questions.length === 0 ? (
-            <div className="text-center py-12 text-zinc-500">
+            <div className="text-center py-12 text-zinc-600 dark:text-zinc-500">
               아직 질문이 없습니다. 첫 번째 질문을 작성해보세요!
             </div>
           ) : (
@@ -159,10 +159,10 @@ export default function QuestionsPage() {
               <Link
                 key={question._id}
                 href={`/questions/${question._id}`}
-                className="block bg-zinc-900/50 border border-zinc-800 rounded-lg p-6 hover:bg-zinc-800/30 transition-all"
+                className="block bg-white dark:bg-zinc-900/50 border border-gray-200 dark:border-zinc-800 rounded-lg p-6 hover:bg-gray-50 dark:hover:bg-zinc-800/30 transition-all shadow-sm dark:shadow-none"
               >
                 <div className="flex items-start justify-between mb-2">
-                  <h3 className="text-lg font-semibold text-zinc-100">{question.title}</h3>
+                  <h3 className="text-lg font-semibold text-zinc-900 dark:text-zinc-100">{question.title}</h3>
                   <span className={`px-2.5 py-0.5 rounded text-xs font-medium ${
                     question.status === 'answered'
                       ? 'bg-green-100/10 text-green-400'
@@ -175,7 +175,7 @@ export default function QuestionsPage() {
                   </span>
                 </div>
                 
-                <p className="text-zinc-400 text-sm mb-3 line-clamp-2">
+                <p className="text-zinc-600 dark:text-zinc-400 text-sm mb-3 line-clamp-2">
                   {question.content}
                 </p>
                 

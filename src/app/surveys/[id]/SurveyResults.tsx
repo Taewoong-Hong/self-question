@@ -139,7 +139,7 @@ export default function SurveyResults({ surveyId }: SurveyResultsProps) {
         // public-results API에서는 text_response_count만 제공
         const textResponseCount = question.totalResponses || 0;
         return (
-          <div className="bg-zinc-800/50 rounded-lg p-4 text-center">
+          <div className="bg-gray-100 dark:bg-zinc-800/50 rounded-lg p-4 text-center">
             <p className="text-2xl font-bold text-surbate">{textResponseCount}개</p>
             <p className="text-sm text-zinc-400 mt-1">텍스트 응답</p>
           </div>
@@ -151,17 +151,17 @@ export default function SurveyResults({ surveyId }: SurveyResultsProps) {
   };
 
   return (
-    <div className="bg-zinc-900/50 backdrop-blur-sm border border-zinc-800 rounded-xl p-4 sm:p-6">
+    <div className="bg-white dark:bg-zinc-900/50 backdrop-blur-sm border border-gray-200 dark:border-zinc-800 rounded-xl p-4 sm:p-6 shadow-sm dark:shadow-none">
       <div className="mb-6">
-        <h2 className="text-lg sm:text-xl font-semibold text-zinc-100 mb-2">설문 결과</h2>
-        <p className="text-sm text-zinc-400">총 {totalResponses}명이 응답했습니다</p>
+        <h2 className="text-lg sm:text-xl font-semibold text-zinc-900 dark:text-zinc-100 mb-2">설문 결과</h2>
+        <p className="text-sm text-zinc-600 dark:text-zinc-400">총 {totalResponses}명이 응답했습니다</p>
         <div className="mt-4">
           <a
             href={`/surveys/${surveyId}/public-results`}
-            className="flex items-center justify-between p-3 bg-zinc-800/50 rounded-lg hover:bg-zinc-800 transition-colors"
+            className="flex items-center justify-between p-3 bg-gray-100 dark:bg-zinc-800/50 rounded-lg hover:bg-gray-200 dark:hover:bg-zinc-800 transition-colors"
           >
             <span>결과 통계 보기</span>
-            <span className="text-zinc-400">→</span>
+            <span className="text-zinc-600 dark:text-zinc-400">→</span>
           </a>
         </div>
       </div>
@@ -181,7 +181,7 @@ export default function SurveyResults({ surveyId }: SurveyResultsProps) {
 // 스켈레톤 UI
 function ResultsSkeleton() {
   return (
-    <div className="bg-zinc-900/50 backdrop-blur-sm border border-zinc-800 rounded-xl p-4 sm:p-6">
+    <div className="bg-white dark:bg-zinc-900/50 backdrop-blur-sm border border-gray-200 dark:border-zinc-800 rounded-xl p-4 sm:p-6 shadow-sm dark:shadow-none">
       <div className="animate-pulse">
         <div className="h-6 bg-zinc-800 rounded w-32 mb-2"></div>
         <div className="h-4 bg-zinc-800 rounded w-48 mb-6"></div>

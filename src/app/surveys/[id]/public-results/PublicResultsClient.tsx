@@ -113,7 +113,7 @@ export default function PublicResultsClient({ survey, results }: PublicResultsCl
       {/* 우측 상단 뒤로가기 버튼 */}
       <Link
         href={`/surveys/${survey.id}`}
-        className="absolute right-4 top-8 p-2 bg-zinc-800 text-zinc-100 rounded-lg hover:bg-zinc-700 transition-colors"
+        className="absolute right-4 top-8 p-2 bg-gray-200 dark:bg-zinc-800 text-zinc-700 dark:text-zinc-100 rounded-lg hover:bg-gray-300 dark:hover:bg-zinc-700 transition-colors"
         title="설문으로 돌아가기"
       >
         <svg 
@@ -132,8 +132,8 @@ export default function PublicResultsClient({ survey, results }: PublicResultsCl
       <div className="mb-6">
         <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-4 pr-12">
           <div>
-            <h1 className="text-xl sm:text-2xl lg:text-3xl font-bold mb-2">{survey.title} - 결과 통계</h1>
-            <div className="flex items-center gap-3 text-xs sm:text-sm text-zinc-500">
+            <h1 className="text-xl sm:text-2xl lg:text-3xl font-bold mb-2 text-zinc-900 dark:text-zinc-100">{survey.title} - 결과 통계</h1>
+            <div className="flex items-center gap-3 text-xs sm:text-sm text-zinc-600 dark:text-zinc-500">
               <span>응답 {results.total_responses || 0}명</span>
               {survey.created_at && (
                 <>
@@ -160,14 +160,14 @@ export default function PublicResultsClient({ survey, results }: PublicResultsCl
           
           
           return (
-            <div key={questionId} className="bg-zinc-900/50 backdrop-blur-sm border border-zinc-800 rounded-xl p-4">
-              <h3 className="text-sm sm:text-base font-medium mb-2">
+            <div key={questionId} className="bg-white dark:bg-zinc-900/50 backdrop-blur-sm border border-gray-200 dark:border-zinc-800 rounded-xl p-4 shadow-sm dark:shadow-none">
+              <h3 className="text-sm sm:text-base font-medium mb-2 text-zinc-900 dark:text-zinc-100">
                 {index + 1}. {question.title}
               </h3>
 
               {/* 통계 데이터가 있는지 확인 */}
               {!questionStats ? (
-                <p className="text-zinc-500 text-center py-8">아직 응답이 없습니다</p>
+                <p className="text-zinc-600 dark:text-zinc-500 text-center py-8">아직 응답이 없습니다</p>
               ) : (
                 <>
                   {/* 단일/다중 선택 결과 */}
@@ -181,8 +181,8 @@ export default function PublicResultsClient({ survey, results }: PublicResultsCl
                             onClick={() => setChartType('bar')}
                             className={`px-2 py-0.5 rounded text-xs transition-colors ${
                               chartType === 'bar' 
-                                ? 'bg-zinc-700 text-zinc-100' 
-                                : 'bg-zinc-800 text-zinc-400 hover:bg-zinc-700'
+                                ? 'bg-gray-300 dark:bg-zinc-700 text-zinc-900 dark:text-zinc-100' 
+                                : 'bg-gray-200 dark:bg-zinc-800 text-zinc-700 dark:text-zinc-400 hover:bg-gray-300 dark:hover:bg-zinc-700'
                             }`}
                           >
                             막대
@@ -191,8 +191,8 @@ export default function PublicResultsClient({ survey, results }: PublicResultsCl
                             onClick={() => setChartType('pie')}
                             className={`px-2 py-0.5 rounded text-xs transition-colors ${
                               chartType === 'pie' 
-                                ? 'bg-zinc-700 text-zinc-100' 
-                                : 'bg-zinc-800 text-zinc-400 hover:bg-zinc-700'
+                                ? 'bg-gray-300 dark:bg-zinc-700 text-zinc-900 dark:text-zinc-100' 
+                                : 'bg-gray-200 dark:bg-zinc-800 text-zinc-700 dark:text-zinc-400 hover:bg-gray-300 dark:hover:bg-zinc-700'
                             }`}
                           >
                             원형

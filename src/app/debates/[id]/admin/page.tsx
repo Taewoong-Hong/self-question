@@ -173,18 +173,18 @@ export default function DebateAdminPage() {
   if (!isAuthenticated) {
     return (
       <div className="min-h-screen flex items-center justify-center">
-        <div className="bg-zinc-900/50 backdrop-blur-sm border border-zinc-800 rounded-xl p-8 w-full max-w-md">
-          <h2 className="text-2xl font-bold mb-6 text-center">작성자 인증</h2>
+        <div className="bg-white dark:bg-zinc-900/50 backdrop-blur-sm border border-gray-200 dark:border-zinc-800 rounded-xl p-8 w-full max-w-md shadow-lg dark:shadow-none">
+          <h2 className="text-2xl font-bold mb-6 text-center text-zinc-900 dark:text-zinc-100">작성자 인증</h2>
           <form onSubmit={handleVerify} className="space-y-4">
             <div>
-              <label className="block text-sm font-medium text-zinc-300 mb-2">
+              <label className="block text-sm font-medium text-zinc-700 dark:text-zinc-300 mb-2">
                 작성자 비밀번호
               </label>
               <input
                 type="password"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
-                className="w-full px-4 py-2 bg-zinc-900 border border-zinc-800 rounded-lg text-zinc-100 placeholder-zinc-500 focus:outline-none focus:ring-2 focus:ring-surbate focus:border-transparent"
+                className="w-full px-4 py-2 bg-gray-50 dark:bg-zinc-900 border border-gray-300 dark:border-zinc-800 rounded-lg text-zinc-900 dark:text-zinc-100 placeholder-zinc-400 dark:placeholder-zinc-500 focus:outline-none focus:ring-2 focus:ring-surbate focus:border-transparent"
                 placeholder="비밀번호를 입력하세요"
                 required
                 autoFocus
@@ -199,7 +199,7 @@ export default function DebateAdminPage() {
             </button>
             <Link
               href={`/debates/${debateId}`}
-              className="block text-center text-zinc-400 hover:text-zinc-100"
+              className="block text-center text-zinc-600 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-zinc-100"
             >
               투표로 돌아가기
             </Link>
@@ -221,7 +221,7 @@ export default function DebateAdminPage() {
       {/* 우측 상단 뒤로가기 버튼 */}
       <Link
         href={`/debates/${debateId}`}
-        className="absolute right-0 top-0 p-2 bg-zinc-800 text-zinc-100 rounded-lg hover:bg-zinc-700 transition-colors"
+        className="absolute right-0 top-0 p-2 bg-gray-200 dark:bg-zinc-800 text-zinc-700 dark:text-zinc-100 rounded-lg hover:bg-gray-300 dark:hover:bg-zinc-700 transition-colors"
         title="투표로 돌아가기"
       >
         <svg 
@@ -240,8 +240,8 @@ export default function DebateAdminPage() {
       <div className="mb-8 pr-12">
         <div className="flex items-start justify-between">
           <div>
-            <h1 className="text-xl sm:text-2xl lg:text-3xl font-bold mb-2">{debate.title} - 관리</h1>
-            <div className="flex flex-wrap items-center gap-2 sm:gap-4 mt-3 text-xs sm:text-sm text-zinc-500">
+            <h1 className="text-xl sm:text-2xl lg:text-3xl font-bold mb-2 text-zinc-900 dark:text-zinc-100">{debate.title} - 관리</h1>
+            <div className="flex flex-wrap items-center gap-2 sm:gap-4 mt-3 text-xs sm:text-sm text-zinc-600 dark:text-zinc-500">
               <span>작성자: {debate.author_nickname || '익명'}</span>
               <span>•</span>
               <span>
@@ -260,15 +260,15 @@ export default function DebateAdminPage() {
       {/* 관리 옵션 */}
       <div className="space-y-6">
         {/* 투표 현황 */}
-        <div className="bg-zinc-900/50 backdrop-blur-sm border border-zinc-800 rounded-xl p-4 sm:p-6">
-          <h2 className="text-base sm:text-lg font-semibold mb-3 sm:mb-4">투표 현황</h2>
+        <div className="bg-white dark:bg-zinc-900/50 backdrop-blur-sm border border-gray-200 dark:border-zinc-800 rounded-xl p-4 sm:p-6 shadow-sm dark:shadow-none">
+          <h2 className="text-base sm:text-lg font-semibold mb-3 sm:mb-4 text-zinc-900 dark:text-zinc-100">투표 현황</h2>
           <div className="space-y-4">
             <div>
               <div className="flex justify-between items-center mb-2">
-                <span className="text-sm sm:text-base font-medium">찬성</span>
+                <span className="text-sm sm:text-base font-medium text-zinc-900 dark:text-zinc-100">찬성</span>
                 <span className="text-sm sm:text-base text-surbate">{agreeVotes}표 ({agreePercentage.toFixed(1)}%)</span>
               </div>
-              <div className="w-full bg-zinc-800 rounded-full h-3 sm:h-4 overflow-hidden">
+              <div className="w-full bg-gray-200 dark:bg-zinc-800 rounded-full h-3 sm:h-4 overflow-hidden">
                 <div 
                   className="bg-gradient-to-r from-surbate to-brand-600 h-full transition-all duration-500"
                   style={{ width: `${agreePercentage}%` }}
@@ -278,10 +278,10 @@ export default function DebateAdminPage() {
             
             <div>
               <div className="flex justify-between items-center mb-2">
-                <span className="text-sm sm:text-base font-medium">반대</span>
+                <span className="text-sm sm:text-base font-medium text-zinc-900 dark:text-zinc-100">반대</span>
                 <span className="text-sm sm:text-base text-red-400">{disagreeVotes}표 ({disagreePercentage.toFixed(1)}%)</span>
               </div>
-              <div className="w-full bg-zinc-800 rounded-full h-3 sm:h-4 overflow-hidden">
+              <div className="w-full bg-gray-200 dark:bg-zinc-800 rounded-full h-3 sm:h-4 overflow-hidden">
                 <div 
                   className="bg-red-500 h-full transition-all duration-500"
                   style={{ width: `${disagreePercentage}%` }}
@@ -292,11 +292,11 @@ export default function DebateAdminPage() {
         </div>
 
         {/* 상태 관리 */}
-        <div className="bg-zinc-900/50 backdrop-blur-sm border border-zinc-800 rounded-xl p-4 sm:p-6">
-          <h2 className="text-base sm:text-lg font-semibold mb-3 sm:mb-4">투표 상태 관리</h2>
+        <div className="bg-white dark:bg-zinc-900/50 backdrop-blur-sm border border-gray-200 dark:border-zinc-800 rounded-xl p-4 sm:p-6 shadow-sm dark:shadow-none">
+          <h2 className="text-base sm:text-lg font-semibold mb-3 sm:mb-4 text-zinc-900 dark:text-zinc-100">투표 상태 관리</h2>
           <div className="flex items-center justify-between">
             <div>
-              <p className="text-zinc-300">
+              <p className="text-zinc-700 dark:text-zinc-300">
                 현재 상태: 
                 <span className={`ml-2 inline-flex items-center px-2.5 py-0.5 rounded text-xs font-medium ${
                   debate.status === 'active' 
@@ -306,7 +306,7 @@ export default function DebateAdminPage() {
                   {debate.status === 'active' ? '진행중' : debate.status === 'scheduled' ? '예정' : '종료'}
                 </span>
               </p>
-              <p className="text-xs sm:text-sm text-zinc-500 mt-1">
+              <p className="text-xs sm:text-sm text-zinc-600 dark:text-zinc-500 mt-1">
                 {debate.status === 'active' 
                   ? '투표를 종료하면 더 이상 투표를 받지 않습니다.' 
                   : debate.status === 'ended'
@@ -338,23 +338,23 @@ export default function DebateAdminPage() {
         </div>
 
         {/* 데이터 내보내기 */}
-        <div className="bg-zinc-900/50 backdrop-blur-sm border border-zinc-800 rounded-xl p-4 sm:p-6">
-          <h2 className="text-base sm:text-lg font-semibold mb-3 sm:mb-4">데이터 내보내기</h2>
+        <div className="bg-white dark:bg-zinc-900/50 backdrop-blur-sm border border-gray-200 dark:border-zinc-800 rounded-xl p-4 sm:p-6 shadow-sm dark:shadow-none">
+          <h2 className="text-base sm:text-lg font-semibold mb-3 sm:mb-4 text-zinc-900 dark:text-zinc-100">데이터 내보내기</h2>
           <button
             onClick={handleExportCSV}
-            className="w-full flex items-center justify-between p-2.5 sm:p-3 text-sm sm:text-base bg-zinc-800/50 rounded-lg hover:bg-zinc-800 transition-colors"
+            className="w-full flex items-center justify-between p-2.5 sm:p-3 text-sm sm:text-base bg-gray-100 dark:bg-zinc-800/50 rounded-lg hover:bg-gray-200 dark:hover:bg-zinc-800 transition-colors"
           >
             <span>투표 데이터 CSV 다운로드</span>
-            <span className="text-zinc-400">↓</span>
+            <span className="text-zinc-600 dark:text-zinc-400">↓</span>
           </button>
         </div>
 
         {/* 공유 링크 */}
-        <div className="bg-zinc-900/50 backdrop-blur-sm border border-zinc-800 rounded-xl p-4 sm:p-6">
-          <h2 className="text-base sm:text-lg font-semibold mb-3 sm:mb-4">공유 링크</h2>
+        <div className="bg-white dark:bg-zinc-900/50 backdrop-blur-sm border border-gray-200 dark:border-zinc-800 rounded-xl p-4 sm:p-6 shadow-sm dark:shadow-none">
+          <h2 className="text-base sm:text-lg font-semibold mb-3 sm:mb-4 text-zinc-900 dark:text-zinc-100">공유 링크</h2>
           <div className="space-y-3">
             <div>
-              <label className="block text-xs sm:text-sm font-medium text-zinc-300 mb-1.5 sm:mb-2">
+              <label className="block text-xs sm:text-sm font-medium text-zinc-700 dark:text-zinc-300 mb-1.5 sm:mb-2">
                 투표 참여 링크
               </label>
               <div className="flex gap-2">
@@ -362,14 +362,14 @@ export default function DebateAdminPage() {
                   type="text"
                   value={`${window.location.origin}/debates/${debateId}`}
                   readOnly
-                  className="flex-1 px-3 py-1.5 sm:px-4 sm:py-2 text-sm sm:text-base bg-zinc-900 border border-zinc-800 rounded-lg text-zinc-100"
+                  className="flex-1 px-3 py-1.5 sm:px-4 sm:py-2 text-sm sm:text-base bg-gray-50 dark:bg-zinc-900 border border-gray-300 dark:border-zinc-800 rounded-lg text-zinc-900 dark:text-zinc-100"
                 />
                 <button
                   onClick={() => {
                     navigator.clipboard.writeText(`${window.location.origin}/debates/${debateId}`);
                     toast.success('링크가 복사되었습니다.');
                   }}
-                  className="p-2 bg-zinc-800 text-zinc-100 rounded-lg hover:bg-zinc-700 transition-colors"
+                  className="p-2 bg-gray-200 dark:bg-zinc-800 text-zinc-700 dark:text-zinc-100 rounded-lg hover:bg-gray-300 dark:hover:bg-zinc-700 transition-colors"
                   title="링크 복사"
                 >
                   <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -379,7 +379,7 @@ export default function DebateAdminPage() {
               </div>
             </div>
             <div>
-              <label className="block text-xs sm:text-sm font-medium text-zinc-300 mb-1.5 sm:mb-2">
+              <label className="block text-xs sm:text-sm font-medium text-zinc-700 dark:text-zinc-300 mb-1.5 sm:mb-2">
                 작성자 페이지 링크
               </label>
               <div className="flex gap-2">
@@ -387,14 +387,14 @@ export default function DebateAdminPage() {
                   type="text"
                   value={`${window.location.origin}/debates/${debateId}/admin`}
                   readOnly
-                  className="flex-1 px-3 py-1.5 sm:px-4 sm:py-2 text-sm sm:text-base bg-zinc-900 border border-zinc-800 rounded-lg text-zinc-100"
+                  className="flex-1 px-3 py-1.5 sm:px-4 sm:py-2 text-sm sm:text-base bg-gray-50 dark:bg-zinc-900 border border-gray-300 dark:border-zinc-800 rounded-lg text-zinc-900 dark:text-zinc-100"
                 />
                 <button
                   onClick={() => {
                     navigator.clipboard.writeText(`${window.location.origin}/debates/${debateId}/admin`);
                     toast.success('링크가 복사되었습니다.');
                   }}
-                  className="p-2 bg-zinc-800 text-zinc-100 rounded-lg hover:bg-zinc-700 transition-colors"
+                  className="p-2 bg-gray-200 dark:bg-zinc-800 text-zinc-700 dark:text-zinc-100 rounded-lg hover:bg-gray-300 dark:hover:bg-zinc-700 transition-colors"
                   title="링크 복사"
                 >
                   <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -407,8 +407,8 @@ export default function DebateAdminPage() {
         </div>
 
         {/* QR 코드 */}
-        <div className="bg-zinc-900/50 backdrop-blur-sm border border-zinc-800 rounded-xl p-4 sm:p-6">
-          <h2 className="text-base sm:text-lg font-semibold mb-3 sm:mb-4">QR 코드</h2>
+        <div className="bg-white dark:bg-zinc-900/50 backdrop-blur-sm border border-gray-200 dark:border-zinc-800 rounded-xl p-4 sm:p-6 shadow-sm dark:shadow-none">
+          <h2 className="text-base sm:text-lg font-semibold mb-3 sm:mb-4 text-zinc-900 dark:text-zinc-100">QR 코드</h2>
           <div className="flex flex-col items-center space-y-4">
             {qrCodeUrl && (
               <img 
@@ -427,7 +427,7 @@ export default function DebateAdminPage() {
                 link.href = qrCodeUrl;
                 link.click();
               }}
-              className="px-3 py-1.5 sm:px-4 sm:py-2 text-sm sm:text-base bg-zinc-800 text-zinc-100 rounded-lg hover:bg-zinc-700 transition-colors"
+              className="px-3 py-1.5 sm:px-4 sm:py-2 text-sm sm:text-base bg-gray-200 dark:bg-zinc-800 text-zinc-700 dark:text-zinc-100 rounded-lg hover:bg-gray-300 dark:hover:bg-zinc-700 transition-colors"
             >
               QR 코드 다운로드
             </button>
@@ -435,13 +435,13 @@ export default function DebateAdminPage() {
         </div>
 
         {/* 위험 구역 */}
-        <div className="bg-zinc-900/50 backdrop-blur-sm border border-zinc-800 rounded-xl p-4 sm:p-6">
+        <div className="bg-white dark:bg-zinc-900/50 backdrop-blur-sm border border-gray-200 dark:border-zinc-800 rounded-xl p-4 sm:p-6 shadow-sm dark:shadow-none">
           <div className="flex items-center justify-between">
             <div>
-              <p className="text-sm sm:text-base text-zinc-300">
+              <p className="text-sm sm:text-base text-zinc-700 dark:text-zinc-300">
                 투표 삭제
               </p>
-              <p className="text-xs sm:text-sm text-zinc-500 mt-1">
+              <p className="text-xs sm:text-sm text-zinc-600 dark:text-zinc-500 mt-1">
                 이 작업은 되돌릴 수 없으며, 모든 투표 데이터가 함께 삭제됩니다.
               </p>
             </div>

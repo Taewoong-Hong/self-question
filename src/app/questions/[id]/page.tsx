@@ -166,8 +166,8 @@ export default function QuestionDetailPage() {
       </div>
 
       {/* 질문 내용 */}
-      <div className="bg-zinc-900/50 border border-zinc-800 rounded-lg p-6 mb-6">
-        <p className="text-zinc-300 whitespace-pre-wrap">{question.content}</p>
+      <div className="bg-white dark:bg-zinc-900/50 border border-gray-200 dark:border-zinc-800 rounded-lg p-6 mb-6 shadow-sm dark:shadow-none">
+        <p className="text-zinc-700 dark:text-zinc-300 whitespace-pre-wrap">{question.content}</p>
       </div>
 
       {/* Admin 답변 (있는 경우에만 표시) */}

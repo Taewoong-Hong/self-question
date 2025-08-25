@@ -294,7 +294,7 @@ export default function EditSurveyResultsPage() {
         </div>
 
         {/* 날짜 수정 섹션 */}
-        <div className="bg-zinc-900/50 backdrop-blur-sm border border-zinc-800 rounded-xl p-6 mb-6">
+        <div className="bg-white dark:bg-zinc-900/50 backdrop-blur-sm border border-gray-200 dark:border-zinc-800 rounded-xl p-6 mb-6 shadow-sm dark:shadow-none">
           <h3 className="text-lg font-semibold text-zinc-100 mb-4">설문 날짜 정보</h3>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
             <div>

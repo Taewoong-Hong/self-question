@@ -74,7 +74,7 @@ export default function CreateDebatePage() {
       </div>
 
       <form onSubmit={handleSubmit} className="space-y-6 max-w-2xl">
-        <div className="bg-zinc-900/50 backdrop-blur-sm border border-zinc-800 rounded-xl p-6">
+        <div className="bg-white dark:bg-zinc-900/50 backdrop-blur-sm border border-gray-200 dark:border-zinc-800 rounded-xl p-6 shadow-sm dark:shadow-none">
           <h2 className="text-lg font-semibold mb-4">기본 정보</h2>
           
           <div className="space-y-4">
@@ -187,7 +187,7 @@ export default function CreateDebatePage() {
         </div>
 
         {/* 투표 설정 */}
-        <div className="bg-zinc-900/50 backdrop-blur-sm border border-zinc-800 rounded-xl p-6">
+        <div className="bg-white dark:bg-zinc-900/50 backdrop-blur-sm border border-gray-200 dark:border-zinc-800 rounded-xl p-6 shadow-sm dark:shadow-none">
           <h2 className="text-lg font-semibold mb-4">투표 설정</h2>
           
           <div className="space-y-4">
@@ -248,7 +248,7 @@ export default function CreateDebatePage() {
         </div>
 
         {/* 작성자 설정 */}
-        <div className="bg-zinc-900/50 backdrop-blur-sm border border-zinc-800 rounded-xl p-6">
+        <div className="bg-white dark:bg-zinc-900/50 backdrop-blur-sm border border-gray-200 dark:border-zinc-800 rounded-xl p-6 shadow-sm dark:shadow-none">
           <h2 className="text-lg font-semibold mb-4">작성자 설정</h2>
           
           <div>
