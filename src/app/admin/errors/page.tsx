@@ -3,20 +3,24 @@
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
+import { useAdminAuth } from '@/contexts/AdminAuthContext';
 
 export default function AdminErrorsPage() {
   const router = useRouter();
+  const { isAdminLoggedIn, isLoading: authLoading } = useAdminAuth();
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    // 관리자 인증 확인
-    const token = localStorage.getItem('admin_token');
-    if (!token) {
+    // 인증 로딩이 완료되고 로그인되지 않은 경우 리다이렉트
+    if (!authLoading && !isAdminLoggedIn) {
       router.push('/admin');
       return;
     }
-    setLoading(false);
-  }, [router]);
+    
+    if (isAdminLoggedIn) {
+      setLoading(false);
+    }
+  }, [router, isAdminLoggedIn, authLoading]);
 
   if (loading) {
     return (

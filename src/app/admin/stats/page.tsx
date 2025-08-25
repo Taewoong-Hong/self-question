@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
+import { useAdminAuth } from '@/contexts/AdminAuthContext';
 import {
   LineChart, Line, AreaChart, Area, BarChart, Bar, PieChart, Pie, Cell,
   XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer
@@ -80,12 +81,19 @@ const COLORS = [
 
 export default function AdminStatsPage() {
   const router = useRouter();
+  const { isAdminLoggedIn, isLoading: authLoading } = useAdminAuth();
   const [loading, setLoading] = useState(true);
   const [stats, setStats] = useState<StatsData | null>(null);
   const [dateRange, setDateRange] = useState('7d'); // 7d, 30d, 90d
   const [refreshing, setRefreshing] = useState(false);
 
   useEffect(() => {
+    // 인증 로딩이 완료되고 로그인되지 않은 경우 리다이렉트
+    if (!authLoading && !isAdminLoggedIn) {
+      router.push('/admin');
+      return;
+    }
+    
     const token = localStorage.getItem('admin_token');
     if (!token) {
       router.push('/admin');

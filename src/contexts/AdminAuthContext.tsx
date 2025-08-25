@@ -6,6 +6,7 @@ import { useRouter } from 'next/navigation';
 interface AdminAuthContextType {
   isAdminLoggedIn: boolean;
   adminUsername: string | null;
+  isLoading: boolean;
   checkAdminAuth: () => void;
   logout: () => void;
 }
@@ -22,12 +23,38 @@ export function AdminAuthProvider({ children }: { children: ReactNode }) {
     try {
       const token = localStorage.getItem('admin_token');
       const username = localStorage.getItem('admin_username');
+      const adminUser = localStorage.getItem('admin_user');
       
-      console.log('AdminAuth Check:', { token: !!token, username });
+      console.log('AdminAuth Check:', { 
+        hasToken: !!token, 
+        username,
+        adminUser: adminUser ? JSON.parse(adminUser) : null,
+        allKeys: Object.keys(localStorage)
+      });
       
-      if (token && username) {
-        setIsAdminLoggedIn(true);
-        setAdminUsername(username);
+      if (token) {
+        // admin_user에서 username 추출 시도
+        if (!username && adminUser) {
+          try {
+            const user = JSON.parse(adminUser);
+            if (user.username) {
+              localStorage.setItem('admin_username', user.username);
+              setIsAdminLoggedIn(true);
+              setAdminUsername(user.username);
+              return;
+            }
+          } catch (e) {
+            console.error('Failed to parse admin_user:', e);
+          }
+        }
+        
+        if (username) {
+          setIsAdminLoggedIn(true);
+          setAdminUsername(username);
+        } else {
+          setIsAdminLoggedIn(false);
+          setAdminUsername(null);
+        }
       } else {
         setIsAdminLoggedIn(false);
         setAdminUsername(null);
@@ -58,6 +85,7 @@ export function AdminAuthProvider({ children }: { children: ReactNode }) {
     <AdminAuthContext.Provider value={{
       isAdminLoggedIn,
       adminUsername,
+      isLoading,
       checkAdminAuth,
       logout
     }}>

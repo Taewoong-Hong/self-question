@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import toast from 'react-hot-toast';
+import { useAdminAuth } from '@/contexts/AdminAuthContext';
 
 interface ContentItem {
   id: string;
@@ -29,6 +30,7 @@ interface ContentItem {
 
 export default function AdminContentsPage() {
   const router = useRouter();
+  const { isAdminLoggedIn, isLoading: authLoading } = useAdminAuth();
   const [loading, setLoading] = useState(true);
   const [contents, setContents] = useState<ContentItem[]>([]);
   const [filter, setFilter] = useState<'all' | 'debate' | 'survey' | 'question' | 'request' | 'reported'>('all');
@@ -39,8 +41,16 @@ export default function AdminContentsPage() {
   const [answerContent, setAnswerContent] = useState('');
 
   useEffect(() => {
-    fetchContents();
-  }, [filter, searchQuery]);
+    // 인증 로딩이 완료되고 로그인되지 않은 경우 리다이렉트
+    if (!authLoading && !isAdminLoggedIn) {
+      router.push('/admin');
+      return;
+    }
+    
+    if (isAdminLoggedIn) {
+      fetchContents();
+    }
+  }, [filter, searchQuery, isAdminLoggedIn, authLoading]);
 
   const fetchContents = async () => {
     try {

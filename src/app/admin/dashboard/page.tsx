@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
+import { useAdminAuth } from '@/contexts/AdminAuthContext';
 
 interface DashboardStats {
   totalDebates: number;
@@ -15,6 +16,7 @@ interface DashboardStats {
 
 export default function AdminDashboardPage() {
   const router = useRouter();
+  const { isAdminLoggedIn, isLoading: authLoading } = useAdminAuth();
   const [loading, setLoading] = useState(true);
   const [adminUser, setAdminUser] = useState<any>(null);
   const [stats, setStats] = useState<DashboardStats>({
@@ -27,6 +29,12 @@ export default function AdminDashboardPage() {
   });
 
   useEffect(() => {
+    // 인증 로딩이 완료되고 로그인되지 않은 경우 리다이렉트
+    if (!authLoading && !isAdminLoggedIn) {
+      router.push('/admin');
+      return;
+    }
+    
     // 관리자 인증 확인
     const token = localStorage.getItem('admin_token');
     const user = localStorage.getItem('admin_user');
