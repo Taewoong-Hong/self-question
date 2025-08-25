@@ -179,7 +179,7 @@ export default function QuestionDetailPage() {
             </svg>
             <h3 className="text-lg font-semibold text-green-400">관리자 답변</h3>
           </div>
-          <p className="text-zinc-300 whitespace-pre-wrap mb-3">{question.adminAnswer.content}</p>
+          <p className="text-zinc-800 dark:text-zinc-300 whitespace-pre-wrap mb-3">{question.adminAnswer.content}</p>
           <div className="text-xs text-zinc-500">
             {question.adminAnswer.answeredBy} • {' '}
             {new Date(question.adminAnswer.answeredAt).toLocaleDateString('ko-KR', {

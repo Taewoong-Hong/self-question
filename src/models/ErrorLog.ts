@@ -1,101 +1,58 @@
-import mongoose from 'mongoose';
+import mongoose, { Document, Model, Schema } from 'mongoose';
 
-export interface IErrorLog extends mongoose.Document {
-  error_code: string;
-  error_message: string;
-  error_stack?: string;
-  error_type: 'system' | 'api' | 'database' | 'validation' | 'authentication' | 'unknown';
+export interface IErrorLog extends Document {
+  id: string;
+  message: string;
+  stack?: string;
+  url?: string;
+  userAgent?: string;
+  timestamp: Date;
+  type: 'client' | 'server';
   severity: 'low' | 'medium' | 'high' | 'critical';
-  endpoint?: string;
-  method?: string;
-  user_ip?: string;
-  user_agent?: string;
-  request_body?: any;
-  response_status?: number;
   resolved: boolean;
-  resolved_at?: Date;
-  resolved_by?: string;
-  notes?: string;
-  created_at: Date;
+  metadata?: any;
 }
 
-const ErrorLogSchema = new mongoose.Schema({
-  error_code: {
+const errorLogSchema = new Schema<IErrorLog>({
+  id: {
     type: String,
     required: true,
-    index: true
+    unique: true,
+    default: () => new Date().getTime().toString(36) + Math.random().toString(36).substring(2)
   },
-  error_message: {
+  message: {
     type: String,
     required: true
   },
-  error_stack: {
-    type: String,
-    default: null
-  },
-  error_type: {
-    type: String,
-    enum: ['system', 'api', 'database', 'validation', 'authentication', 'unknown'],
-    default: 'unknown',
+  stack: String,
+  url: String,
+  userAgent: String,
+  timestamp: {
+    type: Date,
+    default: Date.now,
     index: true
+  },
+  type: {
+    type: String,
+    enum: ['client', 'server'],
+    default: 'client'
   },
   severity: {
     type: String,
     enum: ['low', 'medium', 'high', 'critical'],
-    default: 'medium',
-    index: true
-  },
-  endpoint: {
-    type: String,
-    default: null
-  },
-  method: {
-    type: String,
-    enum: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS', 'HEAD'],
-    default: null
-  },
-  user_ip: {
-    type: String,
-    default: null
-  },
-  user_agent: {
-    type: String,
-    default: null
-  },
-  request_body: {
-    type: mongoose.Schema.Types.Mixed,
-    default: null
-  },
-  response_status: {
-    type: Number,
-    default: null
+    default: 'medium'
   },
   resolved: {
     type: Boolean,
-    default: false,
-    index: true
+    default: false
   },
-  resolved_at: {
-    type: Date,
-    default: null
-  },
-  resolved_by: {
-    type: String,
-    default: null
-  },
-  notes: {
-    type: String,
-    default: null
-  },
-  created_at: {
-    type: Date,
-    default: Date.now,
-    index: true
+  metadata: {
+    type: Schema.Types.Mixed
   }
 });
 
-// 복합 인덱스
-ErrorLogSchema.index({ created_at: -1, severity: 1 });
-ErrorLogSchema.index({ error_type: 1, resolved: 1 });
+// 인덱스
+errorLogSchema.index({ timestamp: -1 });
+errorLogSchema.index({ severity: 1, resolved: 1 });
 
-export default mongoose.models.ErrorLog || mongoose.model<IErrorLog>('ErrorLog', ErrorLogSchema);
+export default (mongoose.models.ErrorLog as Model<IErrorLog>) || mongoose.model<IErrorLog>('ErrorLog', errorLogSchema);

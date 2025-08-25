@@ -8,6 +8,7 @@ import { Toaster } from 'react-hot-toast';
 import { usePathname } from 'next/navigation';
 import { AdminAuthProvider, useAdminAuth } from '@/contexts/AdminAuthContext';
 import { ThemeProvider, useTheme } from '@/contexts/ThemeContext';
+import { errorLogger } from '@/lib/errorLogger';
 
 const inter = Inter({ subsets: ['latin'] });
 
@@ -50,7 +51,7 @@ function LayoutContent({ children }: { children: React.ReactNode }) {
                 </svg>
               </button>
               <Link href="/" className="flex items-center gap-2 hover:opacity-80 transition-opacity">
-                <img src="/images/logo_surbate.png" alt="Surbate" className="h-7 w-7" />
+                <img src="/images/logo_surbate.png" alt="Surbate" className="h-7 w-7 drop-shadow-md dark:drop-shadow-none" />
                 <h1 className="text-xl font-bold text-surbate">Surbate</h1>
               </Link>
               {mounted && (
@@ -93,7 +94,7 @@ function LayoutContent({ children }: { children: React.ReactNode }) {
                 <div className="flex items-center justify-between mb-4">
                   <Link href="/" className="block hover:opacity-80 transition-opacity" onClick={closeSidebar}>
                     <div className="flex items-center gap-2">
-                      <img src="/images/logo_surbate.png" alt="Surbate" className="h-7 w-7" />
+                      <img src="/images/logo_surbate.png" alt="Surbate" className="h-7 w-7 drop-shadow-md dark:drop-shadow-none" />
                       <h1 className="text-xl font-bold text-surbate">Surbate</h1>
                     </div>
                   </Link>
@@ -165,7 +166,7 @@ function LayoutContent({ children }: { children: React.ReactNode }) {
                     </h3>
                   </li>
                   <li>
-                    <div className="flex items-center justify-between gap-3 px-3 py-2 rounded-lg hover:bg-zinc-800 hover:text-brand-400 transition-all duration-200">
+                    <div className="flex items-center justify-between gap-3 px-3 py-2 rounded-lg hover:bg-zinc-200 dark:hover:bg-zinc-800 hover:text-brand-600 dark:hover:text-brand-400 transition-all duration-200">
                       <Link
                         href="/debates"
                         className="flex items-center gap-3 flex-1"
@@ -178,7 +179,7 @@ function LayoutContent({ children }: { children: React.ReactNode }) {
                       </Link>
                       <Link
                         href="/debates/create"
-                        className="p-1.5 rounded-lg hover:bg-zinc-700 transition-colors"
+                        className="p-1.5 rounded-lg hover:bg-zinc-300 dark:hover:bg-zinc-700 transition-colors"
                         onClick={closeSidebar}
                       >
                         <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -188,7 +189,7 @@ function LayoutContent({ children }: { children: React.ReactNode }) {
                     </div>
                   </li>
                   <li>
-                    <div className="flex items-center justify-between gap-3 px-3 py-2 rounded-lg hover:bg-zinc-800 hover:text-brand-400 transition-all duration-200">
+                    <div className="flex items-center justify-between gap-3 px-3 py-2 rounded-lg hover:bg-zinc-200 dark:hover:bg-zinc-800 hover:text-brand-600 dark:hover:text-brand-400 transition-all duration-200">
                       <Link
                         href="/surveys"
                         className="flex items-center gap-3 flex-1"
@@ -201,7 +202,7 @@ function LayoutContent({ children }: { children: React.ReactNode }) {
                       </Link>
                       <Link
                         href="/surveys/create"
-                        className="p-1.5 rounded-lg hover:bg-zinc-700 transition-colors"
+                        className="p-1.5 rounded-lg hover:bg-zinc-300 dark:hover:bg-zinc-700 transition-colors"
                         onClick={closeSidebar}
                       >
                         <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -215,7 +216,7 @@ function LayoutContent({ children }: { children: React.ReactNode }) {
                   <li>
                     <Link
                       href="/requests"
-                      className="flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-zinc-800 hover:text-brand-400 transition-all duration-200"
+                      className="flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-zinc-200 dark:hover:bg-zinc-800 hover:text-brand-600 dark:hover:text-brand-400 transition-all duration-200"
                       onClick={closeSidebar}
                     >
                       <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -236,7 +237,7 @@ function LayoutContent({ children }: { children: React.ReactNode }) {
                       <li>
                         <Link
                           href="/admin/dashboard"
-                          className="flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-zinc-800 hover:text-brand-400 transition-all duration-200"
+                          className="flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-zinc-200 dark:hover:bg-zinc-800 hover:text-brand-600 dark:hover:text-brand-400 transition-all duration-200"
                           onClick={closeSidebar}
                         >
                           <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -248,7 +249,7 @@ function LayoutContent({ children }: { children: React.ReactNode }) {
                       <li>
                         <Link
                           href="/admin/users"
-                          className="flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-zinc-800 hover:text-brand-400 transition-all duration-200"
+                          className="flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-zinc-200 dark:hover:bg-zinc-800 hover:text-brand-600 dark:hover:text-brand-400 transition-all duration-200"
                           onClick={closeSidebar}
                         >
                           <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -260,7 +261,7 @@ function LayoutContent({ children }: { children: React.ReactNode }) {
                       <li>
                         <Link
                           href="/admin/contents"
-                          className="flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-zinc-800 hover:text-brand-400 transition-all duration-200"
+                          className="flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-zinc-200 dark:hover:bg-zinc-800 hover:text-brand-600 dark:hover:text-brand-400 transition-all duration-200"
                           onClick={closeSidebar}
                         >
                           <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -272,7 +273,7 @@ function LayoutContent({ children }: { children: React.ReactNode }) {
                       <li>
                         <Link
                           href="/admin/stats"
-                          className="flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-zinc-800 hover:text-brand-400 transition-all duration-200"
+                          className="flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-zinc-200 dark:hover:bg-zinc-800 hover:text-brand-600 dark:hover:text-brand-400 transition-all duration-200"
                           onClick={closeSidebar}
                         >
                           <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -284,13 +285,13 @@ function LayoutContent({ children }: { children: React.ReactNode }) {
                       <li>
                         <Link
                           href="/admin/errors"
-                          className="flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-zinc-800 hover:text-brand-400 transition-all duration-200"
+                          className="flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-zinc-200 dark:hover:bg-zinc-800 hover:text-brand-600 dark:hover:text-brand-400 transition-all duration-200"
                           onClick={closeSidebar}
                         >
                           <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
                           </svg>
-                          <span>에러로그</span>
+                          <span>시스템관리</span>
                         </Link>
                       </li>
                     </>

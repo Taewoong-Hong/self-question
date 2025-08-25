@@ -233,7 +233,7 @@ export default function RequestDetailPage({ params }: { params: { id: string } }
               <div className="mt-8 pt-8 border-t border-gray-200 dark:border-zinc-800">
                 <div className="bg-gray-100 dark:bg-zinc-800/50 rounded-lg p-6">
                   <div className="flex items-center gap-2 mb-3">
-                    <span className="inline-flex items-center px-2.5 py-0.5 rounded text-xs font-medium bg-brand-500/20 text-brand-400">
+                    <span className="inline-flex items-center px-2.5 py-0.5 rounded text-xs font-medium bg-green-500/20 dark:bg-green-500/20 text-green-700 dark:text-green-400">
                       관리자 답글
                     </span>
                     <span className="text-xs text-zinc-600 dark:text-zinc-500">
