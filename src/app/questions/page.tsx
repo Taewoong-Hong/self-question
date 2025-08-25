@@ -87,9 +87,12 @@ export default function QuestionsPage() {
           {/* 새 질문 작성 버튼 */}
           <Link
             href="/questions/new"
-            className="px-6 py-2 bg-brand-500 text-white rounded-lg hover:bg-brand-600 font-medium"
+            className="p-2 text-zinc-700 dark:text-zinc-100 hover:opacity-60 transition-opacity"
+            title="질문하기"
           >
-            질문하기
+            <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z" />
+            </svg>
           </Link>
         </div>
 
