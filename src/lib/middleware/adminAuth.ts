@@ -7,15 +7,33 @@ const ADMIN_PASSWORD = process.env.ADMIN_PASSWORD || 'admin123!@#';
 export interface AdminTokenPayload {
   isAdmin: boolean;
   username: string;
+  type?: 'access' | 'refresh';
 }
 
-export function generateAdminToken(): string {
-  const payload: AdminTokenPayload = {
+export function generateAdminTokens(): { accessToken: string; refreshToken: string } {
+  const basePayload = {
     isAdmin: true,
     username: ADMIN_USERNAME
   };
   
-  return signJwt(payload, '7d'); // 7일로 연장
+  // Access Token: 15분
+  const accessToken = signJwt(
+    { ...basePayload, type: 'access' }, 
+    '15m'
+  );
+  
+  // Refresh Token: 7일
+  const refreshToken = signJwt(
+    { ...basePayload, type: 'refresh' }, 
+    '7d'
+  );
+  
+  return { accessToken, refreshToken };
+}
+
+export function generateAdminToken(): string {
+  // 기존 코드와의 호환성을 위해 유지
+  return generateAdminTokens().accessToken;
 }
 
 export function verifyAdminToken(token: string): AdminTokenPayload | null {

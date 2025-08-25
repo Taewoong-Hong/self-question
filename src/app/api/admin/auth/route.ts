@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { validateAdminCredentials, generateAdminToken } from '@/lib/middleware/adminAuth';
+import { validateAdminCredentials, generateAdminTokens } from '@/lib/middleware/adminAuth';
 
 // Admin 로그인
 export async function POST(request: NextRequest) {
@@ -25,13 +25,24 @@ export async function POST(request: NextRequest) {
     }
     
     // JWT 토큰 생성
-    const token = generateAdminToken();
+    const { accessToken, refreshToken } = generateAdminTokens();
     
-    return NextResponse.json({
+    const response = NextResponse.json({
       success: true,
-      token,
+      token: accessToken, // 기존 호환성 유지
+      accessToken,
       username
     });
+    
+    // Refresh Token은 httpOnly 쿠키로 설정
+    response.cookies.set('admin_refresh_token', refreshToken, {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === 'production',
+      sameSite: 'lax',
+      maxAge: 60 * 60 * 24 * 7 // 7일
+    });
+    
+    return response;
     
   } catch (error) {
     console.error('Admin 로그인 오류:', error);

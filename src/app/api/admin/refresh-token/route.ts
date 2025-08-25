@@ -1,42 +1,43 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { verifyAdminToken, generateAdminToken } from '@/lib/middleware/adminAuth';
+import { verifyAdminToken, generateAdminTokens } from '@/lib/middleware/adminAuth';
 
 export const runtime = 'nodejs';
 
-// 토큰 갱신 API
+// 토큰 갱신 API - Refresh Token으로 새로운 Access Token 발급
 export async function POST(request: NextRequest) {
   try {
-    const token = request.cookies.get('admin_token')?.value || 
-                  request.headers.get('authorization')?.replace('Bearer ', '');
+    // Refresh Token은 쿠키에서만 가져옴
+    const refreshToken = request.cookies.get('admin_refresh_token')?.value;
     
-    if (!token) {
+    if (!refreshToken) {
       return NextResponse.json(
-        { error: '인증 토큰이 없습니다.' },
+        { error: 'Refresh 토큰이 없습니다.' },
         { status: 401 }
       );
     }
     
-    // 현재 토큰 검증
-    const decoded = verifyAdminToken(token);
+    // Refresh Token 검증
+    const decoded = verifyAdminToken(refreshToken);
     
-    if (!decoded) {
+    if (!decoded || decoded.type !== 'refresh') {
       return NextResponse.json(
-        { error: '유효하지 않은 토큰입니다.' },
+        { error: '유효하지 않은 Refresh 토큰입니다.' },
         { status: 401 }
       );
     }
     
-    // 새로운 토큰 생성
-    const newToken = generateAdminToken();
+    // 새로운 토큰 쌍 생성 (RT 회전)
+    const { accessToken, refreshToken: newRefreshToken } = generateAdminTokens();
     
     const response = NextResponse.json({
       success: true,
-      token: newToken,
+      token: accessToken,
+      accessToken,
       username: decoded.username
     });
     
-    // 쿠키에 새 토큰 설정
-    response.cookies.set('admin_token', newToken, {
+    // 새로운 Refresh Token으로 교체 (회전)
+    response.cookies.set('admin_refresh_token', newRefreshToken, {
       httpOnly: true,
       secure: process.env.NODE_ENV === 'production',
       sameSite: 'lax',

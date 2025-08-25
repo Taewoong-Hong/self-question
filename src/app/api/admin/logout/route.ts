@@ -12,11 +12,19 @@ export async function POST(request: NextRequest) {
       success: true
     });
     
-    // Clear HTTP-only cookie
+    // Clear both tokens
     response.cookies.set('admin_token', '', {
       httpOnly: true,
       secure: process.env.NODE_ENV === 'production',
       sameSite: 'strict',
+      maxAge: 0, // Expire immediately
+      path: '/'
+    });
+    
+    response.cookies.set('admin_refresh_token', '', {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === 'production',
+      sameSite: 'lax',
       maxAge: 0, // Expire immediately
       path: '/'
     });

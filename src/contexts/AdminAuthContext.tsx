@@ -21,19 +21,16 @@ export function AdminAuthProvider({ children }: { children: ReactNode }) {
 
   const refreshToken = useCallback(async () => {
     try {
-      const token = localStorage.getItem('admin_token');
-      if (!token) return false;
-      
+      // Refresh Token은 httpOnly 쿠키에 있으므로 별도 헤더 없이 요청
       const response = await fetch('/api/admin/refresh-token', {
         method: 'POST',
-        headers: {
-          'Authorization': `Bearer ${token}`
-        }
+        credentials: 'include' // 쿠키 포함
       });
       
       if (response.ok) {
         const data = await response.json();
-        localStorage.setItem('admin_token', data.token);
+        // 새로운 Access Token을 localStorage에 저장
+        localStorage.setItem('admin_token', data.accessToken || data.token);
         return true;
       }
       return false;
@@ -85,10 +82,22 @@ export function AdminAuthProvider({ children }: { children: ReactNode }) {
     }
   }, []);
 
-  const logout = useCallback(() => {
+  const logout = useCallback(async () => {
+    // localStorage 정리
     localStorage.removeItem('admin_token');
     localStorage.removeItem('admin_username');
     localStorage.removeItem('admin_user');
+    
+    // 서버에 로그아웃 요청하여 Refresh Token 쿠키 제거
+    try {
+      await fetch('/api/admin/logout', {
+        method: 'POST',
+        credentials: 'include'
+      });
+    } catch (error) {
+      console.error('Logout error:', error);
+    }
+    
     setIsAdminLoggedIn(false);
     setAdminUsername(null);
     router.push('/admin');
@@ -107,7 +116,7 @@ export function AdminAuthProvider({ children }: { children: ReactNode }) {
       if (!refreshed) {
         logout();
       }
-    }, 30 * 60 * 1000); // 30분
+    }, 10 * 60 * 1000); // 10분
     
     return () => clearInterval(interval);
   }, [isAdminLoggedIn, refreshToken, logout]);
