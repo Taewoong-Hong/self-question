@@ -9,14 +9,8 @@ import { usePathname } from 'next/navigation';
 import { AdminAuthProvider, useAdminAuth } from '@/contexts/AdminAuthContext';
 import { ThemeProvider, useTheme } from '@/contexts/ThemeContext';
 import { errorLogger } from '@/lib/errorLogger';
-import dynamic from 'next/dynamic';
 
 const inter = Inter({ subsets: ['latin'] });
-
-// 동적 임포트로 MetallicLogo를 로드 (SSR 방지)
-const MetallicLogo = dynamic(() => import('@/components/MetallicLogo'), {
-  ssr: false,
-});
 
 function LayoutContent({ children }: { children: React.ReactNode }) {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
@@ -67,14 +61,18 @@ function LayoutContent({ children }: { children: React.ReactNode }) {
                 </svg>
               </button>
               <Link href="/" className="flex items-center gap-2 hover:opacity-80 transition-opacity">
-                {theme === 'light' && mounted ? (
-                  <MetallicLogo />
-                ) : (
-                  <>
-                    <img src="/images/logo_surbate.png" alt="Surbate" className="h-7 w-7 drop-shadow-md dark:drop-shadow-none" />
-                    <h1 className="text-xl font-bold text-surbate [text-shadow:_0_1px_3px_rgba(0,0,0,0.3)] dark:[text-shadow:_none]">Surbate</h1>
-                  </>
-                )}
+                <img 
+                  src={theme === 'light' ? "/images/logo_surbate_black.png" : "/images/logo_surbate.png"} 
+                  alt="Surbate" 
+                  className="h-7 w-7 drop-shadow-md dark:drop-shadow-none" 
+                />
+                <h1 className={`text-xl font-bold ${
+                  theme === 'light' 
+                    ? 'text-gray-900 text-3d-light' 
+                    : 'text-surbate [text-shadow:_0_1px_3px_rgba(0,0,0,0.3)]'
+                }`}>
+                  Surbate
+                </h1>
               </Link>
               {mounted && (
                 <button
@@ -116,14 +114,18 @@ function LayoutContent({ children }: { children: React.ReactNode }) {
                 <div className="flex items-center justify-between mb-4">
                   <Link href="/" className="block hover:opacity-80 transition-opacity" onClick={closeSidebar}>
                     <div className="flex items-center gap-2">
-                      {theme === 'light' && mounted ? (
-                        <MetallicLogo />
-                      ) : (
-                        <>
-                          <img src="/images/logo_surbate.png" alt="Surbate" className="h-7 w-7 drop-shadow-md dark:drop-shadow-none" />
-                          <h1 className="text-xl font-bold text-surbate [text-shadow:_0_1px_3px_rgba(0,0,0,0.3)] dark:[text-shadow:_none]">Surbate</h1>
-                        </>
-                      )}
+                      <img 
+                        src={theme === 'light' ? "/images/logo_surbate_black.png" : "/images/logo_surbate.png"} 
+                        alt="Surbate" 
+                        className="h-7 w-7 drop-shadow-md dark:drop-shadow-none" 
+                      />
+                      <h1 className={`text-xl font-bold ${
+                        theme === 'light' 
+                          ? 'text-gray-900 text-3d-light' 
+                          : 'text-surbate [text-shadow:_0_1px_3px_rgba(0,0,0,0.3)]'
+                      }`}>
+                        Surbate
+                      </h1>
                     </div>
                   </Link>
                   <div className="flex items-center gap-2">
