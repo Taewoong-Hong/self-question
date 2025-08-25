@@ -25,13 +25,6 @@ export function AdminAuthProvider({ children }: { children: ReactNode }) {
       const username = localStorage.getItem('admin_username');
       const adminUser = localStorage.getItem('admin_user');
       
-      console.log('AdminAuth Check:', { 
-        hasToken: !!token, 
-        username,
-        adminUser: adminUser ? JSON.parse(adminUser) : null,
-        allKeys: Object.keys(localStorage)
-      });
-      
       if (token) {
         // admin_user에서 username 추출 시도
         if (!username && adminUser) {

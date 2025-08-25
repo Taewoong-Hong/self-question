@@ -47,6 +47,10 @@ export function ThemeProvider({ children }: { children: ReactNode }) {
 export function useTheme() {
   const context = useContext(ThemeContext);
   if (context === undefined) {
+    // 서버 사이드 렌더링 중에는 기본값 반환
+    if (typeof window === 'undefined') {
+      return { theme: 'dark' as Theme, toggleTheme: () => {} };
+    }
     throw new Error('useTheme must be used within a ThemeProvider');
   }
   return context;
