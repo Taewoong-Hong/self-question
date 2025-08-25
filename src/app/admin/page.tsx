@@ -43,6 +43,7 @@ export default function AdminLoginPage() {
       
       localStorage.setItem('admin_token', data.token);
       localStorage.setItem('admin_user', JSON.stringify(data.user));
+      localStorage.setItem('admin_username', data.user.username);
       
       router.push('/admin/dashboard');
     } catch (error) {
