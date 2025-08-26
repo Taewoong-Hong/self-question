@@ -81,7 +81,7 @@ export default function VoteSection({ debateId, status, isAnonymous, allowCommen
       setVoting(true);
       const voteData: VoteDto = {
         option_ids: selectedOptions,
-        is_anonymous: true
+        is_anonymous: isAnonymous
       };
       
       await debateApi.vote(debateId, voteData);
@@ -127,6 +127,14 @@ export default function VoteSection({ debateId, status, isAnonymous, allowCommen
 
   // 결과 공개 여부 확인
   const canViewResults = publicResults || hasVoted;
+  
+  // 디버깅을 위한 로그
+  console.log('VoteSection debug:', {
+    publicResults,
+    hasVoted,
+    canViewResults,
+    voteStats
+  });
 
   return (
     <>
@@ -174,62 +182,82 @@ export default function VoteSection({ debateId, status, isAnonymous, allowCommen
       </div>
 
       {/* 투표 폼 */}
-      {status === 'active' && !hasVoted && (
+      {status === 'active' && (
         <div className="bg-white dark:bg-zinc-900/50 backdrop-blur-sm border border-gray-200 dark:border-zinc-800 rounded-xl p-4 sm:p-6 mb-6 shadow-sm dark:shadow-none">
           <h2 className="text-base sm:text-lg font-semibold mb-3 sm:mb-4 text-zinc-900 dark:text-zinc-100">투표하기</h2>
           
-          {allowComments && (
-            <div className="mb-4">
-              <label className="block text-xs sm:text-sm font-medium text-zinc-700 dark:text-zinc-300 mb-1.5 sm:mb-2">
-                의견 (선택사항)
-              </label>
-              <textarea
-                value={opinion}
-                onChange={(e) => setOpinion(e.target.value)}
-                className="w-full px-3 py-1.5 sm:px-4 sm:py-2 text-sm sm:text-base bg-gray-50 dark:bg-zinc-900 border border-gray-300 dark:border-zinc-800 rounded-lg text-zinc-900 dark:text-zinc-100 placeholder-zinc-400 dark:placeholder-zinc-500 focus:outline-none focus:ring-2 focus:ring-brand-500 focus:border-transparent"
-                rows={3}
-                placeholder="투표와 함께 의견을 남겨주세요"
-              />
-            </div>
-          )}
-          
-          <div className="space-y-3">
-            <div className="space-y-2">
-              {voteOptions.map((option) => (
-                <label 
-                  key={option.id}
-                  className="flex items-center gap-3 p-3 bg-gray-100 dark:bg-zinc-800/50 rounded-lg cursor-pointer hover:bg-gray-200 dark:hover:bg-zinc-800 transition-colors"
-                >
-                  <input
-                    type={allowMultipleChoice ? "checkbox" : "radio"}
-                    name="vote-option"
-                    value={option.id}
-                    checked={selectedOptions.includes(option.id)}
-                    onChange={(e) => handleOptionChange(option.id, e.target.checked)}
-                    disabled={voting}
-                    className="text-surbate focus:ring-surbate"
+          {hasVoted ? (
+            <>
+              {/* 이미 투표한 경우 블러 처리된 선택지 */}
+              <div className="space-y-2 mb-4 relative">
+                <div className="absolute inset-0 bg-white/50 dark:bg-zinc-900/50 backdrop-blur-sm z-10 rounded-lg flex items-center justify-center">
+                  <p className="text-sm sm:text-base text-zinc-600 dark:text-zinc-400 font-medium">
+                    이미 투표에 참여하셨습니다
+                  </p>
+                </div>
+                {voteOptions.map((option) => (
+                  <div 
+                    key={option.id}
+                    className="flex items-center gap-3 p-3 bg-gray-100 dark:bg-zinc-800/50 rounded-lg opacity-50"
+                  >
+                    <input
+                      type={allowMultipleChoice ? "checkbox" : "radio"}
+                      disabled
+                      className="text-gray-400"
+                    />
+                    <span className="text-zinc-500 dark:text-zinc-600">{option.label}</span>
+                  </div>
+                ))}
+              </div>
+            </>
+          ) : (
+            <>
+              {allowComments && (
+                <div className="mb-4">
+                  <label className="block text-xs sm:text-sm font-medium text-zinc-700 dark:text-zinc-300 mb-1.5 sm:mb-2">
+                    의견 (선택사항)
+                  </label>
+                  <textarea
+                    value={opinion}
+                    onChange={(e) => setOpinion(e.target.value)}
+                    className="w-full px-3 py-1.5 sm:px-4 sm:py-2 text-sm sm:text-base bg-gray-50 dark:bg-zinc-900 border border-gray-300 dark:border-zinc-800 rounded-lg text-zinc-900 dark:text-zinc-100 placeholder-zinc-400 dark:placeholder-zinc-500 focus:outline-none focus:ring-2 focus:ring-brand-500 focus:border-transparent"
+                    rows={3}
+                    placeholder="투표와 함께 의견을 남겨주세요"
                   />
-                  <span className="text-zinc-900 dark:text-zinc-100">{option.label}</span>
-                </label>
-              ))}
-            </div>
-            
-            <button
-              onClick={handleVote}
-              disabled={voting || selectedOptions.length === 0}
-              className="w-full px-4 py-3 bg-surbate text-zinc-900 font-semibold rounded-lg hover:bg-brand-400 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
-            >
-              {voting ? '투표 중...' : '투표 제출'}
-            </button>
-          </div>
-        </div>
-      )}
-
-      {hasVoted && (
-        <div className="bg-white dark:bg-zinc-900/50 backdrop-blur-sm border border-gray-200 dark:border-zinc-800 rounded-xl p-4 sm:p-6 mb-6 shadow-sm dark:shadow-none">
-          <p className="text-center text-sm sm:text-base text-zinc-600 dark:text-zinc-400">
-            이미 투표에 참여하셨습니다.
-          </p>
+                </div>
+              )}
+              
+              <div className="space-y-3">
+                <div className="space-y-2">
+                  {voteOptions.map((option) => (
+                    <label 
+                      key={option.id}
+                      className="flex items-center gap-3 p-3 bg-gray-100 dark:bg-zinc-800/50 rounded-lg cursor-pointer hover:bg-gray-200 dark:hover:bg-zinc-800 transition-colors"
+                    >
+                      <input
+                        type={allowMultipleChoice ? "checkbox" : "radio"}
+                        name="vote-option"
+                        value={option.id}
+                        checked={selectedOptions.includes(option.id)}
+                        onChange={(e) => handleOptionChange(option.id, e.target.checked)}
+                        disabled={voting}
+                        className="text-surbate focus:ring-surbate"
+                      />
+                      <span className="text-zinc-900 dark:text-zinc-100">{option.label}</span>
+                    </label>
+                  ))}
+                </div>
+                
+                <button
+                  onClick={handleVote}
+                  disabled={voting || selectedOptions.length === 0}
+                  className="w-full px-4 py-3 bg-surbate text-zinc-900 font-semibold rounded-lg hover:bg-brand-400 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                >
+                  {voting ? '투표 중...' : '투표 제출'}
+                </button>
+              </div>
+            </>
+          )}
         </div>
       )}
 

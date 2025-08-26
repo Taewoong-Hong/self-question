@@ -3,9 +3,31 @@
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
-import VoteSection from './VoteSection';
+import dynamic from 'next/dynamic';
 import OpinionSection from './OpinionSection';
 import CommentSection from '@/components/CommentSection';
+
+// VoteSection을 dynamic import로 변경하여 hydration 에러 해결
+const VoteSection = dynamic(() => import('./VoteSection'), {
+  ssr: false,
+  loading: () => (
+    <div className="bg-white dark:bg-zinc-900/50 backdrop-blur-sm border border-gray-200 dark:border-zinc-800 rounded-xl p-4 sm:p-6 mb-6 shadow-sm dark:shadow-none">
+      <div className="animate-pulse">
+        <div className="h-6 bg-gray-200 dark:bg-zinc-800 rounded w-32 mb-4"></div>
+        <div className="space-y-4">
+          <div>
+            <div className="h-4 bg-gray-200 dark:bg-zinc-800 rounded w-20 mb-2"></div>
+            <div className="h-3 sm:h-4 bg-gray-200 dark:bg-zinc-800 rounded-full"></div>
+          </div>
+          <div>
+            <div className="h-4 bg-gray-200 dark:bg-zinc-800 rounded w-20 mb-2"></div>
+            <div className="h-3 sm:h-4 bg-gray-200 dark:bg-zinc-800 rounded-full"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  )
+});
 
 interface DebateProps {
   debate: {
@@ -90,7 +112,11 @@ export default function DebateClient({ debate }: DebateProps) {
               <span>작성자: {debate.author_nickname || '익명'}</span>
               <span>•</span>
               <span>
-                {debate.start_at ? debate.start_at.split('T')[0] : '시작일 미정'}
+                시작: {debate.start_at ? new Date(debate.start_at).toLocaleDateString('ko-KR') : '미정'}
+              </span>
+              <span>•</span>
+              <span>
+                종료: {debate.end_at ? new Date(debate.end_at).toLocaleDateString('ko-KR') : '미정'}
               </span>
               <span>•</span>
               <span className={`inline-flex items-center px-2 py-0.5 rounded text-xs font-medium ${

@@ -72,6 +72,9 @@ export interface IDebate extends Document {
   is_hidden: boolean;
   is_deleted: boolean;
   
+  // Results visibility
+  public_results: boolean;
+  
   // Statistics
   stats: {
     total_votes: number;
@@ -320,6 +323,12 @@ const debateSchema = new Schema<IDebate>({
     default: false
   },
   
+  // Results visibility
+  public_results: {
+    type: Boolean,
+    default: false
+  },
+  
   // Statistics
   stats: {
     total_votes: {
@@ -414,15 +423,33 @@ debateSchema.methods.updateStatus = function(): string {
 debateSchema.methods.canVote = function(ipHash: string): boolean {
   this.updateStatus();
   
-  if (this.status !== 'active') return false;
-  if (this.is_hidden || this.is_deleted) return false;
+  console.log('canVote check:', {
+    status: this.status,
+    is_hidden: this.is_hidden,
+    is_deleted: this.is_deleted,
+    ipHash: ipHash
+  });
+  
+  if (this.status !== 'active') {
+    console.log('canVote false: status is not active');
+    return false;
+  }
+  if (this.is_hidden || this.is_deleted) {
+    console.log('canVote false: is_hidden or is_deleted');
+    return false;
+  }
   
   // Check IP vote count
   const voterRecord = this.voter_ips.find((v: any) => v.ip_hash === ipHash);
   if (voterRecord && voterRecord.vote_count >= this.settings.max_votes_per_ip) {
+    console.log('canVote false: IP already voted', {
+      voterRecord,
+      max_votes_per_ip: this.settings.max_votes_per_ip
+    });
     return false;
   }
   
+  console.log('canVote true');
   return true;
 };
 

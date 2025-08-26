@@ -111,7 +111,8 @@ export default function DebateAdminPage() {
         // 종료
         const newStatus = 'ended';
         await debateApi.updateStatus(debateId, newStatus);
-        setDebate({ ...debate, status: newStatus });
+        // 서버에서 최신 데이터 다시 가져오기
+        await checkAuthStatus();
         toast.success('투표가 종료되었습니다.');
       } else {
         // 재개 시 모달 표시
@@ -138,11 +139,8 @@ export default function DebateAdminPage() {
     
     try {
       await debateApi.updateStatus(debateId, 'active', resumeEndDate);
-      setDebate({ 
-        ...debate, 
-        status: 'active',
-        end_at: resumeEndDate
-      });
+      // 서버에서 최신 데이터 다시 가져오기
+      await checkAuthStatus();
       toast.success('투표가 재개되었습니다.');
       setShowResumeModal(false);
     } catch (error) {

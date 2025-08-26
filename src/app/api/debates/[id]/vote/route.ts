@@ -44,6 +44,9 @@ export async function POST(
     const adminIps = process.env.ADMIN_IPS?.split(',').map(ip => ip.trim()) || [];
     const isAdminIp = adminIps.includes(clientIp);
     
+    // 상태 업데이트 먼저 수행
+    debate.updateStatus();
+    
     // canVote 확인을 위한 로그
     console.log('Vote validation:', {
       debateId: params.id,
@@ -53,14 +56,20 @@ export async function POST(
       is_hidden: debate.is_hidden,
       is_deleted: debate.is_deleted,
       voter_ips_count: debate.voter_ips.length,
-      isAdminIp
+      voter_ips: debate.voter_ips,
+      isAdminIp,
+      now: new Date(),
+      start_at: debate.start_at,
+      end_at: debate.end_at,
+      settings: debate.settings
     });
     
     // Check if can vote (skip for admin IPs)
     if (!isAdminIp && !debate.canVote(ipHash)) {
+      console.log('Vote blocked - canVote returned false');
       return NextResponse.json(
         { error: '이미 투표하셨거나 투표할 수 없는 상태입니다' },
-        { status: 403 }
+        { status: 400 }
       );
     }
     
