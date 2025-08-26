@@ -3,7 +3,7 @@ import bcrypt from 'bcryptjs';
 
 export interface IComment extends Document {
   contentType: 'debate' | 'question';
-  contentId: mongoose.Types.ObjectId;
+  contentId: string; // 16자리 hex string ID
   nickname: string;
   password: string;
   content: string;
@@ -21,9 +21,9 @@ const CommentSchema = new Schema<IComment>({
     enum: ['debate', 'question']
   },
   contentId: {
-    type: Schema.Types.ObjectId,
+    type: String,
     required: true,
-    refPath: 'contentType'
+    match: /^[a-f0-9]{16}$/i
   },
   nickname: {
     type: String,

@@ -1,7 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import dbConnect from '@/lib/mongodb';
 import Debate from '@/models/Debate';
-import Vote from '@/models/Vote';
 import jwt from 'jsonwebtoken';
 
 const JWT_SECRET = process.env.JWT_SECRET || 'your-secret-key';
@@ -28,7 +27,7 @@ export async function GET(
       const decoded = jwt.verify(token, JWT_SECRET) as any;
       
       // 토큰이 해당 투표의 관리자 토큰인지 확인
-      if (decoded.debateId !== params.id || decoded.role !== 'admin') {
+      if (decoded.debate_id !== params.id || decoded.type !== 'debate_admin') {
         return NextResponse.json(
           { error: '권한이 없습니다.' },
           { status: 403 }
@@ -42,7 +41,7 @@ export async function GET(
     }
 
     // 투표 조회
-    const debate = await Debate.findById(params.id);
+    const debate = await Debate.findOne({ id: params.id });
     if (!debate) {
       return NextResponse.json(
         { error: '투표를 찾을 수 없습니다.' },
@@ -50,45 +49,59 @@ export async function GET(
       );
     }
 
-    // 투표 기록 조회
-    const votes = await Vote.find({ debate_id: params.id })
-      .sort({ created_at: -1 });
+    // 투표 기록 추출
+    const votes: any[] = [];
+    
+    // vote_options에서 투표 데이터 추출
+    debate.vote_options.forEach((option: any) => {
+      option.votes.forEach((vote: any) => {
+        votes.push({
+          _id: vote._id || 'N/A',
+          created_at: vote.voted_at,
+          voter_name: vote.user_nickname || '익명',
+          voter_ip_hash: vote.voter_ip_hash,
+          vote_type: option.label
+        });
+      });
+    });
+    
+    // 투표를 시간 순으로 정렬
+    votes.sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime());
 
-    // 의견이 있는 투표 필터링
-    const opinions = votes.filter((vote: any) => vote.opinion);
+    // 의견 데이터
+    const opinions = debate.opinions || [];
 
     // CSV 데이터 생성 - 투표 기록
-    const voteHeaders = ['투표ID', '투표일시', '투표자명', 'IP주소', '선택'];
+    const voteHeaders = ['투표일시', '투표자명', '선택'];
     const voteRows = votes.map((vote: any) => [
-      vote._id.toString(),
       new Date(vote.created_at).toLocaleString('ko-KR'),
       vote.voter_name || '익명',
-      vote.voter_ip || '',
-      vote.vote_type === 'agree' ? '찬성' : '반대'
+      vote.vote_type
     ]);
 
     // CSV 데이터 생성 - 의견
-    const opinionHeaders = ['의견ID', '작성일시', '작성자명', 'IP주소', '의견내용'];
-    const opinionRows = opinions.map((opinion: any) => [
-      opinion._id.toString(),
-      new Date(opinion.created_at).toLocaleString('ko-KR'),
-      opinion.voter_name || '익명',
-      opinion.voter_ip || '',
-      opinion.opinion || ''
-    ]);
+    const opinionHeaders = ['작성일시', '작성자명', '의견내용'];
+    const opinionRows = opinions
+      .filter((opinion: any) => !opinion.is_deleted)
+      .map((opinion: any) => [
+        new Date(opinion.created_at).toLocaleString('ko-KR'),
+        opinion.author_nickname || '익명',
+        opinion.content || ''
+      ]);
 
     // 통계 정보
     const statsHeaders = ['항목', '수치'];
-    const agreeCount = votes.filter((v: any) => v.vote_type === 'agree').length;
-    const disagreeCount = votes.filter((v: any) => v.vote_type === 'disagree').length;
+    const agreeCount = debate.vote_options.find((opt: any) => opt.label === '찬성')?.vote_count || 0;
+    const disagreeCount = debate.vote_options.find((opt: any) => opt.label === '반대')?.vote_count || 0;
+    const totalVotes = agreeCount + disagreeCount;
 
     const statsRows = [
-      ['총 투표 수', votes.length.toString()],
+      ['총 투표 수', totalVotes.toString()],
       ['찬성', agreeCount.toString()],
       ['반대', disagreeCount.toString()],
-      ['찬성률', votes.length > 0 ? `${((agreeCount / votes.length) * 100).toFixed(1)}%` : '0%'],
-      ['반대율', votes.length > 0 ? `${((disagreeCount / votes.length) * 100).toFixed(1)}%` : '0%'],
-      ['총 의견 수', opinions.length.toString()]
+      ['찬성률', totalVotes > 0 ? `${((agreeCount / totalVotes) * 100).toFixed(1)}%` : '0%'],
+      ['반대율', totalVotes > 0 ? `${((disagreeCount / totalVotes) * 100).toFixed(1)}%` : '0%'],
+      ['총 의견 수', opinions.filter((op: any) => !op.is_deleted).length.toString()]
     ];
 
     // BOM 추가 (엑셀에서 한글 깨짐 방지)
