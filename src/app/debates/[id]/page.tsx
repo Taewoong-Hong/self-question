@@ -3,6 +3,7 @@ import { Metadata } from 'next';
 import { connectDB } from '@/lib/db';
 import Debate from '@/models/Debate';
 import DebateClient from './DebateClient';
+import mongoose from 'mongoose';
 
 interface PageProps {
   params: { id: string };
@@ -12,11 +13,16 @@ interface PageProps {
 export default async function DebatePage({ params }: PageProps) {
   await connectDB();
   
+  // MongoDB ObjectId 형식 확인
+  if (!mongoose.Types.ObjectId.isValid(params.id)) {
+    notFound();
+  }
+
   const debate = await Debate.findOne({ 
-    id: params.id, 
+    _id: params.id, 
     is_deleted: false 
   })
-  .select('id title description tags author_nickname created_at status start_at end_at is_anonymous allow_comments')
+  .select('_id title description tags author_nickname created_at status start_at end_at is_anonymous allow_comments')
   .lean()
   .exec();
     
@@ -25,13 +31,28 @@ export default async function DebatePage({ params }: PageProps) {
   }
   
   // 서버에서 데이터를 가져와서 클라이언트 컴포넌트에 전달
-  return <DebateClient debate={JSON.parse(JSON.stringify(debate))} />;
+  // 서버에서 데이터를 가져와서 클라이언트 컴포넌트에 전달
+  const debateData = {
+    ...debate,
+    id: debate._id.toString(),
+    _id: undefined
+  };
+  
+  return <DebateClient debate={JSON.parse(JSON.stringify(debateData))} />;
 }
 
 // 메타데이터 생성 (SEO)
 export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
   await connectDB();
-  const debate = await Debate.findOne({ id: params.id });
+  
+  if (!mongoose.Types.ObjectId.isValid(params.id)) {
+    return {
+      title: '투표',
+      description: '투표에 참여해보세요',
+    };
+  }
+  
+  const debate = await Debate.findOne({ _id: params.id });
   
   return {
     title: debate?.title || '투표',
@@ -50,13 +71,13 @@ export async function generateStaticParams() {
   
   // 최근 100개 투표만 SSG로 미리 생성
   const debates = await Debate.find({ is_deleted: false })
-    .select('id')
+    .select('_id')
     .sort({ created_at: -1 })
     .limit(100)
     .lean();
     
   return debates.map((debate) => ({
-    id: debate.id,
+    id: debate._id.toString(),
   }));
 }
 

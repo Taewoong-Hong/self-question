@@ -3,6 +3,7 @@ import { Metadata } from 'next';
 import { connectDB } from '@/lib/db';
 import Survey from '@/models/Survey';
 import SurveyClient from './SurveyClient';
+import mongoose from 'mongoose';
 
 interface PageProps {
   params: { id: string };
@@ -12,11 +13,16 @@ interface PageProps {
 export default async function SurveyPage({ params }: PageProps) {
   await connectDB();
   
+  // MongoDB ObjectId 형식 확인
+  if (!mongoose.Types.ObjectId.isValid(params.id)) {
+    notFound();
+  }
+
   const survey = await Survey.findOne({ 
-    id: params.id, 
+    _id: params.id, 
     is_deleted: false 
   })
-  .select('id title description tags author_nickname created_at status start_at end_at questions')
+  .select('_id title description tags author_nickname created_at status start_at end_at questions')
   .lean()
   .exec();
     
@@ -25,13 +31,28 @@ export default async function SurveyPage({ params }: PageProps) {
   }
   
   // 서버에서 데이터를 가져와서 클라이언트 컴포넌트에 전달
-  return <SurveyClient survey={JSON.parse(JSON.stringify(survey))} />;
+  // 서버에서 데이터를 가져와서 클라이언트 컴포넌트에 전달
+  const surveyData = {
+    ...survey,
+    id: survey._id.toString(),
+    _id: undefined
+  };
+  
+  return <SurveyClient survey={JSON.parse(JSON.stringify(surveyData))} />;
 }
 
 // 메타데이터 생성 (SEO)
 export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
   await connectDB();
-  const survey = await Survey.findOne({ id: params.id });
+  
+  if (!mongoose.Types.ObjectId.isValid(params.id)) {
+    return {
+      title: '설문',
+      description: '설문에 참여해보세요',
+    };
+  }
+  
+  const survey = await Survey.findOne({ _id: params.id });
   
   return {
     title: survey?.title || '설문',
@@ -50,13 +71,13 @@ export async function generateStaticParams() {
   
   // 최근 100개 설문만 SSG로 미리 생성
   const surveys = await Survey.find({ is_deleted: false })
-    .select('id')
+    .select('_id')
     .sort({ created_at: -1 })
     .limit(100)
     .lean();
     
   return surveys.map((survey) => ({
-    id: survey.id,
+    id: survey._id.toString(),
   }));
 }
 

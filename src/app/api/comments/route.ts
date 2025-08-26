@@ -3,6 +3,7 @@ import dbConnect from '@/lib/mongodb';
 import Comment from '@/lib/models/Comment';
 import Debate from '@/lib/models/Debate';
 import Question from '@/lib/models/Question';
+import mongoose from 'mongoose';
 
 // 댓글 생성
 export async function POST(request: NextRequest) {
@@ -24,6 +25,14 @@ export async function POST(request: NextRequest) {
     if (password.length < 4) {
       return NextResponse.json(
         { error: '비밀번호는 최소 4자 이상이어야 합니다.' },
+        { status: 400 }
+      );
+    }
+    
+    // MongoDB ObjectId 형식 확인
+    if (!mongoose.Types.ObjectId.isValid(contentId)) {
+      return NextResponse.json(
+        { error: '잘못된 콘텐츠 ID 형식입니다.' },
         { status: 400 }
       );
     }
@@ -109,6 +118,14 @@ export async function GET(request: NextRequest) {
     if (!contentType || !contentId) {
       return NextResponse.json(
         { error: '콘텐츠 정보가 필요합니다.' },
+        { status: 400 }
+      );
+    }
+    
+    // MongoDB ObjectId 형식 확인
+    if (!mongoose.Types.ObjectId.isValid(contentId)) {
+      return NextResponse.json(
+        { error: '잘못된 콘텐츠 ID 형식입니다.' },
         { status: 400 }
       );
     }
