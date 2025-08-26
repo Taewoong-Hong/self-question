@@ -37,42 +37,52 @@ export default function VoteSection({ debateId, status, isAnonymous, allowCommen
   const [selectedOptions, setSelectedOptions] = useState<string[]>([]);
 
   useEffect(() => {
-    // 설문과 동일한 방식으로 메인 API에서 응답 여부 확인
-    checkVoteStatus();
-    fetchVoteStats();
+    // 초기 데이터 로드
+    const loadInitialData = async () => {
+      setLoading(true);
+      try {
+        // 먼저 메인 API에서 응답 여부 확인 (우선순위)
+        const mainResponse = await fetch(`/api/debates/${debateId}`);
+        const mainData = await mainResponse.json();
+        const hasVotedFromMain = mainData.has_voted || false;
+        setHasVoted(hasVotedFromMain);
+
+        // 그 다음 stats 로드
+        const statsResponse = await fetch(`/api/debates/${debateId}/stats`);
+        if (statsResponse.ok) {
+          const statsData = await statsResponse.json();
+          setVoteStats(statsData);
+          // stats API의 has_voted는 메인 API 값이 false일 때만 사용
+          if (!hasVotedFromMain && statsData.has_voted) {
+            setHasVoted(true);
+          }
+        }
+      } catch (error) {
+        console.error('Error loading initial data:', error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    loadInitialData();
+
     // 10초마다 자동 갱신 (투표 진행중일 때만)
     if (status === 'active') {
-      const interval = setInterval(fetchVoteStats, 10000);
+      const interval = setInterval(async () => {
+        try {
+          const response = await fetch(`/api/debates/${debateId}/stats`);
+          if (response.ok) {
+            const data = await response.json();
+            setVoteStats(data);
+            // 자동 갱신 시에는 hasVoted를 변경하지 않음 (이미 설정된 값 유지)
+          }
+        } catch (error) {
+          console.error('Error fetching vote stats:', error);
+        }
+      }, 10000);
       return () => clearInterval(interval);
     }
   }, [debateId, status]);
-
-  const checkVoteStatus = async () => {
-    try {
-      const response = await fetch(`/api/debates/${debateId}`);
-      const data = await response.json();
-      setHasVoted(data.has_voted || false);
-    } catch (error) {
-      console.error('Error checking vote status:', error);
-    }
-  };
-
-  const fetchVoteStats = async () => {
-    try {
-      const response = await fetch(`/api/debates/${debateId}/stats`);
-      if (!response.ok) throw new Error('Failed to fetch stats');
-      const data = await response.json();
-      setVoteStats(data);
-      // stats API의 has_voted도 업데이트 (백업)
-      if (data.has_voted !== undefined) {
-        setHasVoted(data.has_voted);
-      }
-    } catch (error) {
-      console.error('Error fetching vote stats:', error);
-    } finally {
-      setLoading(false);
-    }
-  };
 
   const handleOptionChange = (optionId: string, checked: boolean) => {
     if (allowMultipleChoice) {
@@ -111,8 +121,16 @@ export default function VoteSection({ debateId, status, isAnonymous, allowCommen
       }
       
       setHasVoted(true);
-      await checkVoteStatus(); // 투표 상태 새로고침
-      await fetchVoteStats(); // 결과 새로고침
+      // 투표 후 stats만 새로고침 (hasVoted는 이미 true로 설정됨)
+      try {
+        const response = await fetch(`/api/debates/${debateId}/stats`);
+        if (response.ok) {
+          const data = await response.json();
+          setVoteStats(data);
+        }
+      } catch (error) {
+        console.error('Error refreshing stats after vote:', error);
+      }
       alert('투표가 완료되었습니다!');
     } catch (error: any) {
       if (error.message?.includes('이미 투표')) {
