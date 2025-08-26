@@ -15,7 +15,11 @@ export async function POST(request: NextRequest) {
     const SUPER_ADMIN_PASSWORD = process.env.SUPER_ADMIN_PASSWORD || 'admin123!';
     
     // 디버깅을 위한 로그 (프로덕션에서는 제거해야 함)
-    console.log('Login attempt:', { username, providedUsername: username });
+    console.log('Login attempt:', { 
+      username, 
+      expectedUsername: SUPER_ADMIN_USERNAME,
+      match: username === SUPER_ADMIN_USERNAME 
+    });
     console.log('Env check:', {
       hasUsername: !!process.env.SUPER_ADMIN_USERNAME,
       hasPassword: !!process.env.SUPER_ADMIN_PASSWORD,
@@ -33,11 +37,21 @@ export async function POST(request: NextRequest) {
     }
     
     // JWT 토큰 생성
-    const token = signJwt({
-      username: SUPER_ADMIN_USERNAME,
-      role: 'super_admin',
-      isAdmin: true
-    });
+    let token: string;
+    try {
+      token = signJwt({
+        username: SUPER_ADMIN_USERNAME,
+        role: 'super_admin',
+        isAdmin: true
+      });
+      console.log('JWT token created successfully');
+    } catch (jwtError) {
+      console.error('JWT creation error:', jwtError);
+      return NextResponse.json(
+        { error: 'JWT 토큰 생성 실패' },
+        { status: 500 }
+      );
+    }
     
     // Create response with token in both body and cookie
     const response = NextResponse.json({
