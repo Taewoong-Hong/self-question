@@ -117,30 +117,20 @@ export default function VoteSection({ debateId, status, isAnonymous, allowCommen
         
         {canViewResults ? (
           <div className="space-y-4">
-            {voteStats.option_stats.map((option, index) => {
+            {voteStats.option_stats.map((option) => {
               const percentage = getOptionPercentage(option.count);
-              const colorClasses = index === 0 
-                ? "bg-gradient-to-r from-surbate to-brand-600" 
-                : index === 1 
-                ? "bg-red-500" 
-                : `bg-gradient-to-r from-blue-400 to-blue-600`;
-              const textColor = index === 0 
-                ? "text-surbate" 
-                : index === 1 
-                ? "text-red-400" 
-                : "text-blue-400";
               
               return (
                 <div key={option.option_id}>
                   <div className="flex justify-between items-center mb-2">
                     <span className="text-sm sm:text-base font-medium text-zinc-900 dark:text-zinc-100">{option.label}</span>
-                    <span className={`text-sm sm:text-base ${textColor}`}>
+                    <span className="text-sm sm:text-base text-zinc-600 dark:text-zinc-400">
                       {option.count}표 ({percentage.toFixed(1)}%)
                     </span>
                   </div>
                   <div className="w-full bg-gray-200 dark:bg-zinc-800 rounded-full h-3 sm:h-4 overflow-hidden">
                     <div 
-                      className={`${colorClasses} h-full transition-all duration-500`}
+                      className="bg-surbate h-full transition-all duration-500"
                       style={{ width: `${percentage}%` }}
                     />
                   </div>
@@ -184,25 +174,17 @@ export default function VoteSection({ debateId, status, isAnonymous, allowCommen
             </div>
           )}
           
-          <div className={`${voteOptions.length > 2 ? 'grid grid-cols-2' : 'flex'} gap-4`}>
-            {voteOptions.map((option, index) => {
-              const buttonClasses = index === 0 
-                ? "bg-gradient-to-r from-surbate to-brand-600 text-zinc-900 font-semibold hover:from-brand-400 hover:to-brand-600 shadow-sm hover:shadow-lg hover:shadow-surbate/20" 
-                : index === 1 
-                ? "bg-red-500 text-white hover:bg-red-600" 
-                : "bg-blue-500 text-white hover:bg-blue-600";
-              
-              return (
-                <button
-                  key={option.id}
-                  onClick={() => handleVote(option.id)}
-                  disabled={voting}
-                  className={`flex-1 px-4 py-2 sm:px-6 sm:py-3 text-sm sm:text-base ${buttonClasses} rounded-lg transform hover:-translate-y-0.5 transition-all duration-200 disabled:opacity-50 disabled:transform-none disabled:shadow-none`}
-                >
-                  {option.label}
-                </button>
-              );
-            })}
+          <div className="flex flex-col gap-3">
+            {voteOptions.map((option) => (
+              <button
+                key={option.id}
+                onClick={() => handleVote(option.id)}
+                disabled={voting}
+                className="w-full px-4 py-3 text-sm sm:text-base bg-white dark:bg-zinc-900 border border-gray-300 dark:border-zinc-700 rounded-lg text-zinc-900 dark:text-zinc-100 hover:border-surbate hover:bg-gray-50 dark:hover:bg-zinc-800 transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
+              >
+                {option.label}
+              </button>
+            ))}
           </div>
         </div>
       )}
