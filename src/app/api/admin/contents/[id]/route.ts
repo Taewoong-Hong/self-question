@@ -36,8 +36,11 @@ export async function PUT(
     
     const { id } = params;
     
-    // ID 형식 확인 (16자리 hex string)
-    if (!/^[a-f0-9]{16}$/i.test(id)) {
+    // ID 형식 확인 (16자리 hex string 또는 24자리 MongoDB ObjectId)
+    const isHexId = /^[a-f0-9]{16}$/i.test(id);
+    const isObjectId = /^[a-f0-9]{24}$/i.test(id);
+    
+    if (!isHexId && !isObjectId) {
       console.error('Invalid ID format:', id);
       return NextResponse.json(
         { error: '잘못된 ID 형식입니다.' },
@@ -56,30 +59,36 @@ export async function PUT(
     }
     
     // 투표 확인
-    let content = await Debate.findOne({ id });
+    let content = isHexId 
+      ? await Debate.findOne({ id })
+      : await Debate.findById(id);
     if (content) {
       content.is_hidden = action === 'hide';
       await content.save();
       console.log(`Debate ${id} ${action}d successfully`);
-      return NextResponse.json({ success: true, type: 'debate', id: content.id });
+      return NextResponse.json({ success: true, type: 'debate', id: content.id || content._id });
     }
     
     // 설문 확인
-    content = await Survey.findOne({ id });
+    content = isHexId
+      ? await Survey.findOne({ id })
+      : await Survey.findById(id);
     if (content) {
       content.is_hidden = action === 'hide';
       await content.save();
       console.log(`Survey ${id} ${action}d successfully`);
-      return NextResponse.json({ success: true, type: 'survey', id: content.id });
+      return NextResponse.json({ success: true, type: 'survey', id: content.id || content._id });
     }
     
     // 질문 확인
-    const question = await Question.findOne({ id });
+    const question = isHexId
+      ? await Question.findOne({ id })
+      : await Question.findById(id);
     if (question) {
       question.isDeleted = action === 'hide';
       await question.save();
       console.log(`Question ${id} ${action}d successfully`);
-      return NextResponse.json({ success: true, type: 'question', id: question.id });
+      return NextResponse.json({ success: true, type: 'question', id: question.id || question._id });
     }
     
     return NextResponse.json(
@@ -126,8 +135,11 @@ export async function DELETE(
     
     const { id } = params;
     
-    // ID 형식 확인 (16자리 hex string)
-    if (!/^[a-f0-9]{16}$/i.test(id)) {
+    // ID 형식 확인 (16자리 hex string 또는 24자리 MongoDB ObjectId)
+    const isHexId = /^[a-f0-9]{16}$/i.test(id);
+    const isObjectId = /^[a-f0-9]{24}$/i.test(id);
+    
+    if (!isHexId && !isObjectId) {
       console.error('Invalid ID format:', id);
       return NextResponse.json(
         { error: '잘못된 ID 형식입니다.' },
@@ -136,21 +148,27 @@ export async function DELETE(
     }
     
     // 투표 확인
-    let content = await Debate.findOne({ id });
+    let content = isHexId
+      ? await Debate.findOne({ id })
+      : await Debate.findById(id);
     if (content) {
       await content.deleteOne();
       return NextResponse.json({ success: true });
     }
     
     // 설문 확인
-    content = await Survey.findOne({ id });
+    content = isHexId
+      ? await Survey.findOne({ id })
+      : await Survey.findById(id);
     if (content) {
       await content.deleteOne();
       return NextResponse.json({ success: true });
     }
     
     // 질문 확인
-    const question = await Question.findOne({ id });
+    const question = isHexId
+      ? await Question.findOne({ id })
+      : await Question.findById(id);
     if (question) {
       question.isDeleted = true;
       await question.save();

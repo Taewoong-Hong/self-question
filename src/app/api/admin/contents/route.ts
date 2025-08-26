@@ -39,7 +39,7 @@ export async function GET(request: NextRequest) {
       .lean();
       
       contents.push(...debates.map((debate: any) => ({
-        id: debate._id.toString(),
+        id: debate.id || debate._id.toString(),
         title: debate.title,
         type: 'debate',
         status: debate.status === 'active' ? 'open' : debate.status === 'ended' ? 'closed' : 'scheduled',
@@ -63,7 +63,7 @@ export async function GET(request: NextRequest) {
       .lean();
       
       contents.push(...surveys.map((survey: any) => ({
-        id: survey._id.toString(),
+        id: survey.id || survey._id.toString(),
         title: survey.title,
         type: 'survey',
         status: survey.status,
@@ -90,7 +90,7 @@ export async function GET(request: NextRequest) {
       .lean();
       
       contents.push(...requests.map((request: any) => ({
-        id: request._id.toString(),
+        id: request.id || request._id.toString(),
         title: request.title,
         type: 'request',
         status: request.admin_reply ? 'answered' : 'open', // 답글이 있으면 답변 완료 상태
