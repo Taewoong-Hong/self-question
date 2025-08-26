@@ -176,6 +176,33 @@ export default function CreateDebatePage() {
           </div>
         </div>
 
+        {/* 투표 선택지 */}
+        <div className="bg-white dark:bg-zinc-900/50 backdrop-blur-sm border border-gray-200 dark:border-zinc-800 rounded-xl p-6 shadow-sm dark:shadow-none">
+          <h2 className="text-lg font-semibold mb-4">투표 선택지</h2>
+          
+          <div className="space-y-3">
+            <div className="flex gap-3">
+              <input
+                type="text"
+                value="찬성"
+                readOnly
+                className="flex-1 px-4 py-2 bg-gray-100 dark:bg-zinc-800 border border-zinc-300 dark:border-zinc-800 rounded-lg text-zinc-900 dark:text-zinc-100"
+              />
+            </div>
+            <div className="flex gap-3">
+              <input
+                type="text"
+                value="반대"
+                readOnly
+                className="flex-1 px-4 py-2 bg-gray-100 dark:bg-zinc-800 border border-zinc-300 dark:border-zinc-800 rounded-lg text-zinc-900 dark:text-zinc-100"
+              />
+            </div>
+          </div>
+          <p className="mt-3 text-sm text-zinc-600 dark:text-zinc-500">
+            현재는 찬성/반대 투표만 지원합니다
+          </p>
+        </div>
+
         {/* 투표 설정 */}
         <div className="bg-white dark:bg-zinc-900/50 backdrop-blur-sm border border-gray-200 dark:border-zinc-800 rounded-xl p-6 shadow-sm dark:shadow-none">
           <h2 className="text-lg font-semibold mb-4">투표 설정</h2>
