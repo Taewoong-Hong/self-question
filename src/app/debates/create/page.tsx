@@ -28,7 +28,6 @@ export default function CreateDebatePage() {
     settings: {
       allow_multiple_choice: false,
       show_results_before_end: true,
-      allow_anonymous_vote: true,
       allow_opinion: true,
       max_votes_per_ip: 1
     },
@@ -306,24 +305,6 @@ export default function CreateDebatePage() {
           <h2 className="text-lg font-semibold mb-4">투표 설정</h2>
           
           <div className="space-y-4">
-            <div>
-              <label className="flex items-center gap-3">
-                <input
-                  type="checkbox"
-                  checked={formData.settings?.allow_anonymous_vote}
-                  onChange={(e) => setFormData({ 
-                    ...formData, 
-                    settings: { ...formData.settings!, allow_anonymous_vote: e.target.checked } 
-                  })}
-                  className="rounded text-surbate bg-white dark:bg-zinc-900 border-zinc-300 dark:border-zinc-700 focus:ring-2 ring-surbate"
-                />
-                <span>익명 투표 허용</span>
-              </label>
-              <p className="mt-1 text-sm text-zinc-600 dark:text-zinc-500 ml-7">
-                참여자가 이름 없이 투표할 수 있습니다
-              </p>
-            </div>
-
             <div>
               <label className="flex items-center gap-3">
                 <input
