@@ -211,7 +211,11 @@ export default function CreateDebatePage() {
                       vote_options: [
                         { label: '찬성' },
                         { label: '반대' }
-                      ]
+                      ],
+                      settings: {
+                        ...formData.settings!,
+                        allow_multiple_choice: false
+                      }
                     });
                   }}
                   className="mr-2 text-surbate focus:ring-2 focus:ring-surbate"
@@ -373,6 +377,26 @@ export default function CreateDebatePage() {
                 참여자가 투표 결과를 실시간으로 볼 수 있습니다
               </p>
             </div>
+
+            {voteType === 'multiple' && (
+              <div>
+                <label className="flex items-center gap-3">
+                  <input
+                    type="checkbox"
+                    checked={formData.settings?.allow_multiple_choice || false}
+                    onChange={(e) => setFormData({ 
+                      ...formData, 
+                      settings: { ...formData.settings!, allow_multiple_choice: e.target.checked } 
+                    })}
+                    className="rounded text-surbate bg-white dark:bg-zinc-900 border-zinc-300 dark:border-zinc-700 focus:ring-2 ring-surbate"
+                  />
+                  <span>중복 선택 허용</span>
+                </label>
+                <p className="mt-1 text-sm text-zinc-600 dark:text-zinc-500 ml-7">
+                  참여자가 여러 개의 선택지를 선택할 수 있습니다
+                </p>
+              </div>
+            )}
           </div>
         </div>
 
