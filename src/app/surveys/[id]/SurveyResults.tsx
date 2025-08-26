@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react';
 
 interface SurveyResultsProps {
   surveyId: string;
+  publicResults: boolean;
 }
 
 interface QuestionResult {
@@ -14,7 +15,7 @@ interface QuestionResult {
   totalResponses: number;
 }
 
-export default function SurveyResults({ surveyId }: SurveyResultsProps) {
+export default function SurveyResults({ surveyId, publicResults }: SurveyResultsProps) {
   const [results, setResults] = useState<QuestionResult[]>([]);
   const [totalResponses, setTotalResponses] = useState(0);
   const [loading, setLoading] = useState(true);
@@ -155,15 +156,17 @@ export default function SurveyResults({ surveyId }: SurveyResultsProps) {
       <div className="mb-6">
         <h2 className="text-lg sm:text-xl font-semibold text-zinc-900 dark:text-zinc-100 mb-2">설문 결과</h2>
         <p className="text-sm text-zinc-600 dark:text-zinc-400">총 {totalResponses}명이 응답했습니다</p>
-        <div className="mt-4">
-          <a
-            href={`/surveys/${surveyId}/public-results`}
-            className="flex items-center justify-between p-3 bg-gray-100 dark:bg-zinc-800/50 rounded-lg hover:bg-gray-200 dark:hover:bg-zinc-800 transition-colors"
-          >
-            <span>결과 통계 보기</span>
-            <span className="text-zinc-600 dark:text-zinc-400">→</span>
-          </a>
-        </div>
+        {publicResults && (
+          <div className="mt-4">
+            <a
+              href={`/surveys/${surveyId}/public-results`}
+              className="flex items-center justify-between p-3 bg-gray-100 dark:bg-zinc-800/50 rounded-lg hover:bg-gray-200 dark:hover:bg-zinc-800 transition-colors"
+            >
+              <span>결과 통계 보기</span>
+              <span className="text-zinc-600 dark:text-zinc-400">→</span>
+            </a>
+          </div>
+        )}
       </div>
 
       <div className="space-y-8">

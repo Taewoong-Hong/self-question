@@ -313,7 +313,7 @@ const surveySchema = new Schema<ISurvey>({
   // Public results visibility
   public_results: {
     type: Boolean,
-    default: true
+    default: false  // 기본값: 비공개
   },
   
   // Statistics

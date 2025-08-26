@@ -43,7 +43,8 @@ export async function POST(request: NextRequest) {
       welcome_screen: body.welcome_screen,
       thankyou_screen: body.thankyou_screen,
       settings: body.settings,
-      creator_ip: clientIp
+      creator_ip: clientIp,
+      public_results: body.public_results || false  // 결과 공개 여부 (기본값: 비공개)
     });
     
     // Generate URLs

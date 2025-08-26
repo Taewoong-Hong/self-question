@@ -102,6 +102,9 @@ export interface IDebate extends Document {
     }>;
   };
   
+  // Results visibility
+  public_results: boolean;
+  
   // URLs
   public_url?: string;
   admin_url?: string;
@@ -374,6 +377,12 @@ const debateSchema = new Schema<IDebate>({
     vote_count: Number,
     last_vote_at: Date
   }],
+  
+  // Results visibility
+  public_results: {
+    type: Boolean,
+    default: false  // 기본값: 비공개
+  },
   
   // URLs
   public_url: String,

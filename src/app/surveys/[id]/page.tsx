@@ -22,7 +22,7 @@ export default async function SurveyPage({ params }: PageProps) {
     id: params.id, 
     is_deleted: false 
   })
-  .select('id title description tags author_nickname created_at status start_at end_at questions')
+  .select('id title description tags author_nickname created_at status start_at end_at questions public_results')
   .lean()
   .exec();
     

@@ -116,6 +116,7 @@ export interface SurveyCreateData {
   author_nickname?: string;
   admin_password: string;
   questions: Question[];
+  public_results?: boolean;  // 결과 공개 여부
   welcome_screen?: {
     title?: string;
     description?: string;

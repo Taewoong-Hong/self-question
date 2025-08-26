@@ -67,6 +67,7 @@ export interface CreateDebateDto {
   settings?: Partial<DebateSettings>;
   start_at: string;
   end_at: string;
+  public_results?: boolean;
 }
 
 export interface VoteDto {

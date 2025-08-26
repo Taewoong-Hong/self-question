@@ -20,6 +20,7 @@ interface DebateProps {
     is_anonymous: boolean;
     allow_comments: boolean;
     tags?: string[];
+    public_results?: boolean;
   };
 }
 
@@ -112,6 +113,7 @@ export default function DebateClient({ debate }: DebateProps) {
         status={debate.status}
         isAnonymous={debate.is_anonymous}
         allowComments={debate.allow_comments}
+        publicResults={debate.public_results || false}
       />
 
       {/* 의견 섹션 - CSR로 실시간 업데이트 */}

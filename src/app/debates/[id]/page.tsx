@@ -22,7 +22,7 @@ export default async function DebatePage({ params }: PageProps) {
     id: params.id, 
     is_deleted: false 
   })
-  .select('id title description tags author_nickname created_at status start_at end_at is_anonymous allow_comments')
+  .select('id title description tags author_nickname created_at status start_at end_at is_anonymous allow_comments public_results')
   .lean()
   .exec();
     

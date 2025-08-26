@@ -9,6 +9,7 @@ interface VoteSectionProps {
   status: 'active' | 'ended' | 'scheduled';
   isAnonymous: boolean;
   allowComments: boolean;
+  publicResults: boolean;
 }
 
 interface VoteStats {
@@ -18,7 +19,7 @@ interface VoteStats {
   has_voted: boolean;
 }
 
-export default function VoteSection({ debateId, status, isAnonymous, allowComments }: VoteSectionProps) {
+export default function VoteSection({ debateId, status, isAnonymous, allowComments, publicResults }: VoteSectionProps) {
   const [voteStats, setVoteStats] = useState<VoteStats | null>(null);
   const [loading, setLoading] = useState(true);
   const [voting, setVoting] = useState(false);
@@ -104,47 +105,61 @@ export default function VoteSection({ debateId, status, isAnonymous, allowCommen
     ? (voteStats.disagree_count / voteStats.total_votes) * 100 
     : 0;
 
+  // 결과 공개 여부 확인
+  const canViewResults = publicResults || hasVoted;
+
   return (
     <>
       {/* 투표 결과 */}
       <div className="bg-white dark:bg-zinc-900/50 backdrop-blur-sm border border-gray-200 dark:border-zinc-800 rounded-xl p-4 sm:p-6 mb-6 shadow-sm dark:shadow-none">
         <h2 className="text-base sm:text-lg font-semibold mb-3 sm:mb-4 text-zinc-900 dark:text-zinc-100">현재 투표 현황</h2>
         
-        <div className="space-y-4">
-          <div>
-            <div className="flex justify-between items-center mb-2">
-              <span className="text-sm sm:text-base font-medium text-zinc-900 dark:text-zinc-100">찬성</span>
-              <span className="text-sm sm:text-base text-surbate">
-                {voteStats.agree_count}표 ({agreePercentage.toFixed(1)}%)
-              </span>
+        {canViewResults ? (
+          <div className="space-y-4">
+            <div>
+              <div className="flex justify-between items-center mb-2">
+                <span className="text-sm sm:text-base font-medium text-zinc-900 dark:text-zinc-100">찬성</span>
+                <span className="text-sm sm:text-base text-surbate">
+                  {voteStats.agree_count}표 ({agreePercentage.toFixed(1)}%)
+                </span>
+              </div>
+              <div className="w-full bg-gray-200 dark:bg-zinc-800 rounded-full h-3 sm:h-4 overflow-hidden">
+                <div 
+                  className="bg-gradient-to-r from-surbate to-brand-600 h-full transition-all duration-500"
+                  style={{ width: `${agreePercentage}%` }}
+                />
+              </div>
             </div>
-            <div className="w-full bg-gray-200 dark:bg-zinc-800 rounded-full h-3 sm:h-4 overflow-hidden">
-              <div 
-                className="bg-gradient-to-r from-surbate to-brand-600 h-full transition-all duration-500"
-                style={{ width: `${agreePercentage}%` }}
-              />
+            
+            <div>
+              <div className="flex justify-between items-center mb-2">
+                <span className="text-sm sm:text-base font-medium text-zinc-900 dark:text-zinc-100">반대</span>
+                <span className="text-sm sm:text-base text-red-400">
+                  {voteStats.disagree_count}표 ({disagreePercentage.toFixed(1)}%)
+                </span>
+              </div>
+              <div className="w-full bg-gray-200 dark:bg-zinc-800 rounded-full h-3 sm:h-4 overflow-hidden">
+                <div 
+                  className="bg-red-500 h-full transition-all duration-500"
+                  style={{ width: `${disagreePercentage}%` }}
+                />
+              </div>
+            </div>
+            
+            <div className="text-center text-xs sm:text-sm text-zinc-600 dark:text-zinc-500 mt-3 sm:mt-4">
+              총 {voteStats.total_votes}명 참여
             </div>
           </div>
-          
-          <div>
-            <div className="flex justify-between items-center mb-2">
-              <span className="text-sm sm:text-base font-medium text-zinc-900 dark:text-zinc-100">반대</span>
-              <span className="text-sm sm:text-base text-red-400">
-                {voteStats.disagree_count}표 ({disagreePercentage.toFixed(1)}%)
-              </span>
-            </div>
-            <div className="w-full bg-gray-200 dark:bg-zinc-800 rounded-full h-3 sm:h-4 overflow-hidden">
-              <div 
-                className="bg-red-500 h-full transition-all duration-500"
-                style={{ width: `${disagreePercentage}%` }}
-              />
-            </div>
+        ) : (
+          <div className="text-center py-8">
+            <p className="text-sm sm:text-base text-zinc-600 dark:text-zinc-400 mb-2">
+              결과는 투표 후 확인할 수 있습니다
+            </p>
+            <p className="text-xs sm:text-sm text-zinc-500 dark:text-zinc-500">
+              총 {voteStats.total_votes}명이 투표에 참여했습니다
+            </p>
           </div>
-          
-          <div className="text-center text-xs sm:text-sm text-zinc-600 dark:text-zinc-500 mt-3 sm:mt-4">
-            총 {voteStats.total_votes}명 참여
-          </div>
-        </div>
+        )}
       </div>
 
       {/* 투표 폼 */}

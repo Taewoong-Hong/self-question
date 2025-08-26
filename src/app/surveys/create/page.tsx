@@ -476,6 +476,31 @@ export default function CreateSurveyPage() {
           </div>
         </div>
 
+        {/* 설문 설정 */}
+        <div className="bg-white dark:bg-zinc-900/50 backdrop-blur-sm border border-gray-200 dark:border-zinc-800 rounded-xl p-6 shadow-sm dark:shadow-none">
+          <h2 className="text-lg font-semibold mb-4">설문 설정</h2>
+          
+          <div className="space-y-4">
+            <div>
+              <label className="flex items-center gap-3">
+                <input
+                  type="checkbox"
+                  checked={formData.public_results || false}
+                  onChange={(e) => setFormData({ 
+                    ...formData, 
+                    public_results: e.target.checked
+                  })}
+                  className="rounded text-surbate bg-white dark:bg-zinc-900 border-zinc-300 dark:border-zinc-700 focus:ring-2 ring-surbate"
+                />
+                <span>결과 공개</span>
+              </label>
+              <p className="mt-1 text-sm text-zinc-600 dark:text-zinc-500 ml-7">
+                모든 사람이 설문 결과를 볼 수 있습니다 (체크하지 않으면 작성자만 볼 수 있습니다)
+              </p>
+            </div>
+          </div>
+        </div>
+
         {/* 작성자 설정 */}
         <div className="bg-white dark:bg-zinc-900/50 backdrop-blur-sm border border-gray-200 dark:border-zinc-800 rounded-xl p-6 shadow-sm dark:shadow-none">
           <h2 className="text-lg font-semibold mb-4">작성자 설정</h2>

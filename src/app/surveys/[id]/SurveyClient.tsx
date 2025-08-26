@@ -18,6 +18,7 @@ interface SurveyProps {
     end_at?: string;
     tags?: string[];
     questions: any[];
+    public_results?: boolean;
     stats?: {
       response_count: number;
       completion_rate?: number;
@@ -205,7 +206,17 @@ export default function SurveyClient({ survey }: SurveyProps) {
               </div>
             </>
           ) : (
-            <SurveyResults surveyId={survey.id} />
+            // 설문이 종료된 경우, public_results 확인
+            survey.public_results || hasResponded ? (
+              <SurveyResults surveyId={survey.id} publicResults={survey.public_results || false} />
+            ) : (
+              <div className="bg-white dark:bg-zinc-900/50 backdrop-blur-sm border border-gray-200 dark:border-zinc-800 rounded-xl p-6 mb-6 shadow-sm dark:shadow-none">
+                <h2 className="text-xl font-semibold text-zinc-700 dark:text-zinc-300 mb-2 text-center">비공개 결과</h2>
+                <p className="text-center text-zinc-600 dark:text-zinc-400">
+                  이 설문의 결과는 작성자만 확인할 수 있습니다.
+                </p>
+              </div>
+            )
           )}
         </>
       )}

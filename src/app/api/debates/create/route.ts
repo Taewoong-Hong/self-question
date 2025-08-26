@@ -54,7 +54,8 @@ export async function POST(request: NextRequest) {
       })),
       settings: body.settings || {},
       start_at: new Date(body.start_at),
-      end_at: new Date(body.end_at)
+      end_at: new Date(body.end_at),
+      public_results: body.public_results || false  // 결과 공개 여부 (기본값: 비공개)
     });
     
     // Update status
