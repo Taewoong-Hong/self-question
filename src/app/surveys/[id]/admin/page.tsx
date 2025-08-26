@@ -290,7 +290,7 @@ export default function SurveyAdminPage() {
               <span className="text-zinc-600 dark:text-zinc-400">→</span>
             </Link>
             <button
-              onClick={() => surveyApi.exportCSV(surveyId, adminToken || '')}
+              onClick={() => surveyApi.exportCSV(surveyId)}
               className="w-full flex items-center justify-between p-3 bg-gray-100 dark:bg-zinc-800/50 rounded-lg hover:bg-gray-200 dark:hover:bg-zinc-800 transition-colors"
             >
               <span>응답 데이터 CSV 다운로드</span>

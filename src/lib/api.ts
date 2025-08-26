@@ -126,7 +126,7 @@ export const debateApi = {
   },
 
   // CSV 다운로드 (쿠키 기반)
-  exportCSV: async (debateId: string, adminToken?: string) => {
+  exportCSV: async (debateId: string) => {
     try {
       const response = await api.get(`/debates/${debateId}/export`, {
         responseType: 'blob',
@@ -220,7 +220,7 @@ export const surveyApi = {
   },
 
   // CSV 다운로드
-  exportCSV: async (surveyId: string, adminToken: string) => {
+  exportCSV: async (surveyId: string) => {
     try {
       const response = await api.get(`/surveys/${surveyId}/export`, {
         responseType: 'blob',

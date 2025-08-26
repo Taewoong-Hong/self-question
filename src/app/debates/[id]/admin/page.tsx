@@ -141,7 +141,7 @@ export default function DebateAdminPage() {
     try {
       // 쿠키 기반 인증으로 CSV 다운로드 (토큰은 선택사항)
       const adminToken = localStorage.getItem(`debate_admin_${debateId}`);
-      await debateApi.exportCSV(debateId, adminToken || undefined);
+      await debateApi.exportCSV(debateId);
     } catch (error: any) {
       console.error('CSV 다운로드 오류 상세:', error);
       

@@ -3,6 +3,7 @@ import { connectDB } from '@/lib/db';
 import Survey from '@/models/Survey';
 import Response from '@/models/Response';
 
+export const runtime = 'nodejs';
 export const dynamic = 'force-dynamic';
 
 function escapeCSV(value: any): string {
