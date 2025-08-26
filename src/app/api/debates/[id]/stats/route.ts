@@ -24,15 +24,28 @@ export async function GET(
     }
 
     // IP 체크 (중복 투표 확인)
-    const ip = request.headers.get('x-forwarded-for') || 
-               request.headers.get('x-real-ip') || 
-               'unknown';
+    const clientIp = request.headers.get('x-forwarded-for')?.split(',')[0] || 
+                     request.headers.get('x-real-ip') || 
+                     'unknown';
     
     // Hash the IP for privacy
     const crypto = require('crypto');
-    const ipHash = crypto.createHash('sha256').update(ip).digest('hex');
+    const ipHash = crypto
+      .createHash('sha256')
+      .update(clientIp + (process.env.IP_SALT || 'default-salt'))
+      .digest('hex');
     
     const hasVoted = debate.voter_ips.some((voterRecord: any) => voterRecord.ip_hash === ipHash);
+    
+    // 디버깅을 위한 로그
+    console.log('Stats API debug:', {
+      debateId: params.id,
+      clientIp,
+      ipHash,
+      hasVoted,
+      voter_ips_count: debate.voter_ips.length,
+      public_results: (debate as any).public_results
+    });
     
     // 결과 공개 여부 확인 - 작성자만 결과를 볼 수 있거나, public_results가 true이거나, 투표한 경우
     const canViewResults = (debate as any).public_results || hasVoted;
