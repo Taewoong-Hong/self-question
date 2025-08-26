@@ -108,32 +108,20 @@ export const debateApi = {
   },
 
   // 투표 수정 (관리자)
-  update: async (debateId: string, data: any, adminToken: string) => {
-    const response = await api.put(`/debates/${debateId}`, data, {
-      headers: {
-        Authorization: `Bearer ${adminToken}`,
-      },
-    });
+  update: async (debateId: string, data: any, adminToken?: string) => {
+    const response = await api.put(`/debates/${debateId}`, data);
     return response.data;
   },
 
   // 투표 상태 변경 (관리자)
-  updateStatus: async (debateId: string, status: 'scheduled' | 'active' | 'ended', adminToken: string) => {
-    const response = await api.put(`/debates/${debateId}/status`, { status }, {
-      headers: {
-        Authorization: `Bearer ${adminToken}`,
-      },
-    });
+  updateStatus: async (debateId: string, status: 'scheduled' | 'active' | 'ended', adminToken?: string) => {
+    const response = await api.put(`/debates/${debateId}/status`, { status });
     return response.data;
   },
 
   // 투표 삭제 (관리자)
-  delete: async (debateId: string, adminToken: string) => {
-    const response = await api.delete(`/debates/${debateId}`, {
-      headers: {
-        Authorization: `Bearer ${adminToken}`,
-      },
-    });
+  delete: async (debateId: string, adminToken?: string) => {
+    const response = await api.delete(`/debates/${debateId}`);
     return response.data;
   },
 
@@ -143,9 +131,6 @@ export const debateApi = {
       const response = await api.get(`/debates/${debateId}/export`, {
         responseType: 'blob',
         withCredentials: true, // 쿠키 포함
-        headers: adminToken ? {
-          Authorization: `Bearer ${adminToken}`, // 하위 호환성
-        } : {},
       });
       
       // Content-Type 확인
@@ -240,9 +225,6 @@ export const surveyApi = {
       const response = await api.get(`/surveys/${surveyId}/export`, {
         responseType: 'blob',
         withCredentials: true, // 쿠키 포함
-        headers: adminToken ? {
-          Authorization: `Bearer ${adminToken}`,
-        } : {},
       });
       
       // Content-Type 확인
@@ -289,32 +271,20 @@ export const surveyApi = {
   },
 
   // 설문 수정 (관리자)
-  update: async (surveyId: string, data: any, adminToken: string) => {
-    const response = await api.put(`/surveys/${surveyId}`, data, {
-      headers: {
-        Authorization: `Bearer ${adminToken}`,
-      },
-    });
+  update: async (surveyId: string, data: any, adminToken?: string) => {
+    const response = await api.put(`/surveys/${surveyId}`, data);
     return response.data;
   },
 
   // 설문 상태 변경 (관리자)
-  updateStatus: async (surveyId: string, status: 'open' | 'closed', adminToken: string) => {
-    const response = await api.put(`/surveys/${surveyId}/status`, { status }, {
-      headers: {
-        Authorization: `Bearer ${adminToken}`,
-      },
-    });
+  updateStatus: async (surveyId: string, status: 'open' | 'closed', adminToken?: string) => {
+    const response = await api.put(`/surveys/${surveyId}/status`, { status });
     return response.data;
   },
 
   // 설문 삭제 (관리자)
-  delete: async (surveyId: string, adminToken: string) => {
-    const response = await api.delete(`/surveys/${surveyId}`, {
-      headers: {
-        Authorization: `Bearer ${adminToken}`,
-      },
-    });
+  delete: async (surveyId: string, adminToken?: string) => {
+    const response = await api.delete(`/surveys/${surveyId}`);
     return response.data;
   },
 };

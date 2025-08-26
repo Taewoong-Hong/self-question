@@ -106,7 +106,7 @@ export default function DebateAdminPage() {
     
     try {
       const newStatus = debate.status === 'active' ? 'ended' : 'active';
-      await debateApi.updateStatus(debateId, newStatus, token);
+      await debateApi.updateStatus(debateId, newStatus);
       setDebate({ ...debate, status: newStatus });
       alert(`투표가 ${newStatus === 'active' ? '시작되었습니다' : '종료되었습니다'}.`);
     } catch (error) {
@@ -128,7 +128,7 @@ export default function DebateAdminPage() {
     }
 
     try {
-      await debateApi.delete(debateId, token);
+      await debateApi.delete(debateId);
       alert('투표가 삭제되었습니다.');
       router.push('/debates');
     } catch (error) {

@@ -36,6 +36,14 @@ export async function POST(request: NextRequest) {
       username: decoded.username
     });
     
+    // 새로운 Access Token도 쿠키로 설정
+    response.cookies.set('admin_token', accessToken, {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === 'production',
+      sameSite: 'lax',
+      maxAge: 60 * 60 * 24 // 24시간
+    });
+    
     // 새로운 Refresh Token으로 교체 (회전)
     response.cookies.set('admin_refresh_token', newRefreshToken, {
       httpOnly: true,

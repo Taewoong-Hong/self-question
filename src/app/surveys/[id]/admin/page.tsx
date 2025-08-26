@@ -90,7 +90,7 @@ export default function SurveyAdminPage() {
     
     try {
       const newStatus = survey.status === 'open' ? 'closed' : 'open';
-      await surveyApi.updateStatus(surveyId, newStatus, token);
+      await surveyApi.updateStatus(surveyId, newStatus);
       setSurvey({ ...survey, status: newStatus });
       toast.success(`설문이 ${newStatus === 'open' ? '열렸습니다' : '닫혔습니다'}.`);
     } catch (error) {
@@ -290,7 +290,7 @@ export default function SurveyAdminPage() {
               <span className="text-zinc-600 dark:text-zinc-400">→</span>
             </Link>
             <button
-              onClick={() => adminToken && surveyApi.exportCSV(surveyId, adminToken)}
+              onClick={() => surveyApi.exportCSV(surveyId, adminToken || '')}
               className="w-full flex items-center justify-between p-3 bg-gray-100 dark:bg-zinc-800/50 rounded-lg hover:bg-gray-200 dark:hover:bg-zinc-800 transition-colors"
             >
               <span>응답 데이터 CSV 다운로드</span>

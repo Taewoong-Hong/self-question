@@ -34,6 +34,14 @@ export async function POST(request: NextRequest) {
       username
     });
     
+    // Access Token도 httpOnly 쿠키로 설정 (middleware가 확인하는 쿠키)
+    response.cookies.set('admin_token', accessToken, {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === 'production',
+      sameSite: 'lax',
+      maxAge: 60 * 60 * 24 // 24시간
+    });
+    
     // Refresh Token은 httpOnly 쿠키로 설정
     response.cookies.set('admin_refresh_token', refreshToken, {
       httpOnly: true,
