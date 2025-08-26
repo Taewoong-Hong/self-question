@@ -4,6 +4,7 @@ import Debate from '@/lib/models/Debate';
 import Survey from '@/lib/models/Survey';
 import Question from '@/lib/models/Question';
 import { verifyAdminAuth } from '@/lib/adminAuthUtils';
+import mongoose from 'mongoose';
 
 export const runtime = 'nodejs';
 export const dynamic = 'force-dynamic';
@@ -34,6 +35,16 @@ export async function PUT(
     await dbConnect();
     
     const { id } = params;
+    
+    // MongoDB ObjectId 형식인지 확인
+    if (!mongoose.Types.ObjectId.isValid(id)) {
+      console.error('Invalid ObjectId format:', id);
+      return NextResponse.json(
+        { error: '잘못된 ID 형식입니다.' },
+        { status: 400 }
+      );
+    }
+    
     const body = await request.json();
     const { action } = body;
     
@@ -49,7 +60,8 @@ export async function PUT(
     if (content) {
       content.is_hidden = action === 'hide';
       await content.save();
-      return NextResponse.json({ success: true });
+      console.log(`Debate ${id} ${action}d successfully`);
+      return NextResponse.json({ success: true, type: 'debate', id: content._id });
     }
     
     // 설문 확인
@@ -57,7 +69,8 @@ export async function PUT(
     if (content) {
       content.is_hidden = action === 'hide';
       await content.save();
-      return NextResponse.json({ success: true });
+      console.log(`Survey ${id} ${action}d successfully`);
+      return NextResponse.json({ success: true, type: 'survey', id: content._id });
     }
     
     // 질문 확인
@@ -65,7 +78,8 @@ export async function PUT(
     if (question) {
       question.isDeleted = action === 'hide';
       await question.save();
-      return NextResponse.json({ success: true });
+      console.log(`Question ${id} ${action}d successfully`);
+      return NextResponse.json({ success: true, type: 'question', id: question._id });
     }
     
     return NextResponse.json(
@@ -76,7 +90,10 @@ export async function PUT(
   } catch (error) {
     console.error('콘텐츠 수정 오류:', error);
     return NextResponse.json(
-      { error: '콘텐츠 수정 중 오류가 발생했습니다.' },
+      { 
+        error: '콘텐츠 수정 중 오류가 발생했습니다.',
+        details: error instanceof Error ? error.message : '알 수 없는 오류'
+      },
       { status: 500 }
     );
   }
@@ -109,6 +126,15 @@ export async function DELETE(
     
     const { id } = params;
     
+    // MongoDB ObjectId 형식인지 확인
+    if (!mongoose.Types.ObjectId.isValid(id)) {
+      console.error('Invalid ObjectId format:', id);
+      return NextResponse.json(
+        { error: '잘못된 ID 형식입니다.' },
+        { status: 400 }
+      );
+    }
+    
     // 투표 확인
     let content = await Debate.findById(id);
     if (content) {
@@ -139,7 +165,10 @@ export async function DELETE(
   } catch (error) {
     console.error('콘텐츠 삭제 오류:', error);
     return NextResponse.json(
-      { error: '콘텐츠 삭제 중 오류가 발생했습니다.' },
+      { 
+        error: '콘텐츠 삭제 중 오류가 발생했습니다.',
+        details: error instanceof Error ? error.message : '알 수 없는 오류'
+      },
       { status: 500 }
     );
   }

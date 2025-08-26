@@ -143,19 +143,39 @@
 
 ## 7) 기술 스택
 
-### Backend
-- Next.js API Routes
-- MongoDB (Mongoose)
-- TypeScript
-- bcrypt (비밀번호 해싱)
-- JWT (관리자 인증)
+### Frontend Framework
+- Next.js 14.1.0 (App Router)
+- React 18.2.0
+- TypeScript 5.3.3
 
-### Frontend  
-- Next.js 14
-- TypeScript
-- Tailwind CSS
-- Axios
-- Chart.js (통계 시각화)
+### Styling
+- Tailwind CSS 3.4.1
+- PostCSS 8.4.33
+- Autoprefixer 10.4.17
+
+### Data Fetching & State
+- Axios 1.6.5 (HTTP 클라이언트)
+- React Context API (테마, 인증 상태 관리)
+
+### UI Components & Libraries
+- React Hot Toast 2.6.0 (알림 메시지)
+- React Datepicker 8.4.0 (날짜 선택)
+- Recharts 3.1.2 (차트 라이브러리)
+- Victory 37.3.6 (데이터 시각화 - 사용 검토 중)
+- QRCode 1.5.4 (QR 코드 생성)
+
+### Backend & Database
+- Next.js API Routes
+- MongoDB + Mongoose 8.17.1 (ODM)
+- bcryptjs 3.0.2 (비밀번호 해싱)
+- jsonwebtoken 9.0.2 (JWT 인증)
+
+### Date & Time
+- date-fns 3.6.0 (날짜 포맷팅, 한국어 지원)
+
+### Development Tools
+- ESLint 8.56.0 + TypeScript ESLint
+- Next.js ESLint Config
 
 ## 8) 보안 고려사항
 
@@ -165,6 +185,102 @@
 * Rate limiting으로 DDoS 방지
 * 입력값 검증 및 XSS 방지
 * CORS 설정으로 외부 접근 제어
+
+# 현재 구현 상태
+
+## 완료된 기능
+
+### 1. 투표 (Debates) 시스템
+- ✅ 투표 생성/조회/수정/삭제
+- ✅ 찬성/반대 투표 기능
+- ✅ 의견 작성 기능
+- ✅ 익명/실명 투표 지원
+- ✅ 관리자 페이지 (비밀번호 인증)
+- ✅ 실시간 투표 현황
+- ✅ CSV 내보내기
+- ✅ IP 기반 중복 투표 방지
+
+### 2. 설문 (Surveys) 시스템
+- ✅ 설문 생성/조회/수정/삭제
+- ✅ 다양한 질문 유형 (단일선택, 다중선택, 단답, 장문, 평점)
+- ✅ 단계별 설문 응답 UI
+- ✅ 관리자 페이지 (비밀번호 인증)
+- ✅ 설문 결과 통계 및 차트
+- ✅ CSV 내보내기
+- ✅ IP 기반 중복 응답 방지
+- ✅ 공개 결과 페이지
+
+### 3. 관리자 시스템
+- ✅ 슈퍼 관리자 인증 (JWT 기반)
+- ✅ 관리자 대시보드
+- ✅ 통계 페이지 (상세 통계 포함)
+- ✅ 콘텐츠 관리 (숨기기/삭제)
+- ✅ 사용자 IP 관리 및 차단
+- ✅ 에러 로그 모니터링
+
+### 4. 추가 기능
+- ✅ 방명록 (Guestbook) 시스템
+- ✅ 질문/답변 (Questions) 시스템
+- ✅ 요청사항 (Requests) 시스템
+- ✅ 댓글 (Comments) 시스템
+- ✅ 다크모드 지원
+- ✅ 반응형 디자인
+
+## 개발 진행 중
+- 🚧 태그 입력 컴포넌트 (TagInput.tsx)
+- 🚧 debates/create 페이지 개선
+
+## 기술 스택 (간단 요약)
+- **Frontend**: Next.js 14, React 18, TypeScript
+- **Backend**: Next.js API Routes
+- **Database**: MongoDB (Mongoose)
+- **Authentication**: JWT, bcryptjs
+- **UI Components**: Recharts, React Hot Toast, React Datepicker, QRCode
+- **Styling**: Tailwind CSS
+- **날짜 처리**: date-fns (한국어 지원)
+
+## 배포 정보
+- **Frontend**: Vercel (추천)
+- **Database**: MongoDB Atlas
+- **배포 방법**: 
+  - Vercel에 GitHub 연동 후 자동 배포
+  - 환경 변수 설정 필요 (아래 참조)
+
+## 환경 변수
+- `MONGODB_URI`: MongoDB 연결 문자열
+- `JWT_SECRET`: JWT 시크릿 키
+- `NEXT_PUBLIC_API_URL`: API 엔드포인트 URL
+- `ADMIN_USERNAME`: 슈퍼 관리자 아이디
+- `ADMIN_PASSWORD`: 슈퍼 관리자 비밀번호
+
+## 로컬 실행
+```bash
+npm install
+npm run dev
+```
+
+포트: http://localhost:3001 (기본값)
+
+## 프로젝트 구조
+```
+selfquestion/
+├── src/
+│   ├── app/               # Next.js 14 app directory
+│   │   ├── api/          # API Routes
+│   │   ├── debates/      # 투표 페이지
+│   │   ├── surveys/      # 설문 페이지
+│   │   ├── admin/        # 관리자 페이지
+│   │   ├── guestbook/    # 방명록
+│   │   ├── questions/    # Q&A
+│   │   └── requests/     # 요청사항
+│   ├── components/       # 재사용 가능한 컴포넌트
+│   ├── contexts/        # React Context (테마, 인증)
+│   ├── lib/            # 유틸리티 및 API 클라이언트
+│   ├── models/         # Mongoose 모델
+│   └── types/          # TypeScript 타입 정의
+├── public/             # 정적 파일
+└── scripts/           # 유틸리티 스크립트
+```
 
 # important-instruction-reminders
 Do what has been asked; nothing more, nothing less.

@@ -3,8 +3,14 @@
 @tailwind utilities;
 
 @layer base {
+  /* 기본값은 다크모드 */
   body {
     @apply bg-zinc-950 text-zinc-100;
+  }
+  
+  /* 라이트모드 스타일 */
+  .light body {
+    @apply bg-white text-zinc-900;
   }
 }
 

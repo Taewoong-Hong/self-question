@@ -4,6 +4,7 @@ import Debate from '@/models/Debate';
 import Survey from '@/models/Survey';
 import Request from '@/models/Request';
 import { verifyAdminToken } from '@/lib/auth';
+import mongoose from 'mongoose';
 
 export const runtime = 'nodejs';
 export const dynamic = 'force-dynamic';
@@ -38,7 +39,7 @@ export async function GET(request: NextRequest) {
       .lean();
       
       contents.push(...debates.map((debate: any) => ({
-        id: debate.id || debate._id.toString(),
+        id: debate._id.toString(),
         title: debate.title,
         type: 'debate',
         status: debate.status === 'active' ? 'open' : debate.status === 'ended' ? 'closed' : 'scheduled',
@@ -62,7 +63,7 @@ export async function GET(request: NextRequest) {
       .lean();
       
       contents.push(...surveys.map((survey: any) => ({
-        id: survey.id || survey._id.toString(),
+        id: survey._id.toString(),
         title: survey.title,
         type: 'survey',
         status: survey.status,
@@ -89,7 +90,7 @@ export async function GET(request: NextRequest) {
       .lean();
       
       contents.push(...requests.map((request: any) => ({
-        id: request.id || request._id.toString(),
+        id: request._id.toString(),
         title: request.title,
         type: 'request',
         status: request.admin_reply ? 'answered' : 'open', // 답글이 있으면 답변 완료 상태
@@ -166,8 +167,14 @@ export async function POST(request: NextRequest) {
     
     // 각 ID에 대해 타입 확인 후 처리
     for (const id of ids) {
+      // MongoDB ObjectId 형식 확인
+      if (!mongoose.Types.ObjectId.isValid(id)) {
+        console.error('Invalid ObjectId in batch operation:', id);
+        continue;
+      }
+      
       // 투표 확인
-      const debate = await Debate.findOne({ $or: [{ _id: id }, { id: id }] });
+      const debate = await Debate.findById(id);
       if (debate) {
         if (action === 'delete') {
           await debate.deleteOne();
@@ -179,7 +186,7 @@ export async function POST(request: NextRequest) {
       }
       
       // 설문 확인
-      const survey = await Survey.findOne({ $or: [{ _id: id }, { id: id }] });
+      const survey = await Survey.findById(id);
       if (survey) {
         if (action === 'delete') {
           await survey.deleteOne();
@@ -191,7 +198,7 @@ export async function POST(request: NextRequest) {
       }
       
       // 요청 확인
-      const request = await Request.findOne({ $or: [{ _id: id }, { id: id }] });
+      const request = await Request.findById(id);
       if (request) {
         if (action === 'delete') {
           request.is_deleted = true;

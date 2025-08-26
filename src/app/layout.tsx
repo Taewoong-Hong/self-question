@@ -46,7 +46,7 @@ function LayoutContent({ children }: { children: React.ReactNode }) {
   };
 
   return (
-    <html lang="ko" className={theme === 'dark' ? 'dark' : ''}>
+    <html lang="ko" className={mounted ? (theme === 'dark' ? 'dark' : '') : 'dark'}>
       <body className={`${inter.className} bg-white dark:bg-zinc-950 text-zinc-900 dark:text-zinc-100 min-h-screen transition-colors duration-200`}>
         <div className="flex h-screen">
           {/* 모바일 헤더 */}
