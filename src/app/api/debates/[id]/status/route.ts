@@ -12,32 +12,38 @@ export async function PUT(
   try {
     await connectDB();
     
-    // Get admin token from header
-    const authHeader = request.headers.get('authorization');
-    if (!authHeader || !authHeader.startsWith('Bearer ')) {
+    // 쿠키에서 인증 토큰 확인
+    const { cookies } = await import('next/headers');
+    const cookieStore = cookies();
+    
+    // 작성자 쿠키 확인
+    const authorCookie = cookieStore.get(`debate_author_${params.id}`);  // 작성자 쿠키
+    const adminCookie = cookieStore.get('admin_token');  // 슈퍼 관리자 쿠키
+    
+    if (!authorCookie && !adminCookie) {
       return NextResponse.json(
         { error: '인증이 필요합니다' },
         { status: 401 }
       );
     }
     
-    const adminToken = authHeader.substring(7);
-    
-    // Verify admin token
-    try {
-      const decoded = jwt.verify(adminToken, process.env.JWT_SECRET || 'your-secret-key') as any;
-      
-      if (decoded.debateId !== params.id || decoded.type !== 'debate_admin') {
+    // 작성자 쿠키 검증
+    if (authorCookie) {
+      try {
+        const decoded = jwt.verify(authorCookie.value, process.env.JWT_SECRET || 'your-secret-key') as any;
+        
+        if (decoded.debate_id !== params.id || decoded.type !== 'debate_author') {
+          return NextResponse.json(
+            { error: '권한이 없습니다' },
+            { status: 403 }
+          );
+        }
+      } catch (error) {
         return NextResponse.json(
-          { error: '권한이 없습니다' },
-          { status: 403 }
+          { error: '유효하지 않은 토큰입니다' },
+          { status: 401 }
         );
       }
-    } catch (error) {
-      return NextResponse.json(
-        { error: '유효하지 않은 토큰입니다' },
-        { status: 401 }
-      );
     }
     
     // Get request body
