@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { connectDB } from '@/lib/db';
 import Survey from '@/models/Survey';
+import { cookies } from 'next/headers';
 export const dynamic = 'force-dynamic';
 
 export async function POST(
@@ -44,6 +45,15 @@ export async function POST(
     // Generate admin token
     const adminToken = survey.generateAdminToken();
     await survey.save();
+    
+    // 쿠키로 세션 설정 (debates와 동일하게)
+    cookies().set(`survey_admin_${params.id}`, adminToken, {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === 'production',
+      sameSite: 'lax',
+      path: '/',
+      maxAge: 60 * 60 * 24 * 30 // 30일
+    });
     
     return NextResponse.json({
       message: '인증에 성공했습니다',

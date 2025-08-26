@@ -21,9 +21,15 @@ export async function GET(
   try {
     await connectDB();
     
-    // 관리자 토큰 확인
+    // 관리자 토큰 확인 - 쿠키 또는 Authorization 헤더에서 확인
     const cookieStore = request.cookies;
-    const adminToken = cookieStore.get(`survey_admin_${params.id}`)?.value;
+    const cookieToken = cookieStore.get(`survey_admin_${params.id}`)?.value;
+    
+    // Authorization 헤더에서 토큰 추출
+    const authHeader = request.headers.get('authorization');
+    const headerToken = authHeader?.startsWith('Bearer ') ? authHeader.slice(7) : null;
+    
+    const adminToken = cookieToken || headerToken;
     
     if (!adminToken) {
       return NextResponse.json(

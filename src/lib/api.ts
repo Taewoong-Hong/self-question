@@ -236,22 +236,46 @@ export const surveyApi = {
 
   // CSV 다운로드
   exportCSV: async (surveyId: string, adminToken: string) => {
-    const response = await api.get(`/admin/surveys/${surveyId}/export/csv`, {
-      responseType: 'blob',
-      headers: {
-        Authorization: `Bearer ${adminToken}`,
-      },
-    });
-    
-    // 브라우저에서 다운로드 처리
-    const url = window.URL.createObjectURL(new Blob([response.data]));
-    const link = document.createElement('a');
-    link.href = url;
-    link.setAttribute('download', `survey_${surveyId}_results.csv`);
-    document.body.appendChild(link);
-    link.click();
-    link.remove();
-    window.URL.revokeObjectURL(url);
+    try {
+      const response = await api.get(`/surveys/${surveyId}/export`, {
+        responseType: 'blob',
+        withCredentials: true, // 쿠키 포함
+        headers: adminToken ? {
+          Authorization: `Bearer ${adminToken}`,
+        } : {},
+      });
+      
+      // Content-Type 확인
+      const contentType = response.headers['content-type'];
+      
+      // 에러 응답인지 확인 (JSON으로 응답된 경우)
+      if (contentType && contentType.includes('application/json')) {
+        // Blob을 텍스트로 변환
+        const text = await response.data.text();
+        const error = JSON.parse(text);
+        console.error('CSV 다운로드 오류:', error);
+        throw new Error(error.error || 'CSV 다운로드 실패');
+      }
+      
+      // 정상적인 CSV 응답 처리
+      const url = window.URL.createObjectURL(response.data);
+      const link = document.createElement('a');
+      link.href = url;
+      
+      // Content-Disposition에서 파일명 추출 시도
+      const contentDisposition = response.headers['content-disposition'];
+      const fileNameMatch = contentDisposition?.match(/filename="(.+)"/);
+      const fileName = fileNameMatch ? fileNameMatch[1] : `survey_${surveyId}_results.csv`;
+      
+      link.setAttribute('download', fileName);
+      document.body.appendChild(link);
+      link.click();
+      link.remove();
+      window.URL.revokeObjectURL(url);
+    } catch (error) {
+      console.error('CSV 다운로드 오류:', error);
+      throw error;
+    }
   },
 
   // 관리자 비밀번호 확인
