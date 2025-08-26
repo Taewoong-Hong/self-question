@@ -15,6 +15,7 @@ interface VoteSectionProps {
     label: string;
     vote_count: number;
   }>;
+  allowMultipleChoice: boolean;
 }
 
 interface VoteStats {
@@ -27,12 +28,13 @@ interface VoteStats {
   has_voted: boolean;
 }
 
-export default function VoteSection({ debateId, status, isAnonymous, allowComments, publicResults, voteOptions }: VoteSectionProps) {
+export default function VoteSection({ debateId, status, isAnonymous, allowComments, publicResults, voteOptions, allowMultipleChoice }: VoteSectionProps) {
   const [voteStats, setVoteStats] = useState<VoteStats | null>(null);
   const [loading, setLoading] = useState(true);
   const [voting, setVoting] = useState(false);
   const [opinion, setOpinion] = useState('');
   const [hasVoted, setHasVoted] = useState(false);
+  const [selectedOptions, setSelectedOptions] = useState<string[]>([]);
 
   useEffect(() => {
     fetchVoteStats();
@@ -57,11 +59,28 @@ export default function VoteSection({ debateId, status, isAnonymous, allowCommen
     }
   };
 
-  const handleVote = async (optionId: string) => {
+  const handleOptionChange = (optionId: string, checked: boolean) => {
+    if (allowMultipleChoice) {
+      if (checked) {
+        setSelectedOptions([...selectedOptions, optionId]);
+      } else {
+        setSelectedOptions(selectedOptions.filter(id => id !== optionId));
+      }
+    } else {
+      setSelectedOptions([optionId]);
+    }
+  };
+
+  const handleVote = async () => {
+    if (selectedOptions.length === 0) {
+      alert('투표할 항목을 선택해주세요.');
+      return;
+    }
+
     try {
       setVoting(true);
       const voteData: VoteDto = {
-        option_ids: [optionId],
+        option_ids: selectedOptions,
         is_anonymous: true
       };
       
@@ -174,17 +193,34 @@ export default function VoteSection({ debateId, status, isAnonymous, allowCommen
             </div>
           )}
           
-          <div className="flex flex-col gap-3">
-            {voteOptions.map((option) => (
-              <button
-                key={option.id}
-                onClick={() => handleVote(option.id)}
-                disabled={voting}
-                className="w-full px-4 py-3 text-sm sm:text-base bg-white dark:bg-zinc-900 border border-gray-300 dark:border-zinc-700 rounded-lg text-zinc-900 dark:text-zinc-100 hover:border-surbate hover:bg-gray-50 dark:hover:bg-zinc-800 transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
-              >
-                {option.label}
-              </button>
-            ))}
+          <div className="space-y-3">
+            <div className="space-y-2">
+              {voteOptions.map((option) => (
+                <label 
+                  key={option.id}
+                  className="flex items-center gap-3 p-3 bg-gray-100 dark:bg-zinc-800/50 rounded-lg cursor-pointer hover:bg-gray-200 dark:hover:bg-zinc-800 transition-colors"
+                >
+                  <input
+                    type={allowMultipleChoice ? "checkbox" : "radio"}
+                    name="vote-option"
+                    value={option.id}
+                    checked={selectedOptions.includes(option.id)}
+                    onChange={(e) => handleOptionChange(option.id, e.target.checked)}
+                    disabled={voting}
+                    className="text-surbate focus:ring-surbate"
+                  />
+                  <span className="text-zinc-900 dark:text-zinc-100">{option.label}</span>
+                </label>
+              ))}
+            </div>
+            
+            <button
+              onClick={handleVote}
+              disabled={voting || selectedOptions.length === 0}
+              className="w-full px-4 py-3 bg-surbate text-zinc-900 font-semibold rounded-lg hover:bg-brand-400 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+            >
+              {voting ? '투표 중...' : '투표 제출'}
+            </button>
           </div>
         </div>
       )}

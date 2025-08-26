@@ -26,6 +26,12 @@ interface DebateProps {
       label: string;
       vote_count: number;
     }>;
+    settings?: {
+      allow_multiple_choice: boolean;
+      show_results_before_end: boolean;
+      allow_opinion: boolean;
+      max_votes_per_ip: number;
+    };
   };
 }
 
@@ -120,6 +126,7 @@ export default function DebateClient({ debate }: DebateProps) {
         allowComments={debate.allow_comments}
         publicResults={debate.public_results || false}
         voteOptions={debate.vote_options}
+        allowMultipleChoice={debate.settings?.allow_multiple_choice || false}
       />
 
       {/* 의견 섹션 - CSR로 실시간 업데이트 */}
