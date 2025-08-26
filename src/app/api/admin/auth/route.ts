@@ -39,6 +39,7 @@ export async function POST(request: NextRequest) {
       httpOnly: true,
       secure: process.env.NODE_ENV === 'production',
       sameSite: 'lax',
+      path: '/',  // 루트 경로로 설정하여 모든 API 경로에서 접근 가능
       maxAge: 60 * 60 * 24 // 24시간
     });
     
@@ -47,6 +48,7 @@ export async function POST(request: NextRequest) {
       httpOnly: true,
       secure: process.env.NODE_ENV === 'production',
       sameSite: 'lax',
+      path: '/',  // 루트 경로로 설정
       maxAge: 60 * 60 * 24 * 7 // 7일
     });
     

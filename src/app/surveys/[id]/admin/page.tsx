@@ -23,7 +23,7 @@ export default function SurveyAdminPage() {
 
   useEffect(() => {
     // localStorage에서 토큰 확인
-    const savedToken = localStorage.getItem(`survey_admin_${surveyId}`);
+    const savedToken = localStorage.getItem(`survey_author_${surveyId}`);
     if (savedToken) {
       setAdminToken(savedToken);
       setIsAuthenticated(true);
@@ -42,7 +42,7 @@ export default function SurveyAdminPage() {
       const data = await surveyApi.get(surveyId);
       setSurvey(data.survey);
       // localStorage에 토큰이 있으면 인증된 것으로 유지
-      const savedToken = localStorage.getItem(`survey_admin_${surveyId}`);
+      const savedToken = localStorage.getItem(`survey_author_${surveyId}`);
       if (!savedToken) {
         setIsAuthenticated(false);
       }
@@ -62,7 +62,7 @@ export default function SurveyAdminPage() {
       
       // 토큰을 localStorage에 저장 (세션 기반으로 처리)
       if (response.admin_token) {
-        localStorage.setItem(`survey_admin_${surveyId}`, response.admin_token);
+        localStorage.setItem(`survey_author_${surveyId}`, response.admin_token);
         setAdminToken(response.admin_token);
       }
       
@@ -82,7 +82,7 @@ export default function SurveyAdminPage() {
     if (!survey) return;
     
     // localStorage에서 토큰 직접 가져오기
-    const token = adminToken || localStorage.getItem(`survey_admin_${surveyId}`);
+    const token = adminToken || localStorage.getItem(`survey_author_${surveyId}`);
     if (!token) {
       toast.error('관리자 인증이 필요합니다.');
       return;
@@ -105,7 +105,7 @@ export default function SurveyAdminPage() {
     }
 
     // localStorage에서 토큰 직접 가져오기
-    const token = adminToken || localStorage.getItem(`survey_admin_${surveyId}`);
+    const token = adminToken || localStorage.getItem(`survey_author_${surveyId}`);
     if (!token) {
       toast.error('관리자 인증이 필요합니다.');
       return;

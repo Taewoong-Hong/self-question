@@ -22,17 +22,22 @@ export async function GET(
   try {
     await connectDB();
     
-    // 관리자 토큰 확인 - 쿠키 또는 Authorization 헤더에서 확인
+    // 인증 토큰 확인 - 쿠키 또는 Authorization 헤더에서 확인
     const cookieStore = request.cookies;
-    const cookieToken = cookieStore.get(`survey_admin_${params.id}`)?.value;
+    const authorCookie = cookieStore.get(`survey_author_${params.id}`)?.value;  // 작성자 쿠키
+    const adminCookie = cookieStore.get('admin_token')?.value;  // 슈퍼 관리자 쿠키
+    
+    console.log('[RT] export survey', params.id, 'author?', !!authorCookie, 'admin?', !!adminCookie);
     
     // Authorization 헤더에서 토큰 추출
     const authHeader = request.headers.get('authorization');
     const headerToken = authHeader?.startsWith('Bearer ') ? authHeader.slice(7) : null;
     
-    const adminToken = cookieToken || headerToken;
+    // 쿠키 우선, 그 다음 Authorization 헤더
+    const authToken = authorCookie || adminCookie || headerToken;
     
-    if (!adminToken) {
+    if (!authToken) {
+      console.log('[RT] No auth token found');
       return NextResponse.json(
         { error: '권한이 없습니다' },
         { status: 401 }
@@ -51,10 +56,14 @@ export async function GET(
       );
     }
     
-    // 토큰 검증
-    if (survey.admin_token !== adminToken) {
+    // 토큰 검증 - 슈퍼 관리자면 항상 허용
+    if (adminCookie) {
+      console.log('[RT] Admin access granted');
+      // 슈퍼 관리자는 모든 설문 접근 가능
+    } else if (survey.admin_token !== authToken) {
+      console.log('[RT] Author token mismatch');
       return NextResponse.json(
-        { error: '유효하지 않은 관리자 토큰입니다' },
+        { error: '작성자 권한이 없습니다' },
         { status: 401 }
       );
     }

@@ -42,12 +42,12 @@ export async function POST(
       );
     }
     
-    // Generate admin token
-    const adminToken = survey.generateAdminToken();
+    // Generate author token
+    const authorToken = survey.generateAdminToken();  // TODO: 메소드 이름도 generateAuthorToken으로 변경 필요
     await survey.save();
     
-    // 쿠키로 세션 설정 (debates와 동일하게)
-    cookies().set(`survey_admin_${params.id}`, adminToken, {
+    // 쿠키로 작성자 세션 설정
+    cookies().set(`survey_author_${params.id}`, authorToken, {
       httpOnly: true,
       secure: process.env.NODE_ENV === 'production',
       sameSite: 'lax',
@@ -57,7 +57,7 @@ export async function POST(
     
     return NextResponse.json({
       message: '인증에 성공했습니다',
-      admin_token: adminToken,
+      admin_token: authorToken,  // 하위 호환성 유지 (TODO: author_token으로 변경)
       expires_at: survey.admin_token_expires
     });
     

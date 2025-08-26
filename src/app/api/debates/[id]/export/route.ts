@@ -26,9 +26,12 @@ export async function GET(
 
     // 쿠키에서 세션 토큰 확인
     const cookieStore = cookies();
-    const sessionCookie = cookieStore.get(`debate_admin_${params.id}`);
+    const authorCookie = cookieStore.get(`debate_author_${params.id}`);  // 작성자 쿠키
+    const adminCookie = cookieStore.get('admin_token');  // 슈퍼 관리자 쿠키
     
-    if (!sessionCookie) {
+    console.log('[RT] export debate', params.id, 'author?', !!authorCookie, 'admin?', !!adminCookie);
+    
+    if (!authorCookie && !adminCookie) {
       // Authorization 헤더도 확인 (하위 호환성)
       const authHeader = request.headers.get('authorization');
       if (!authHeader || !authHeader.startsWith('Bearer ')) {
@@ -43,8 +46,8 @@ export async function GET(
       try {
         const decoded = jwt.verify(token, JWT_SECRET) as any;
         
-        // 토큰이 해당 투표의 관리자 토큰인지 확인
-        if (decoded.debate_id !== params.id || decoded.type !== 'debate_admin') {
+        // 토큰이 해당 투표의 작성자 토큰인지 확인
+        if (decoded.debate_id !== params.id || decoded.type !== 'debate_author') {
           return NextResponse.json(
             { error: '권한이 없습니다.' },
             { status: 403 }
@@ -56,18 +59,23 @@ export async function GET(
           { status: 401 }
         );
       }
-    } else {
-      // 쿠키 세션 검증
+    } else if (adminCookie) {
+      // 슈퍼 관리자 접근 허용 (모든 토론 접근 가능)
+      console.log('[RT] Admin access granted');
+    } else if (authorCookie) {
+      // 작성자 쿠키 세션 검증
       try {
-        const decoded = jwt.verify(sessionCookie.value, JWT_SECRET) as any;
+        const decoded = jwt.verify(authorCookie.value, JWT_SECRET) as any;
         
-        if (decoded.debate_id !== params.id || decoded.type !== 'debate_admin') {
+        if (decoded.debate_id !== params.id || decoded.type !== 'debate_author') {
+          console.log('[RT] Author token mismatch');
           return NextResponse.json(
-            { error: '권한이 없습니다.' },
+            { error: '작성자 권한이 없습니다.' },
             { status: 403 }
           );
         }
       } catch (error) {
+        console.log('[RT] Author token expired');
         return NextResponse.json(
           { error: '세션이 만료되었습니다.' },
           { status: 401 }

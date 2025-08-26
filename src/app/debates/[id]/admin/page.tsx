@@ -25,7 +25,7 @@ export default function DebateAdminPage() {
 
   useEffect(() => {
     // localStorage에서 토큰 확인
-    const savedToken = localStorage.getItem(`debate_admin_${debateId}`);
+    const savedToken = localStorage.getItem(`debate_author_${debateId}`);
     if (savedToken) {
       setAdminToken(savedToken);
       setIsAuthenticated(true);
@@ -59,7 +59,7 @@ export default function DebateAdminPage() {
       const data = await debateApi.get(debateId);
       setDebate(data);
       // localStorage에 토큰이 있으면 인증 상태 유지
-      const savedToken = localStorage.getItem(`debate_admin_${debateId}`);
+      const savedToken = localStorage.getItem(`debate_author_${debateId}`);
       if (savedToken) {
         setIsAuthenticated(true);
       }
@@ -79,7 +79,7 @@ export default function DebateAdminPage() {
       
       // 토큰을 localStorage에 저장
       if (response.admin_token) {
-        localStorage.setItem(`debate_admin_${debateId}`, response.admin_token);
+        localStorage.setItem(`debate_author_${debateId}`, response.admin_token);
         setAdminToken(response.admin_token);
         setIsAuthenticated(true);
         // 토론 데이터 다시 불러오기
@@ -98,7 +98,7 @@ export default function DebateAdminPage() {
     if (!debate) return;
     
     // localStorage에서 토큰 직접 가져오기
-    const token = adminToken || localStorage.getItem(`debate_admin_${debateId}`);
+    const token = adminToken || localStorage.getItem(`debate_author_${debateId}`);
     if (!token) {
       alert('관리자 인증이 필요합니다.');
       return;
@@ -121,7 +121,7 @@ export default function DebateAdminPage() {
     }
 
     // localStorage에서 토큰 직접 가져오기
-    const token = adminToken || localStorage.getItem(`debate_admin_${debateId}`);
+    const token = adminToken || localStorage.getItem(`debate_author_${debateId}`);
     if (!token) {
       alert('관리자 인증이 필요합니다.');
       return;
@@ -140,7 +140,7 @@ export default function DebateAdminPage() {
   const handleExportCSV = async () => {
     try {
       // 쿠키 기반 인증으로 CSV 다운로드 (토큰은 선택사항)
-      const adminToken = localStorage.getItem(`debate_admin_${debateId}`);
+      const adminToken = localStorage.getItem(`debate_author_${debateId}`);
       await debateApi.exportCSV(debateId);
     } catch (error: any) {
       console.error('CSV 다운로드 오류 상세:', error);
@@ -148,7 +148,7 @@ export default function DebateAdminPage() {
       // 인증 에러인 경우
       if (error.message?.includes('인증이 필요') || error.message?.includes('세션이 만료')) {
         // 토큰 제거하고 재인증 유도
-        localStorage.removeItem(`debate_admin_${debateId}`);
+        localStorage.removeItem(`debate_author_${debateId}`);
         setIsAuthenticated(false);
         alert('인증이 만료되었습니다. 비밀번호를 다시 입력해주세요.');
         return;

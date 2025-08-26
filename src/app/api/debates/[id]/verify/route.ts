@@ -54,13 +54,13 @@ export async function POST(
       );
     }
     
-    // Generate admin token
-    const adminToken = debate.generateAdminToken();
+    // Generate author token
+    const authorToken = debate.generateAdminToken();  // TODO: 메소드 이름도 generateAuthorToken으로 변경 필요
     
-    // 쿠키로 세션 설정
+    // 쿠키로 작성자 세션 설정
     const sessionData = {
       debate_id: params.id,
-      type: 'debate_admin',
+      type: 'debate_author',
       created_at: new Date()
     };
     
@@ -69,7 +69,7 @@ export async function POST(
     });
     
     // 쿠키 설정
-    cookies().set(`debate_admin_${params.id}`, sessionToken, {
+    cookies().set(`debate_author_${params.id}`, sessionToken, {
       httpOnly: true,
       secure: process.env.NODE_ENV === 'production',
       sameSite: 'lax',
@@ -79,7 +79,7 @@ export async function POST(
     
     return NextResponse.json({
       message: '인증에 성공했습니다',
-      admin_token: adminToken // 하위 호환성을 위해 유지
+      admin_token: authorToken // 하위 호환성을 위해 유지 (TODO: author_token으로 변경)
     });
     
   } catch (error: any) {
