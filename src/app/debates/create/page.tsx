@@ -13,6 +13,7 @@ import TagInput from '@/components/TagInput';
 export default function CreateDebatePage() {
   const router = useRouter();
   const [loading, setLoading] = useState(false);
+  const [voteType, setVoteType] = useState<'yesno' | 'multiple'>('yesno');
   const [formData, setFormData] = useState<CreateDebateDto>({
     title: '',
     description: '',
@@ -45,6 +46,18 @@ export default function CreateDebatePage() {
 
     if (formData.admin_password.length < 8) {
       toast.error('작성자 비밀번호는 8자 이상이어야 합니다.');
+      return;
+    }
+
+    if (formData.vote_options.length < 2) {
+      toast.error('최소 2개의 투표 선택지가 필요합니다.');
+      return;
+    }
+
+    // 빈 선택지 검증
+    const emptyOptions = formData.vote_options.filter(opt => !opt.label.trim());
+    if (emptyOptions.length > 0) {
+      toast.error('모든 투표 선택지를 입력해주세요.');
       return;
     }
 
@@ -180,26 +193,107 @@ export default function CreateDebatePage() {
         <div className="bg-white dark:bg-zinc-900/50 backdrop-blur-sm border border-gray-200 dark:border-zinc-800 rounded-xl p-6 shadow-sm dark:shadow-none">
           <h2 className="text-lg font-semibold mb-4">투표 선택지</h2>
           
-          <div className="space-y-3">
-            <div className="flex gap-3">
-              <input
-                type="text"
-                value="찬성"
-                readOnly
-                className="flex-1 px-4 py-2 bg-gray-100 dark:bg-zinc-800 border border-zinc-300 dark:border-zinc-800 rounded-lg text-zinc-900 dark:text-zinc-100"
-              />
-            </div>
-            <div className="flex gap-3">
-              <input
-                type="text"
-                value="반대"
-                readOnly
-                className="flex-1 px-4 py-2 bg-gray-100 dark:bg-zinc-800 border border-zinc-300 dark:border-zinc-800 rounded-lg text-zinc-900 dark:text-zinc-100"
-              />
+          {/* 투표 유형 선택 */}
+          <div className="mb-4">
+            <label className="block text-sm font-medium text-zinc-700 dark:text-zinc-300 mb-2">
+              투표 유형
+            </label>
+            <div className="flex gap-4">
+              <label className="flex items-center">
+                <input
+                  type="radio"
+                  value="yesno"
+                  checked={voteType === 'yesno'}
+                  onChange={(e) => {
+                    setVoteType('yesno');
+                    setFormData({
+                      ...formData,
+                      vote_options: [
+                        { label: '찬성' },
+                        { label: '반대' }
+                      ]
+                    });
+                  }}
+                  className="mr-2 text-surbate focus:ring-2 focus:ring-surbate"
+                />
+                <span>찬성/반대 투표</span>
+              </label>
+              <label className="flex items-center">
+                <input
+                  type="radio"
+                  value="multiple"
+                  checked={voteType === 'multiple'}
+                  onChange={(e) => {
+                    setVoteType('multiple');
+                    setFormData({
+                      ...formData,
+                      vote_options: [
+                        { label: '선택지 1' },
+                        { label: '선택지 2' }
+                      ]
+                    });
+                  }}
+                  className="mr-2 text-surbate focus:ring-2 focus:ring-surbate"
+                />
+                <span>다중 선택 투표</span>
+              </label>
             </div>
           </div>
+          
+          <div className="space-y-3">
+            {formData.vote_options.map((option, index) => (
+              <div key={index} className="flex gap-3">
+                <input
+                  type="text"
+                  value={option.label}
+                  onChange={(e) => {
+                    const newOptions = [...formData.vote_options];
+                    newOptions[index] = { label: e.target.value };
+                    setFormData({ ...formData, vote_options: newOptions });
+                  }}
+                  readOnly={voteType === 'yesno'}
+                  className={`flex-1 px-4 py-2 border rounded-lg text-zinc-900 dark:text-zinc-100 ${
+                    voteType === 'yesno' 
+                      ? 'bg-gray-100 dark:bg-zinc-800 border-zinc-300 dark:border-zinc-800' 
+                      : 'bg-white dark:bg-zinc-900 border-zinc-300 dark:border-zinc-700 focus:outline-none focus:ring-2 focus:ring-surbate'
+                  }`}
+                  placeholder={`선택지 ${index + 1}`}
+                />
+                {voteType === 'multiple' && formData.vote_options.length > 2 && (
+                  <button
+                    type="button"
+                    onClick={() => {
+                      const newOptions = formData.vote_options.filter((_, i) => i !== index);
+                      setFormData({ ...formData, vote_options: newOptions });
+                    }}
+                    className="p-2 text-red-500 hover:bg-red-50 dark:hover:bg-red-900/20 rounded-lg transition-colors"
+                  >
+                    <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                    </svg>
+                  </button>
+                )}
+              </div>
+            ))}
+          </div>
+          
+          {voteType === 'multiple' && formData.vote_options.length < 10 && (
+            <button
+              type="button"
+              onClick={() => {
+                const newOptions = [...formData.vote_options, { label: `선택지 ${formData.vote_options.length + 1}` }];
+                setFormData({ ...formData, vote_options: newOptions });
+              }}
+              className="mt-3 w-full py-2 border-2 border-dashed border-zinc-300 dark:border-zinc-700 rounded-lg text-zinc-600 dark:text-zinc-400 hover:border-surbate hover:text-surbate transition-colors"
+            >
+              + 선택지 추가
+            </button>
+          )}
+          
           <p className="mt-3 text-sm text-zinc-600 dark:text-zinc-500">
-            현재는 찬성/반대 투표만 지원합니다
+            {voteType === 'yesno' 
+              ? '찬성/반대 투표는 선택지를 수정할 수 없습니다.' 
+              : '최소 2개, 최대 10개의 선택지를 만들 수 있습니다.'}
           </p>
         </div>
 
