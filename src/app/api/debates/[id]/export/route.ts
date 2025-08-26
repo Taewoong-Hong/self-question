@@ -3,7 +3,11 @@ import { connectDB } from '@/lib/db';
 import Debate from '@/models/Debate';
 import jwt from 'jsonwebtoken';
 
+// JWT_SECRET이 환경변수에 설정되어 있는지 확인
 const JWT_SECRET = process.env.JWT_SECRET || 'your-secret-key';
+if (!process.env.JWT_SECRET) {
+  console.warn('WARNING: JWT_SECRET not found in environment variables, using default key');
+}
 
 export const dynamic = 'force-dynamic';
 
@@ -34,15 +38,28 @@ export async function GET(
     try {
       const decoded = jwt.verify(token, JWT_SECRET) as any;
       console.log('Decoded token:', decoded);
+      console.log('JWT_SECRET from env:', process.env.JWT_SECRET ? 'Set' : 'Not set');
+      console.log('Using JWT_SECRET:', JWT_SECRET === 'your-secret-key' ? 'Default' : 'Custom');
+      console.log('Token debate_id:', decoded.debate_id);
+      console.log('Request debate_id:', params.id);
+      console.log('Token type:', decoded.type);
       
       // 토큰이 해당 투표의 관리자 토큰인지 확인
       if (decoded.debate_id !== params.id || decoded.type !== 'debate_admin') {
+        console.error('Token validation failed:', {
+          tokenDebateId: decoded.debate_id,
+          requestDebateId: params.id,
+          tokenType: decoded.type,
+          match: decoded.debate_id === params.id && decoded.type === 'debate_admin'
+        });
         return NextResponse.json(
           { error: '권한이 없습니다.' },
           { status: 403 }
         );
       }
-    } catch (error) {
+    } catch (error: any) {
+      console.error('JWT verification error:', error.message);
+      console.error('JWT error stack:', error.stack);
       return NextResponse.json(
         { error: '유효하지 않은 토큰입니다.' },
         { status: 401 }

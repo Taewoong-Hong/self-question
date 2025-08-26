@@ -582,7 +582,7 @@ debateSchema.methods.generateAdminToken = function(): string {
   };
   
   return jwt.sign(payload, process.env.JWT_SECRET || 'your-secret-key', {
-    expiresIn: '24h'
+    expiresIn: '30d' // 30일로 연장
   });
 };
 

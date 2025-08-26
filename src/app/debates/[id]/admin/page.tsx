@@ -151,6 +151,16 @@ export default function DebateAdminPage() {
       await debateApi.exportCSV(debateId, adminToken);
     } catch (error: any) {
       console.error('CSV 다운로드 오류 상세:', error);
+      
+      // 토큰 만료 등으로 인한 401 에러인 경우
+      if (error.message?.includes('인증이 필요') || error.message?.includes('유효하지 않은 토큰')) {
+        // 토큰 제거하고 재인증 유도
+        localStorage.removeItem(`debate_admin_${debateId}`);
+        setIsAuthenticated(false);
+        alert('인증이 만료되었습니다. 비밀번호를 다시 입력해주세요.');
+        return;
+      }
+      
       const errorMessage = error.message || 'CSV 다운로드에 실패했습니다.';
       alert(`CSV 다운로드 실패: ${errorMessage}`);
     }
