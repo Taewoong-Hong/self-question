@@ -36,6 +36,11 @@ export function middleware(req: NextRequest) {
   
   // API 경로 처리
   if (pathname.startsWith('/api')) {
+    // 로그인 경로는 보호하지 않음
+    if (pathname === '/api/admin/super-auth') {
+      return NextResponse.next();
+    }
+    
     // 보호된 API인지 확인
     const isProtected = protectedApi.some((re) => re.test(pathname));
     
