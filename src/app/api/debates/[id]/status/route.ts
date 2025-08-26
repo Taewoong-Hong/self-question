@@ -87,10 +87,24 @@ export async function PUT(
       // If end_at is provided when resuming, update it
       if (end_at) {
         debate.end_at = new Date(end_at);
+      } else if (debate.end_at <= new Date()) {
+        // If no end_at provided but current end_at is in the past, set it to 7 days from now
+        const newEndDate = new Date();
+        newEndDate.setDate(newEndDate.getDate() + 7);
+        debate.end_at = newEndDate;
       }
     }
     
     await debate.save();
+    
+    // 저장 후 상태 확인을 위한 로그
+    console.log('Status update completed:', {
+      id: debate.id,
+      status: debate.status,
+      start_at: debate.start_at,
+      end_at: debate.end_at,
+      now: new Date()
+    });
     
     return NextResponse.json({
       message: '투표 상태가 변경되었습니다',

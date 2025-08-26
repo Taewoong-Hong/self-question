@@ -24,7 +24,20 @@ export async function GET(
     }
     
     // Update status
+    const oldStatus = debate.status;
     debate.updateStatus();
+    
+    // 상태 변경 확인을 위한 로그
+    if (oldStatus !== debate.status) {
+      console.log('Status changed by updateStatus:', {
+        id: debate.id,
+        oldStatus,
+        newStatus: debate.status,
+        start_at: debate.start_at,
+        end_at: debate.end_at,
+        now: new Date()
+      });
+    }
     
     // Increment view count
     debate.stats.view_count += 1;
