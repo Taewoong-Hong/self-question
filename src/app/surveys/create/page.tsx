@@ -16,6 +16,8 @@ export default function CreateSurveyPage() {
   const [formData, setFormData] = useState<SurveyCreateData>({
     title: '',
     description: '',
+    start_at: new Date().toISOString(),
+    end_at: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString(), // 30일 후 기본값
     questions: [
       {
         id: '1',
@@ -235,32 +237,48 @@ export default function CreateSurveyPage() {
               />
             </div>
 
-            <div>
-              <label className="block text-sm font-medium text-zinc-700 dark:text-zinc-300 mb-2">
-                종료일시 (선택사항)
-              </label>
-              <DatePicker
-                selected={formData.settings?.close_at ? new Date(formData.settings.close_at) : null}
-                onChange={(date) => setFormData({ 
-                  ...formData, 
-                  settings: {
-                    ...formData.settings,
-                    close_at: date ? date.toISOString() : undefined
-                  }
-                })}
-                showTimeSelect
-                timeFormat="HH:mm"
-                timeIntervals={1}
-                dateFormat="yyyy년 MM월 dd일 HH:mm"
-                locale={ko}
-                placeholderText="종료일시를 선택하세요 (선택사항)"
-                isClearable
-                className="w-full px-2 py-1.5 sm:px-4 sm:py-2 text-sm sm:text-base bg-white dark:bg-zinc-900 border border-zinc-300 dark:border-zinc-800 rounded-lg text-zinc-900 dark:text-zinc-100 placeholder-zinc-500 focus:outline-none focus:ring-2 focus:ring-brand-500 focus:border-transparent"
-                wrapperClassName="w-full"
-                withPortal
-                portalId="root-portal"
-                minDate={new Date()}
-              />
+            <div className="grid grid-cols-2 gap-4">
+              <div>
+                <label className="block text-sm font-medium text-zinc-700 dark:text-zinc-300 mb-2">
+                  시작일시
+                </label>
+                <DatePicker
+                  selected={formData.start_at ? new Date(formData.start_at) : null}
+                  onChange={(date) => setFormData({ ...formData, start_at: date?.toISOString() || '' })}
+                  showTimeSelect
+                  timeFormat="HH:mm"
+                  timeIntervals={1}
+                  dateFormat="yyyy년 MM월 dd일 HH:mm"
+                  locale={ko}
+                  placeholderText="시작일시를 선택하세요"
+                  className="w-full px-2 py-1.5 sm:px-4 sm:py-2 text-sm sm:text-base bg-white dark:bg-zinc-900 border border-zinc-300 dark:border-zinc-800 rounded-lg text-zinc-900 dark:text-zinc-100 placeholder-zinc-500 focus:outline-none focus:ring-2 focus:ring-brand-500 focus:border-transparent"
+                  wrapperClassName="w-full"
+                  withPortal
+                  portalId="root-portal"
+                  minDate={new Date()}
+                />
+              </div>
+              
+              <div>
+                <label className="block text-sm font-medium text-zinc-700 dark:text-zinc-300 mb-2">
+                  종료일시
+                </label>
+                <DatePicker
+                  selected={formData.end_at ? new Date(formData.end_at) : null}
+                  onChange={(date) => setFormData({ ...formData, end_at: date?.toISOString() || '' })}
+                  showTimeSelect
+                  timeFormat="HH:mm"
+                  timeIntervals={1}
+                  dateFormat="yyyy년 MM월 dd일 HH:mm"
+                  locale={ko}
+                  placeholderText="종료일시를 선택하세요"
+                  className="w-full px-2 py-1.5 sm:px-4 sm:py-2 text-sm sm:text-base bg-white dark:bg-zinc-900 border border-zinc-300 dark:border-zinc-800 rounded-lg text-zinc-900 dark:text-zinc-100 placeholder-zinc-500 focus:outline-none focus:ring-2 focus:ring-brand-500 focus:border-transparent"
+                  wrapperClassName="w-full"
+                  withPortal
+                  portalId="root-portal"
+                  minDate={formData.start_at ? new Date(formData.start_at) : new Date()}
+                />
+              </div>
             </div>
           </div>
         </div>

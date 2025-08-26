@@ -44,7 +44,9 @@ export async function POST(request: NextRequest) {
       thankyou_screen: body.thankyou_screen,
       settings: body.settings,
       creator_ip: clientIp,
-      public_results: body.public_results || false  // 결과 공개 여부 (기본값: 비공개)
+      public_results: body.public_results || false,  // 결과 공개 여부 (기본값: 비공개)
+      start_at: body.start_at ? new Date(body.start_at) : new Date(),
+      end_at: body.end_at ? new Date(body.end_at) : new Date(Date.now() + 30 * 24 * 60 * 60 * 1000) // 기본값: 30일 후
     });
     
     // Generate URLs

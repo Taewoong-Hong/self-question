@@ -44,6 +44,18 @@ export async function POST(
     const adminIps = process.env.ADMIN_IPS?.split(',').map(ip => ip.trim()) || [];
     const isAdminIp = adminIps.includes(clientIp);
     
+    // canVote 확인을 위한 로그
+    console.log('Vote validation:', {
+      debateId: params.id,
+      ipHash,
+      canVote: debate.canVote(ipHash),
+      status: debate.status,
+      is_hidden: debate.is_hidden,
+      is_deleted: debate.is_deleted,
+      voter_ips_count: debate.voter_ips.length,
+      isAdminIp
+    });
+    
     // Check if can vote (skip for admin IPs)
     if (!isAdminIp && !debate.canVote(ipHash)) {
       return NextResponse.json(
