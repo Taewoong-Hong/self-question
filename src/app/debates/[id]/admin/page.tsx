@@ -139,21 +139,14 @@ export default function DebateAdminPage() {
 
   const handleExportCSV = async () => {
     try {
-      // localStorage에서 토큰 확인
+      // 쿠키 기반 인증으로 CSV 다운로드 (토큰은 선택사항)
       const adminToken = localStorage.getItem(`debate_admin_${debateId}`);
-      console.log('Stored admin token:', adminToken ? adminToken.substring(0, 20) + '...' : 'No token');
-      
-      if (!adminToken) {
-        alert('관리자 인증이 필요합니다. 작성자 페이지에서 먼저 로그인해주세요.');
-        return;
-      }
-      
-      await debateApi.exportCSV(debateId, adminToken);
+      await debateApi.exportCSV(debateId, adminToken || undefined);
     } catch (error: any) {
       console.error('CSV 다운로드 오류 상세:', error);
       
-      // 토큰 만료 등으로 인한 401 에러인 경우
-      if (error.message?.includes('인증이 필요') || error.message?.includes('유효하지 않은 토큰')) {
+      // 인증 에러인 경우
+      if (error.message?.includes('인증이 필요') || error.message?.includes('세션이 만료')) {
         // 토큰 제거하고 재인증 유도
         localStorage.removeItem(`debate_admin_${debateId}`);
         setIsAuthenticated(false);

@@ -39,23 +39,10 @@ const api = axios.create({
   withCredentials: true, // 쿠키 전송 활성화
 });
 
-// 디버깅을 위한 요청 인터셉터
-api.interceptors.request.use(
-  (config) => {
-    console.log('API Request:', config.method?.toUpperCase(), config.url);
-    console.log('Request Headers:', config.headers);
-    return config;
-  },
-  (error) => {
-    return Promise.reject(error);
-  }
-);
-
 // 에러 처리
 api.interceptors.response.use(
   (response) => response,
   (error) => {
-    console.error('API Error Response:', error.response?.status, error.response?.data);
     if (error.response?.data?.error) {
       throw new Error(error.response.data.error);
     }
@@ -150,14 +137,15 @@ export const debateApi = {
     return response.data;
   },
 
-  // CSV 다운로드
-  exportCSV: async (debateId: string, adminToken: string) => {
+  // CSV 다운로드 (쿠키 기반)
+  exportCSV: async (debateId: string, adminToken?: string) => {
     try {
       const response = await api.get(`/debates/${debateId}/export`, {
         responseType: 'blob',
-        headers: {
-          Authorization: `Bearer ${adminToken}`,
-        },
+        withCredentials: true, // 쿠키 포함
+        headers: adminToken ? {
+          Authorization: `Bearer ${adminToken}`, // 하위 호환성
+        } : {},
       });
       
       // Content-Type 확인
@@ -165,21 +153,24 @@ export const debateApi = {
       
       // 에러 응답인지 확인 (JSON으로 응답된 경우)
       if (contentType && contentType.includes('application/json')) {
-        const reader = new FileReader();
-        reader.onload = function() {
-          const error = JSON.parse(reader.result as string);
-          console.error('CSV 다운로드 오류:', error);
-          throw new Error(error.error || 'CSV 다운로드 실패');
-        };
-        reader.readAsText(response.data);
-        return;
+        // Blob을 텍스트로 변환
+        const text = await response.data.text();
+        const error = JSON.parse(text);
+        console.error('CSV 다운로드 오류:', error);
+        throw new Error(error.error || 'CSV 다운로드 실패');
       }
       
       // 정상적인 CSV 응답 처리
-      const url = window.URL.createObjectURL(new Blob([response.data]));
+      const url = window.URL.createObjectURL(response.data);
       const link = document.createElement('a');
       link.href = url;
-      link.setAttribute('download', `debate_${debateId}_results.csv`);
+      
+      // Content-Disposition에서 파일명 추출 시도
+      const contentDisposition = response.headers['content-disposition'];
+      const fileNameMatch = contentDisposition?.match(/filename="(.+)"/);
+      const fileName = fileNameMatch ? fileNameMatch[1] : `debate_${debateId}_results.csv`;
+      
+      link.setAttribute('download', fileName);
       document.body.appendChild(link);
       link.click();
       link.remove();

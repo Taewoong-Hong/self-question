@@ -1,13 +1,10 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { connectDB } from '@/lib/db';
 import Debate from '@/models/Debate';
+import { cookies } from 'next/headers';
 import jwt from 'jsonwebtoken';
 
-// JWT_SECRET이 환경변수에 설정되어 있는지 확인
 const JWT_SECRET = process.env.JWT_SECRET || 'your-secret-key';
-if (!process.env.JWT_SECRET) {
-  console.warn('WARNING: JWT_SECRET not found in environment variables, using default key');
-}
 
 export const dynamic = 'force-dynamic';
 
@@ -18,52 +15,63 @@ export async function GET(
   try {
     await connectDB();
 
-    // 디버깅을 위한 로그
-    console.log('CSV Export - Debate ID:', params.id);
-    console.log('Headers:', Object.fromEntries(request.headers.entries()));
-
-    // 관리자 토큰 확인
-    const authHeader = request.headers.get('authorization');
-    if (!authHeader || !authHeader.startsWith('Bearer ')) {
-      console.error('No authorization header or invalid format');
+    // ID 형식 검증 (16자리 hex)
+    if (!/^[a-f0-9]{16}$/i.test(params.id)) {
       return NextResponse.json(
-        { error: '인증이 필요합니다.' },
-        { status: 401 }
+        { error: '잘못된 투표 ID 형식입니다' },
+        { status: 400 }
       );
     }
 
-    const token = authHeader.split(' ')[1];
-    console.log('Token:', token.substring(0, 20) + '...');
+    // 쿠키에서 세션 토큰 확인
+    const cookieStore = cookies();
+    const sessionCookie = cookieStore.get(`debate_admin_${params.id}`);
     
-    try {
-      const decoded = jwt.verify(token, JWT_SECRET) as any;
-      console.log('Decoded token:', decoded);
-      console.log('JWT_SECRET from env:', process.env.JWT_SECRET ? 'Set' : 'Not set');
-      console.log('Using JWT_SECRET:', JWT_SECRET === 'your-secret-key' ? 'Default' : 'Custom');
-      console.log('Token debate_id:', decoded.debate_id);
-      console.log('Request debate_id:', params.id);
-      console.log('Token type:', decoded.type);
-      
-      // 토큰이 해당 투표의 관리자 토큰인지 확인
-      if (decoded.debate_id !== params.id || decoded.type !== 'debate_admin') {
-        console.error('Token validation failed:', {
-          tokenDebateId: decoded.debate_id,
-          requestDebateId: params.id,
-          tokenType: decoded.type,
-          match: decoded.debate_id === params.id && decoded.type === 'debate_admin'
-        });
+    if (!sessionCookie) {
+      // Authorization 헤더도 확인 (하위 호환성)
+      const authHeader = request.headers.get('authorization');
+      if (!authHeader || !authHeader.startsWith('Bearer ')) {
         return NextResponse.json(
-          { error: '권한이 없습니다.' },
-          { status: 403 }
+          { error: '인증이 필요합니다.' },
+          { status: 401 }
         );
       }
-    } catch (error: any) {
-      console.error('JWT verification error:', error.message);
-      console.error('JWT error stack:', error.stack);
-      return NextResponse.json(
-        { error: '유효하지 않은 토큰입니다.' },
-        { status: 401 }
-      );
+
+      const token = authHeader.split(' ')[1];
+      
+      try {
+        const decoded = jwt.verify(token, JWT_SECRET) as any;
+        
+        // 토큰이 해당 투표의 관리자 토큰인지 확인
+        if (decoded.debate_id !== params.id || decoded.type !== 'debate_admin') {
+          return NextResponse.json(
+            { error: '권한이 없습니다.' },
+            { status: 403 }
+          );
+        }
+      } catch (error) {
+        return NextResponse.json(
+          { error: '유효하지 않은 토큰입니다.' },
+          { status: 401 }
+        );
+      }
+    } else {
+      // 쿠키 세션 검증
+      try {
+        const decoded = jwt.verify(sessionCookie.value, JWT_SECRET) as any;
+        
+        if (decoded.debate_id !== params.id || decoded.type !== 'debate_admin') {
+          return NextResponse.json(
+            { error: '권한이 없습니다.' },
+            { status: 403 }
+          );
+        }
+      } catch (error) {
+        return NextResponse.json(
+          { error: '세션이 만료되었습니다.' },
+          { status: 401 }
+        );
+      }
     }
 
     // 투표 조회
@@ -161,13 +169,16 @@ export async function GET(
     ].join('\n');
 
     // 응답 헤더 설정
-    const responseHeaders = new Headers();
-    responseHeaders.set('Content-Type', 'text/csv; charset=utf-8');
-    responseHeaders.set('Content-Disposition', `attachment; filename="debate_${params.id}_results_${new Date().toISOString().split('T')[0]}.csv"`);
+    const headers = new Headers();
+    headers.set('Content-Type', 'text/csv; charset=utf-8');
+    headers.set('Content-Disposition', `attachment; filename="debate_${params.id}_results_${new Date().toISOString().split('T')[0]}.csv"`);
+    headers.set('Cache-Control', 'no-cache, no-store, must-revalidate');
+    headers.set('Pragma', 'no-cache');
+    headers.set('Expires', '0');
 
-    return new NextResponse(csvContent, {
+    return new Response(csvContent, {
       status: 200,
-      headers: responseHeaders,
+      headers: headers,
     });
 
   } catch (error) {
