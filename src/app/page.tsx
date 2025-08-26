@@ -93,9 +93,9 @@ export default function Home() {
         combinedItems.sort((a, b) => {
           switch (sortOption) {
             case 'latest':
-              return new Date(b.created_at).getTime() - new Date(a.created_at).getTime();
+              return b.created_at.localeCompare(a.created_at);
             case 'oldest':
-              return new Date(a.created_at).getTime() - new Date(b.created_at).getTime();
+              return a.created_at.localeCompare(b.created_at);
             case 'popular':
               return b.participantCount - a.participantCount;
             case 'unpopular':
@@ -250,26 +250,14 @@ export default function Home() {
                     </div>
                     <div>
                       {item.start_at ? (
-                        <span>시작: {new Date(item.start_at).toLocaleDateString('ko-KR', { 
-                          year: 'numeric',
-                          month: '2-digit',
-                          day: '2-digit',
-                          hour: '2-digit',
-                          minute: '2-digit'
-                        }).replace(/\. /g, '-').replace('.', '')}</span>
+                        <span>시작: {item.start_at.split('T')[0]}</span>
                       ) : (
                         <span>시작: -</span>
                       )}
                     </div>
                     <div>
                       {item.end_at ? (
-                        <span>종료: {new Date(item.end_at).toLocaleDateString('ko-KR', { 
-                          year: 'numeric',
-                          month: '2-digit',
-                          day: '2-digit',
-                          hour: '2-digit',
-                          minute: '2-digit'
-                        }).replace(/\. /g, '-').replace('.', '')}</span>
+                        <span>종료: {item.end_at.split('T')[0]}</span>
                       ) : (
                         <span>종료: 미정</span>
                       )}

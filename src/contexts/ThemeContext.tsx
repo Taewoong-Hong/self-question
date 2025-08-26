@@ -18,15 +18,18 @@ export function ThemeProvider({ children }: { children: ReactNode }) {
 
   // 초기 테마 로드 - 기본값을 다크모드로 설정
   useEffect(() => {
-    const savedTheme = localStorage.getItem('theme') as Theme;
-    if (savedTheme) {
-      setTheme(savedTheme);
-      document.documentElement.classList.toggle('light', savedTheme === 'light');
-    } else {
-      // localStorage에 저장된 값이 없으면 다크모드를 기본으로 설정
-      setTheme('dark');
-      localStorage.setItem('theme', 'dark');
-      document.documentElement.classList.remove('light');
+    // 클라이언트 사이드에서만 localStorage 접근
+    if (typeof window !== 'undefined') {
+      const savedTheme = localStorage.getItem('theme') as Theme;
+      if (savedTheme) {
+        setTheme(savedTheme);
+        document.documentElement.classList.toggle('light', savedTheme === 'light');
+      } else {
+        // localStorage에 저장된 값이 없으면 다크모드를 기본으로 설정
+        setTheme('dark');
+        localStorage.setItem('theme', 'dark');
+        document.documentElement.classList.remove('light');
+      }
     }
     setMounted(true);
   }, []);
