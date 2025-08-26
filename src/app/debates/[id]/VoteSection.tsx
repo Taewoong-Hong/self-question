@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react';
 import { debateApi } from '@/lib/api';
 import { VoteDto } from '@/types/debate';
+import toast from 'react-hot-toast';
 
 interface VoteSectionProps {
   debateId: string;
@@ -98,7 +99,7 @@ export default function VoteSection({ debateId, status, isAnonymous, allowCommen
 
   const handleVote = async () => {
     if (selectedOptions.length === 0) {
-      alert('투표할 항목을 선택해주세요.');
+      toast.error('투표할 항목을 선택해주세요.');
       return;
     }
 
@@ -131,13 +132,13 @@ export default function VoteSection({ debateId, status, isAnonymous, allowCommen
       } catch (error) {
         console.error('Error refreshing stats after vote:', error);
       }
-      alert('투표가 완료되었습니다!');
+      toast.success('투표가 완료되었습니다!');
     } catch (error: any) {
       if (error.message?.includes('이미 투표')) {
         setHasVoted(true);
-        alert('이미 투표에 참여하셨습니다.');
+        toast.error('이미 투표에 참여하셨습니다.');
       } else {
-        alert('투표 처리 중 오류가 발생했습니다.');
+        toast.error('투표 처리 중 오류가 발생했습니다.');
       }
     } finally {
       setVoting(false);
