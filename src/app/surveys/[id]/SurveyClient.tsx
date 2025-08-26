@@ -5,6 +5,7 @@ import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import SurveyForm from './SurveyForm';
 import SurveyResults from './SurveyResults';
+import toast from 'react-hot-toast';
 
 interface SurveyProps {
   survey: {
@@ -34,6 +35,13 @@ export default function SurveyClient({ survey }: SurveyProps) {
   const [stats, setStats] = useState(survey.stats || { response_count: 0 });
 
   useEffect(() => {
+    // 로컬 스토리지에서 성공 메시지 확인
+    const successMessage = localStorage.getItem('showSuccessMessage');
+    if (successMessage) {
+      toast.success(successMessage);
+      localStorage.removeItem('showSuccessMessage');
+    }
+    
     // API에서 응답 여부 확인
     checkResponseStatus();
   }, [survey.id]);

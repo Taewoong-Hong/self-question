@@ -69,8 +69,10 @@ export default function CreateDebatePage() {
       };
       
       const result = await debateApi.create(submitData);
-      toast.success('투표가 성공적으로 생성되었습니다!');
-      router.push(`/debates/${result.id}`);
+      // 로컬 스토리지에 성공 메시지 저장 (다음 페이지에서 표시)
+      localStorage.setItem('showSuccessMessage', '투표가 성공적으로 생성되었습니다!');
+      // 즉시 페이지 이동 (replace를 사용하여 히스토리 스택 최적화)
+      router.replace(`/debates/${result.id}`);
     } catch (error: any) {
       console.error('투표 생성 실패:', error);
       toast.error(error.message || '투표 생성에 실패했습니다.');

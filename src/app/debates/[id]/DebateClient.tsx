@@ -6,6 +6,7 @@ import Link from 'next/link';
 import dynamic from 'next/dynamic';
 import OpinionSection from './OpinionSection';
 import CommentSection from '@/components/CommentSection';
+import toast from 'react-hot-toast';
 
 // VoteSection을 dynamic import로 변경하여 hydration 에러 해결
 const VoteSection = dynamic(() => import('./VoteSection'), {
@@ -59,6 +60,15 @@ interface DebateProps {
 
 export default function DebateClient({ debate }: DebateProps) {
   const router = useRouter();
+
+  useEffect(() => {
+    // 로컬 스토리지에서 성공 메시지 확인
+    const successMessage = localStorage.getItem('showSuccessMessage');
+    if (successMessage) {
+      toast.success(successMessage);
+      localStorage.removeItem('showSuccessMessage');
+    }
+  }, []);
 
   return (
     <div className="min-h-screen max-w-4xl mx-auto">

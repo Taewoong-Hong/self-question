@@ -71,8 +71,10 @@ export default function CreateSurveyPage() {
     try {
       setLoading(true);
       const result = await surveyApi.create(formData);
-      toast.success('설문이 성공적으로 생성되었습니다!');
-      router.push(`/surveys/${result.id}`);
+      // 로컬 스토리지에 성공 메시지 저장 (다음 페이지에서 표시)
+      localStorage.setItem('showSuccessMessage', '설문이 성공적으로 생성되었습니다!');
+      // 즉시 페이지 이동 (replace를 사용하여 히스토리 스택 최적화)
+      router.replace(`/surveys/${result.id}`);
     } catch (error) {
       console.error('설문 생성 실패:', error);
       toast.error('설문 생성에 실패했습니다.');
