@@ -288,3 +288,12 @@ Do what has been asked; nothing more, nothing less.
 NEVER create files unless they're absolutely necessary for achieving your goal.
 ALWAYS prefer editing an existing file to creating a new one.
 NEVER proactively create documentation files (*.md) or README files. Only create documentation files if explicitly requested by the User.
+
+# UI-PROTECTION-RULES
+NEVER modify UI structure or styling unless explicitly requested by the user.
+기본 UI 구조는 절대 변경하지 않는다. 사용자가 명시적으로 UI 변경을 요청할 때만 수정한다.
+- 레이아웃 구조 변경 금지
+- 기본 스타일 변경 금지  
+- 색상 체계 변경 금지
+- 간격 및 패딩 변경 금지
+UI 변경 요청이 있을 때만 해당 부분을 수정하고, 그 외에는 기존 구조를 유지한다.
