@@ -54,12 +54,25 @@ export async function POST(
     
     // Cast vote
     try {
+      console.log('Vote request:', {
+        debateId: params.id,
+        optionIds: body.option_ids,
+        voteOptions: debate.vote_options.map((opt: any) => ({ id: opt.id, label: opt.label })),
+        allowMultipleChoice: debate.settings.allow_multiple_choice,
+        status: debate.status
+      });
+      
       await debate.castVote(body.option_ids, ipHash, {
         user_id: body.user_id,
         nickname: body.nickname,
         is_anonymous: body.is_anonymous
       });
     } catch (error: any) {
+      console.error('Vote casting error:', {
+        error: error.message,
+        debateId: params.id,
+        optionIds: body.option_ids
+      });
       return NextResponse.json(
         { error: error.message },
         { status: 400 }

@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { connectDB } from '@/lib/db';
 import Debate from '@/models/Debate';
+import crypto from 'crypto';
 export const dynamic = 'force-dynamic';
 
 export async function POST(request: NextRequest) {
@@ -49,6 +50,7 @@ export async function POST(request: NextRequest) {
       author_ip_hash: ipHash,
       admin_password_hash: body.admin_password,
       vote_options: body.vote_options.map((opt: any, index: number) => ({
+        id: crypto.randomBytes(8).toString('hex'),
         label: opt.label,
         order: index
       })),
