@@ -8,6 +8,7 @@ import DatePicker from 'react-datepicker';
 import 'react-datepicker/dist/react-datepicker.css';
 import { ko } from 'date-fns/locale';
 import toast from 'react-hot-toast';
+import TagInput from '@/components/TagInput';
 
 export default function CreateDebatePage() {
   const router = useRouter();
@@ -123,17 +124,10 @@ export default function CreateDebatePage() {
               <label className="block text-sm font-medium text-zinc-700 dark:text-zinc-300 mb-2">
                 태그
               </label>
-              <input
-                type="text"
-                value={formData.tags?.join(', ')}
-                onChange={(e) => {
-                  const value = e.target.value;
-                  // 쉼표로 구분하여 태그 배열 생성
-                  const tags = value.split(',').map(tag => tag.trim()).filter(tag => tag);
-                  setFormData({ ...formData, tags });
-                }}
-                className="w-full px-4 py-2 bg-white dark:bg-zinc-900 border border-zinc-300 dark:border-zinc-800 rounded-lg text-zinc-900 dark:text-zinc-100 placeholder-zinc-500 focus:outline-none focus:ring-2 ring-surbate focus:border-transparent"
-                placeholder="태그1, 태그2 (쉼표로 구분)"
+              <TagInput
+                tags={formData.tags || []}
+                onChange={(tags) => setFormData({ ...formData, tags })}
+                placeholder="태그 입력 후 Enter 또는 쉼표"
               />
             </div>
 
@@ -248,7 +242,7 @@ export default function CreateDebatePage() {
           <h2 className="text-lg font-semibold mb-4">작성자 설정</h2>
           
           <div>
-            <label className="block text-sm font-medium text-zinc-300 mb-2">
+            <label className="block text-sm font-medium text-zinc-700 dark:text-zinc-300 mb-2">
               작성자 비밀번호 *
             </label>
             <input
@@ -257,7 +251,7 @@ export default function CreateDebatePage() {
               minLength={8}
               value={formData.admin_password}
               onChange={(e) => setFormData({ ...formData, admin_password: e.target.value })}
-              className="w-full px-4 py-2 bg-zinc-900 border border-zinc-800 rounded-lg text-zinc-100 placeholder-zinc-500 focus:outline-none focus:ring-2 ring-surbate focus:border-transparent"
+              className="w-full px-4 py-2 bg-white dark:bg-zinc-900 border border-zinc-300 dark:border-zinc-800 rounded-lg text-zinc-900 dark:text-zinc-100 placeholder-zinc-500 focus:outline-none focus:ring-2 ring-surbate focus:border-transparent"
               placeholder="8자 이상의 비밀번호"
             />
             <p className="mt-2 text-sm text-zinc-600 dark:text-zinc-500">

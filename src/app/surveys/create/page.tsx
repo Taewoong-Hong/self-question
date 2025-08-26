@@ -8,6 +8,7 @@ import DatePicker from 'react-datepicker';
 import 'react-datepicker/dist/react-datepicker.css';
 import { ko } from 'date-fns/locale';
 import toast from 'react-hot-toast';
+import TagInput from '@/components/TagInput';
 
 export default function CreateSurveyPage() {
   const router = useRouter();
@@ -227,17 +228,10 @@ export default function CreateSurveyPage() {
               <label className="block text-sm font-medium text-zinc-700 dark:text-zinc-300 mb-2">
                 태그
               </label>
-              <input
-                type="text"
-                value={formData.tags?.join(', ')}
-                onChange={(e) => {
-                  const value = e.target.value;
-                  // 쉼표로 구분하여 태그 배열 생성
-                  const tags = value.split(',').map(tag => tag.trim()).filter(tag => tag);
-                  setFormData({ ...formData, tags });
-                }}
-                className="w-full px-4 py-2 bg-white dark:bg-zinc-900 border border-zinc-300 dark:border-zinc-800 rounded-lg text-zinc-900 dark:text-zinc-100 placeholder-zinc-500 focus:outline-none focus:ring-2 focus:ring-brand-500 focus:border-transparent"
-                placeholder="태그1, 태그2 (쉼표로 구분)"
+              <TagInput
+                tags={formData.tags || []}
+                onChange={(tags) => setFormData({ ...formData, tags })}
+                placeholder="태그 입력 후 Enter 또는 쉼표"
               />
             </div>
 
@@ -261,7 +255,7 @@ export default function CreateSurveyPage() {
                 locale={ko}
                 placeholderText="종료일시를 선택하세요 (선택사항)"
                 isClearable
-                className="w-full px-2 py-1.5 sm:px-4 sm:py-2 text-sm sm:text-base bg-zinc-900 border border-zinc-800 rounded-lg text-zinc-100 placeholder-zinc-500 focus:outline-none focus:ring-2 focus:ring-brand-500 focus:border-transparent"
+                className="w-full px-2 py-1.5 sm:px-4 sm:py-2 text-sm sm:text-base bg-white dark:bg-zinc-900 border border-zinc-300 dark:border-zinc-800 rounded-lg text-zinc-900 dark:text-zinc-100 placeholder-zinc-500 focus:outline-none focus:ring-2 focus:ring-brand-500 focus:border-transparent"
                 wrapperClassName="w-full"
                 withPortal
                 portalId="root-portal"
@@ -369,7 +363,7 @@ export default function CreateSurveyPage() {
                                 ...question.skip_logic!,
                                 condition: { ...question.skip_logic!.condition, question_id: e.target.value }
                               })}
-                              className="px-2 py-1 bg-zinc-800 border border-zinc-700 rounded text-sm text-zinc-100"
+                              className="px-2 py-1 bg-white dark:bg-zinc-800 border border-zinc-300 dark:border-zinc-700 rounded text-sm text-zinc-900 dark:text-zinc-100"
                             >
                               {formData.questions.slice(0, qIndex).map((q, i) => (
                                 <option key={i} value={q.id || i.toString()}>
@@ -384,7 +378,7 @@ export default function CreateSurveyPage() {
                                 ...question.skip_logic!,
                                 condition: { ...question.skip_logic!.condition, operator: e.target.value as any }
                               })}
-                              className="px-2 py-1 bg-zinc-800 border border-zinc-700 rounded text-sm text-zinc-100"
+                              className="px-2 py-1 bg-white dark:bg-zinc-800 border border-zinc-300 dark:border-zinc-700 rounded text-sm text-zinc-900 dark:text-zinc-100"
                             >
                               <option value="equals">같을 때</option>
                               <option value="not_equals">다를 때</option>
@@ -400,7 +394,7 @@ export default function CreateSurveyPage() {
                                       ...question.skip_logic!,
                                       condition: { ...question.skip_logic!.condition, value: e.target.value }
                                     })}
-                                    className="px-2 py-1 bg-zinc-800 border border-zinc-700 rounded text-sm text-zinc-100"
+                                    className="px-2 py-1 bg-white dark:bg-zinc-800 border border-zinc-300 dark:border-zinc-700 rounded text-sm text-zinc-900 dark:text-zinc-100"
                                   >
                                     <option value="">선택하세요</option>
                                     {targetQuestion.properties?.choices?.map((choice) => (
@@ -420,7 +414,7 @@ export default function CreateSurveyPage() {
                                       condition: { ...question.skip_logic!.condition, value: e.target.value }
                                     })}
                                     placeholder="값"
-                                    className="px-2 py-1 bg-zinc-800 border border-zinc-700 rounded text-sm text-zinc-100"
+                                    className="px-2 py-1 bg-white dark:bg-zinc-800 border border-zinc-300 dark:border-zinc-700 rounded text-sm text-zinc-900 dark:text-zinc-100"
                                   />
                                 );
                               }
@@ -444,7 +438,7 @@ export default function CreateSurveyPage() {
                             required
                             value={choice.label}
                             onChange={(e) => updateOption(qIndex, oIndex, e.target.value)}
-                            className="flex-1 px-3 py-2 bg-zinc-900 border border-zinc-700 rounded-lg text-zinc-100 placeholder-zinc-500 focus:outline-none focus:ring-2 focus:ring-brand-500 focus:border-transparent"
+                            className="flex-1 px-3 py-2 bg-white dark:bg-zinc-900 border border-zinc-300 dark:border-zinc-700 rounded-lg text-zinc-900 dark:text-zinc-100 placeholder-zinc-500 focus:outline-none focus:ring-2 focus:ring-brand-500 focus:border-transparent"
                             placeholder={`옵션 ${oIndex + 1}`}
                           />
                           <label className="flex items-center gap-1 text-sm text-zinc-400">
@@ -487,7 +481,7 @@ export default function CreateSurveyPage() {
           <h2 className="text-lg font-semibold mb-4">작성자 설정</h2>
           
           <div>
-            <label className="block text-sm font-medium text-zinc-300 mb-2">
+            <label className="block text-sm font-medium text-zinc-700 dark:text-zinc-300 mb-2">
               작성자 비밀번호 *
             </label>
             <input
@@ -496,7 +490,7 @@ export default function CreateSurveyPage() {
               minLength={8}
               value={formData.admin_password}
               onChange={(e) => setFormData({ ...formData, admin_password: e.target.value })}
-              className="w-full px-4 py-2 bg-white dark:bg-zinc-900 border border-zinc-300 dark:border-zinc-800 rounded-lg text-zinc-900 dark:text-zinc-100 placeholder-zinc-500 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-transparent"
+              className="w-full px-4 py-2 bg-white dark:bg-zinc-900 border border-zinc-300 dark:border-zinc-800 rounded-lg text-zinc-900 dark:text-zinc-100 placeholder-zinc-500 focus:outline-none focus:ring-2 focus:ring-brand-500 focus:border-transparent"
               placeholder="8자 이상의 비밀번호"
             />
             <p className="mt-2 text-sm text-zinc-600 dark:text-zinc-500">
