@@ -147,9 +147,10 @@ export default function DebateAdminPage() {
       }
       
       await debateApi.exportCSV(debateId, adminToken);
-      alert('CSV 다운로드가 시작됩니다.');
-    } catch (error) {
-      alert('CSV 다운로드에 실패했습니다.');
+    } catch (error: any) {
+      console.error('CSV 다운로드 오류 상세:', error);
+      const errorMessage = error.message || 'CSV 다운로드에 실패했습니다.';
+      alert(`CSV 다운로드 실패: ${errorMessage}`);
     }
   };
 

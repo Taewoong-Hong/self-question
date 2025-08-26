@@ -26,13 +26,17 @@ import {
   RequestListResponse
 } from '@/types/request';
 
-const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || '/api';
+// 상대 경로 사용으로 동일 도메인 보장
+const API_BASE_URL = typeof window === 'undefined' 
+  ? process.env.NEXT_PUBLIC_API_URL || '/api'
+  : '/api';
 
 const api = axios.create({
   baseURL: API_BASE_URL,
   headers: {
     'Content-Type': 'application/json',
   },
+  withCredentials: true, // 쿠키 전송 활성화
 });
 
 // 에러 처리
@@ -135,22 +139,42 @@ export const debateApi = {
 
   // CSV 다운로드
   exportCSV: async (debateId: string, adminToken: string) => {
-    const response = await api.get(`/debates/${debateId}/export`, {
-      responseType: 'blob',
-      headers: {
-        Authorization: `Bearer ${adminToken}`,
-      },
-    });
-    
-    // 브라우저에서 다운로드 처리
-    const url = window.URL.createObjectURL(new Blob([response.data]));
-    const link = document.createElement('a');
-    link.href = url;
-    link.setAttribute('download', `debate_${debateId}_results.csv`);
-    document.body.appendChild(link);
-    link.click();
-    link.remove();
-    window.URL.revokeObjectURL(url);
+    try {
+      const response = await api.get(`/debates/${debateId}/export`, {
+        responseType: 'blob',
+        headers: {
+          Authorization: `Bearer ${adminToken}`,
+        },
+      });
+      
+      // Content-Type 확인
+      const contentType = response.headers['content-type'];
+      
+      // 에러 응답인지 확인 (JSON으로 응답된 경우)
+      if (contentType && contentType.includes('application/json')) {
+        const reader = new FileReader();
+        reader.onload = function() {
+          const error = JSON.parse(reader.result as string);
+          console.error('CSV 다운로드 오류:', error);
+          throw new Error(error.error || 'CSV 다운로드 실패');
+        };
+        reader.readAsText(response.data);
+        return;
+      }
+      
+      // 정상적인 CSV 응답 처리
+      const url = window.URL.createObjectURL(new Blob([response.data]));
+      const link = document.createElement('a');
+      link.href = url;
+      link.setAttribute('download', `debate_${debateId}_results.csv`);
+      document.body.appendChild(link);
+      link.click();
+      link.remove();
+      window.URL.revokeObjectURL(url);
+    } catch (error) {
+      console.error('CSV 다운로드 오류:', error);
+      throw error;
+    }
   },
 
   // 투표 통계 (관리자)
