@@ -21,6 +21,8 @@ export default function DebateAdminPage() {
   const [password, setPassword] = useState('');
   const [verifying, setVerifying] = useState(false);
   const [adminToken, setAdminToken] = useState<string | null>(null);
+  const [showResumeModal, setShowResumeModal] = useState(false);
+  const [resumeEndDate, setResumeEndDate] = useState('');
   const [qrCodeUrl, setQrCodeUrl] = useState<string>('');
 
   useEffect(() => {
@@ -100,18 +102,52 @@ export default function DebateAdminPage() {
     // localStorage에서 토큰 직접 가져오기
     const token = adminToken || localStorage.getItem(`debate_author_${debateId}`);
     if (!token) {
-      alert('관리자 인증이 필요합니다.');
+      toast.error('관리자 인증이 필요합니다.');
       return;
     }
     
     try {
-      const newStatus = debate.status === 'active' ? 'ended' : 'active';
-      await debateApi.updateStatus(debateId, newStatus);
-      setDebate({ ...debate, status: newStatus });
-      alert(`투표가 ${newStatus === 'active' ? '시작되었습니다' : '종료되었습니다'}.`);
+      if (debate.status === 'active') {
+        // 종료
+        const newStatus = 'ended';
+        await debateApi.updateStatus(debateId, newStatus);
+        setDebate({ ...debate, status: newStatus });
+        toast.success('투표가 종료되었습니다.');
+      } else {
+        // 재개 시 모달 표시
+        // 기본값으로 7일 후 설정
+        const defaultEndDate = new Date();
+        defaultEndDate.setDate(defaultEndDate.getDate() + 7);
+        setResumeEndDate(defaultEndDate.toISOString().slice(0, 16));
+        setShowResumeModal(true);
+      }
     } catch (error) {
       console.error('상태 변경 오류:', error);
-      alert('상태 변경에 실패했습니다.');
+      toast.error('상태 변경에 실패했습니다.');
+    }
+  };
+
+  const handleResume = async () => {
+    if (!debate || !resumeEndDate) return;
+    
+    const token = adminToken || localStorage.getItem(`debate_author_${debateId}`);
+    if (!token) {
+      toast.error('관리자 인증이 필요합니다.');
+      return;
+    }
+    
+    try {
+      await debateApi.updateStatus(debateId, 'active', resumeEndDate);
+      setDebate({ 
+        ...debate, 
+        status: 'active',
+        end_at: resumeEndDate
+      });
+      toast.success('투표가 재개되었습니다.');
+      setShowResumeModal(false);
+    } catch (error) {
+      console.error('재개 오류:', error);
+      toast.error('투표 재개에 실패했습니다.');
     }
   };
 
@@ -462,6 +498,45 @@ export default function DebateAdminPage() {
           </div>
         </div>
       </div>
+
+      {/* 재개 모달 */}
+      {showResumeModal && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+          <div className="bg-white dark:bg-zinc-900 rounded-xl p-6 max-w-md w-full">
+            <h3 className="text-lg font-semibold mb-4 text-zinc-900 dark:text-zinc-100">투표 재개</h3>
+            <p className="text-zinc-600 dark:text-zinc-400 mb-4">
+              투표를 재개하려면 새로운 종료 일정을 설정해주세요.
+            </p>
+            <div className="mb-4">
+              <label className="block text-sm font-medium text-zinc-700 dark:text-zinc-300 mb-2">
+                종료 일시
+              </label>
+              <input
+                type="datetime-local"
+                value={resumeEndDate}
+                onChange={(e) => setResumeEndDate(e.target.value)}
+                min={new Date().toISOString().slice(0, 16)}
+                className="w-full px-4 py-2 bg-gray-50 dark:bg-zinc-800 border border-gray-300 dark:border-zinc-700 rounded-lg text-zinc-900 dark:text-zinc-100 focus:outline-none focus:ring-2 focus:ring-surbate focus:border-transparent"
+              />
+            </div>
+            <div className="flex gap-3">
+              <button
+                onClick={() => setShowResumeModal(false)}
+                className="flex-1 px-4 py-2 bg-gray-200 dark:bg-zinc-800 text-zinc-700 dark:text-zinc-300 rounded-lg hover:bg-gray-300 dark:hover:bg-zinc-700 transition-colors"
+              >
+                취소
+              </button>
+              <button
+                onClick={handleResume}
+                disabled={!resumeEndDate}
+                className="flex-1 px-4 py-2 bg-gradient-to-r from-surbate to-brand-600 text-zinc-900 font-semibold rounded-lg hover:from-brand-400 hover:to-brand-600 transition-colors disabled:opacity-50"
+              >
+                재개하기
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

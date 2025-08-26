@@ -48,7 +48,7 @@ export async function PUT(
     
     // Get request body
     const body = await request.json();
-    const { status } = body;
+    const { status, end_at } = body;
     
     if (!status || !['active', 'ended', 'scheduled'].includes(status)) {
       return NextResponse.json(
@@ -79,8 +79,15 @@ export async function PUT(
     }
     
     // If activating the debate, ensure start_at is not in the future
-    if (status === 'active' && debate.start_at > new Date()) {
-      debate.start_at = new Date();
+    if (status === 'active') {
+      if (debate.start_at > new Date()) {
+        debate.start_at = new Date();
+      }
+      
+      // If end_at is provided when resuming, update it
+      if (end_at) {
+        debate.end_at = new Date(end_at);
+      }
     }
     
     await debate.save();

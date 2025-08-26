@@ -114,8 +114,11 @@ export const debateApi = {
   },
 
   // 투표 상태 변경 (관리자)
-  updateStatus: async (debateId: string, status: 'scheduled' | 'active' | 'ended', adminToken?: string) => {
-    const response = await api.put(`/debates/${debateId}/status`, { status });
+  updateStatus: async (debateId: string, status: 'scheduled' | 'active' | 'ended', endAt?: string) => {
+    const response = await api.put(`/debates/${debateId}/status`, { 
+      status,
+      ...(endAt && { end_at: endAt })
+    });
     return response.data;
   },
 

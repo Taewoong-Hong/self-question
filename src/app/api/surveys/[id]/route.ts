@@ -142,9 +142,15 @@ export async function DELETE(
   try {
     await connectDB();
     
-    const authToken = request.headers.get('Authorization')?.replace('Bearer ', '');
+    // 쿠키에서 인증 토큰 확인
+    const { cookies } = await import('next/headers');
+    const cookieStore = cookies();
     
-    if (!authToken) {
+    // 작성자 쿠키 확인
+    const authorCookie = cookieStore.get(`survey_author_${params.id}`);
+    const adminCookie = cookieStore.get('admin_token');
+    
+    if (!authorCookie && !adminCookie) {
       return NextResponse.json(
         { error: '인증이 필요합니다' },
         { status: 401 }
@@ -160,12 +166,14 @@ export async function DELETE(
       );
     }
     
-    // Validate admin token
-    if (!survey.validateAdminToken(authToken)) {
-      return NextResponse.json(
-        { error: '유효하지 않은 인증 토큰입니다' },
-        { status: 401 }
-      );
+    // 작성자 쿠키 검증
+    if (authorCookie && !adminCookie) {
+      if (!survey.validateAdminToken(authorCookie.value)) {
+        return NextResponse.json(
+          { error: '유효하지 않은 인증 토큰입니다' },
+          { status: 401 }
+        );
+      }
     }
     
     // Soft delete
