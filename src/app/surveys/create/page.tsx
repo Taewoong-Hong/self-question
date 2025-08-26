@@ -158,10 +158,11 @@ export default function CreateSurveyPage() {
   const toggleOtherOption = (questionIndex: number, optionIndex: number, isOther: boolean) => {
     const newQuestions = [...formData.questions];
     if (newQuestions[questionIndex].properties?.choices) {
-      newQuestions[questionIndex].properties!.choices![optionIndex].is_other = isOther;
-      if (isOther) {
-        // '기타' 옵션이 활성화되면 라벨을 '기타'로 설정
-        newQuestions[questionIndex].properties!.choices![optionIndex].label = '기타';
+      const choice = newQuestions[questionIndex].properties!.choices![optionIndex];
+      choice.is_other = isOther;
+      // 라벨이 비어있거나 기본 옵션 형식일 때만 '직접입력'으로 설정
+      if (isOther && (!choice.label || choice.label.trim() === '' || choice.label.match(/^옵션 \d+$/))) {
+        choice.label = '직접입력';
       }
       setFormData({ ...formData, questions: newQuestions });
     }
@@ -468,7 +469,7 @@ export default function CreateSurveyPage() {
                               onChange={(e) => toggleOtherOption(qIndex, oIndex, e.target.checked)}
                               className="rounded bg-white dark:bg-zinc-900 border-zinc-300 dark:border-zinc-700 text-brand-500 focus:ring-brand-500"
                             />
-                            기타
+                            직접입력
                           </label>
                           {question.properties!.choices!.length > 2 && (
                             <button

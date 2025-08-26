@@ -137,7 +137,7 @@ export default function SurveyForm({ surveyId, questions, onComplete }: SurveyFo
             switch (q.type) {
               case 'single_choice':
                 answer.choice_id = responses[q._id] || null;
-                // '기타' 옵션이 선택된 경우
+                // '직접입력' 옵션이 선택된 경우
                 if (responses[q._id]) {
                   const selectedChoice = q.properties?.choices?.find((c: any) => c.id === responses[q._id]);
                   if (selectedChoice?.is_other && otherTexts[q._id]) {
@@ -229,7 +229,7 @@ export default function SurveyForm({ surveyId, questions, onComplete }: SurveyFo
                     type="text"
                     value={otherTexts[question._id] || ''}
                     onChange={(e) => setOtherTexts({ ...otherTexts, [question._id]: e.target.value })}
-                    placeholder="기타 내용을 입력해주세요"
+                    placeholder="직접입력 내용을 입력해주세요"
                     className="mt-2 ml-8 w-full px-3 py-2 bg-gray-50 dark:bg-zinc-900 border border-gray-300 dark:border-zinc-800 rounded-lg text-zinc-900 dark:text-zinc-100 placeholder-zinc-400 dark:placeholder-zinc-500 focus:outline-none focus:ring-2 focus:ring-surbate focus:border-transparent"
                   />
                 )}
@@ -265,7 +265,7 @@ export default function SurveyForm({ surveyId, questions, onComplete }: SurveyFo
                     type="text"
                     value={otherTexts[`${question._id}_${choice.id}`] || ''}
                     onChange={(e) => setOtherTexts({ ...otherTexts, [`${question._id}_${choice.id}`]: e.target.value })}
-                    placeholder="기타 내용을 입력해주세요"
+                    placeholder="직접입력 내용을 입력해주세요"
                     className="mt-2 ml-8 w-full px-3 py-2 bg-gray-50 dark:bg-zinc-900 border border-gray-300 dark:border-zinc-800 rounded-lg text-zinc-900 dark:text-zinc-100 placeholder-zinc-400 dark:placeholder-zinc-500 focus:outline-none focus:ring-2 focus:ring-surbate focus:border-transparent"
                   />
                 )}
