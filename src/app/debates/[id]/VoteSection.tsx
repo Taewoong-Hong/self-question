@@ -37,6 +37,8 @@ export default function VoteSection({ debateId, status, isAnonymous, allowCommen
   const [selectedOptions, setSelectedOptions] = useState<string[]>([]);
 
   useEffect(() => {
+    // 설문과 동일한 방식으로 메인 API에서 응답 여부 확인
+    checkVoteStatus();
     fetchVoteStats();
     // 10초마다 자동 갱신 (투표 진행중일 때만)
     if (status === 'active') {
@@ -45,13 +47,26 @@ export default function VoteSection({ debateId, status, isAnonymous, allowCommen
     }
   }, [debateId, status]);
 
+  const checkVoteStatus = async () => {
+    try {
+      const response = await fetch(`/api/debates/${debateId}`);
+      const data = await response.json();
+      setHasVoted(data.has_voted || false);
+    } catch (error) {
+      console.error('Error checking vote status:', error);
+    }
+  };
+
   const fetchVoteStats = async () => {
     try {
       const response = await fetch(`/api/debates/${debateId}/stats`);
       if (!response.ok) throw new Error('Failed to fetch stats');
       const data = await response.json();
       setVoteStats(data);
-      setHasVoted(data.has_voted);
+      // stats API의 has_voted도 업데이트 (백업)
+      if (data.has_voted !== undefined) {
+        setHasVoted(data.has_voted);
+      }
     } catch (error) {
       console.error('Error fetching vote stats:', error);
     } finally {
@@ -96,6 +111,7 @@ export default function VoteSection({ debateId, status, isAnonymous, allowCommen
       }
       
       setHasVoted(true);
+      await checkVoteStatus(); // 투표 상태 새로고침
       await fetchVoteStats(); // 결과 새로고침
       alert('투표가 완료되었습니다!');
     } catch (error: any) {
