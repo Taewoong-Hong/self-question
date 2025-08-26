@@ -1,20 +1,27 @@
 import { NextRequest, NextResponse } from 'next/server';
-import dbConnect from '@/lib/mongodb';
+import { connectDB } from '@/lib/db';
 import Debate from '@/models/Debate';
 import jwt from 'jsonwebtoken';
 
 const JWT_SECRET = process.env.JWT_SECRET || 'your-secret-key';
+
+export const dynamic = 'force-dynamic';
 
 export async function GET(
   request: NextRequest,
   { params }: { params: { id: string } }
 ) {
   try {
-    await dbConnect();
+    await connectDB();
+
+    // 디버깅을 위한 로그
+    console.log('CSV Export - Debate ID:', params.id);
+    console.log('Headers:', Object.fromEntries(request.headers.entries()));
 
     // 관리자 토큰 확인
     const authHeader = request.headers.get('authorization');
     if (!authHeader || !authHeader.startsWith('Bearer ')) {
+      console.error('No authorization header or invalid format');
       return NextResponse.json(
         { error: '인증이 필요합니다.' },
         { status: 401 }
@@ -22,9 +29,11 @@ export async function GET(
     }
 
     const token = authHeader.split(' ')[1];
+    console.log('Token:', token.substring(0, 20) + '...');
     
     try {
       const decoded = jwt.verify(token, JWT_SECRET) as any;
+      console.log('Decoded token:', decoded);
       
       // 토큰이 해당 투표의 관리자 토큰인지 확인
       if (decoded.debate_id !== params.id || decoded.type !== 'debate_admin') {

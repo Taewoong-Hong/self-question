@@ -141,6 +141,8 @@ export default function DebateAdminPage() {
     try {
       // localStorage에서 토큰 확인
       const adminToken = localStorage.getItem(`debate_admin_${debateId}`);
+      console.log('Stored admin token:', adminToken ? adminToken.substring(0, 20) + '...' : 'No token');
+      
       if (!adminToken) {
         alert('관리자 인증이 필요합니다. 작성자 페이지에서 먼저 로그인해주세요.');
         return;

@@ -39,10 +39,23 @@ const api = axios.create({
   withCredentials: true, // 쿠키 전송 활성화
 });
 
+// 디버깅을 위한 요청 인터셉터
+api.interceptors.request.use(
+  (config) => {
+    console.log('API Request:', config.method?.toUpperCase(), config.url);
+    console.log('Request Headers:', config.headers);
+    return config;
+  },
+  (error) => {
+    return Promise.reject(error);
+  }
+);
+
 // 에러 처리
 api.interceptors.response.use(
   (response) => response,
   (error) => {
+    console.error('API Error Response:', error.response?.status, error.response?.data);
     if (error.response?.data?.error) {
       throw new Error(error.response.data.error);
     }
