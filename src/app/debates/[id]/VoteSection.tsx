@@ -10,20 +10,27 @@ interface VoteSectionProps {
   isAnonymous: boolean;
   allowComments: boolean;
   publicResults: boolean;
+  voteOptions: Array<{
+    id: string;
+    label: string;
+    vote_count: number;
+  }>;
 }
 
 interface VoteStats {
-  agree_count: number;
-  disagree_count: number;
+  option_stats: Array<{
+    option_id: string;
+    label: string;
+    count: number;
+  }>;
   total_votes: number;
   has_voted: boolean;
 }
 
-export default function VoteSection({ debateId, status, isAnonymous, allowComments, publicResults }: VoteSectionProps) {
+export default function VoteSection({ debateId, status, isAnonymous, allowComments, publicResults, voteOptions }: VoteSectionProps) {
   const [voteStats, setVoteStats] = useState<VoteStats | null>(null);
   const [loading, setLoading] = useState(true);
   const [voting, setVoting] = useState(false);
-  const [voterName, setVoterName] = useState('');
   const [opinion, setOpinion] = useState('');
   const [hasVoted, setHasVoted] = useState(false);
 
@@ -50,18 +57,12 @@ export default function VoteSection({ debateId, status, isAnonymous, allowCommen
     }
   };
 
-  const handleVote = async (choice: 'agree' | 'disagree') => {
-    if (!isAnonymous && !voterName.trim()) {
-      alert('이름을 입력해주세요.');
-      return;
-    }
-
+  const handleVote = async (optionId: string) => {
     try {
       setVoting(true);
       const voteData: VoteDto = {
-        option_ids: [choice],
-        user_nickname: !isAnonymous ? voterName : undefined,
-        is_anonymous: isAnonymous
+        option_ids: [optionId],
+        is_anonymous: true
       };
       
       await debateApi.vote(debateId, voteData);
@@ -70,8 +71,8 @@ export default function VoteSection({ debateId, status, isAnonymous, allowCommen
       if (allowComments && opinion.trim()) {
         await debateApi.addOpinion(debateId, {
           content: opinion,
-          author_nickname: !isAnonymous ? voterName : '익명',
-          is_anonymous: isAnonymous
+          author_nickname: '익명',
+          is_anonymous: true
         });
       }
       
@@ -98,12 +99,12 @@ export default function VoteSection({ debateId, status, isAnonymous, allowCommen
     return null;
   }
 
-  const agreePercentage = voteStats.total_votes > 0 
-    ? (voteStats.agree_count / voteStats.total_votes) * 100 
-    : 0;
-  const disagreePercentage = voteStats.total_votes > 0 
-    ? (voteStats.disagree_count / voteStats.total_votes) * 100 
-    : 0;
+  // Calculate percentages for each option
+  const getOptionPercentage = (optionCount: number) => {
+    return voteStats.total_votes > 0 
+      ? (optionCount / voteStats.total_votes) * 100 
+      : 0;
+  };
 
   // 결과 공개 여부 확인
   const canViewResults = publicResults || hasVoted;
@@ -116,35 +117,36 @@ export default function VoteSection({ debateId, status, isAnonymous, allowCommen
         
         {canViewResults ? (
           <div className="space-y-4">
-            <div>
-              <div className="flex justify-between items-center mb-2">
-                <span className="text-sm sm:text-base font-medium text-zinc-900 dark:text-zinc-100">찬성</span>
-                <span className="text-sm sm:text-base text-surbate">
-                  {voteStats.agree_count}표 ({agreePercentage.toFixed(1)}%)
-                </span>
-              </div>
-              <div className="w-full bg-gray-200 dark:bg-zinc-800 rounded-full h-3 sm:h-4 overflow-hidden">
-                <div 
-                  className="bg-gradient-to-r from-surbate to-brand-600 h-full transition-all duration-500"
-                  style={{ width: `${agreePercentage}%` }}
-                />
-              </div>
-            </div>
-            
-            <div>
-              <div className="flex justify-between items-center mb-2">
-                <span className="text-sm sm:text-base font-medium text-zinc-900 dark:text-zinc-100">반대</span>
-                <span className="text-sm sm:text-base text-red-400">
-                  {voteStats.disagree_count}표 ({disagreePercentage.toFixed(1)}%)
-                </span>
-              </div>
-              <div className="w-full bg-gray-200 dark:bg-zinc-800 rounded-full h-3 sm:h-4 overflow-hidden">
-                <div 
-                  className="bg-red-500 h-full transition-all duration-500"
-                  style={{ width: `${disagreePercentage}%` }}
-                />
-              </div>
-            </div>
+            {voteStats.option_stats.map((option, index) => {
+              const percentage = getOptionPercentage(option.count);
+              const colorClasses = index === 0 
+                ? "bg-gradient-to-r from-surbate to-brand-600" 
+                : index === 1 
+                ? "bg-red-500" 
+                : `bg-gradient-to-r from-blue-400 to-blue-600`;
+              const textColor = index === 0 
+                ? "text-surbate" 
+                : index === 1 
+                ? "text-red-400" 
+                : "text-blue-400";
+              
+              return (
+                <div key={option.option_id}>
+                  <div className="flex justify-between items-center mb-2">
+                    <span className="text-sm sm:text-base font-medium text-zinc-900 dark:text-zinc-100">{option.label}</span>
+                    <span className={`text-sm sm:text-base ${textColor}`}>
+                      {option.count}표 ({percentage.toFixed(1)}%)
+                    </span>
+                  </div>
+                  <div className="w-full bg-gray-200 dark:bg-zinc-800 rounded-full h-3 sm:h-4 overflow-hidden">
+                    <div 
+                      className={`${colorClasses} h-full transition-all duration-500`}
+                      style={{ width: `${percentage}%` }}
+                    />
+                  </div>
+                </div>
+              );
+            })}
             
             <div className="text-center text-xs sm:text-sm text-zinc-600 dark:text-zinc-500 mt-3 sm:mt-4">
               총 {voteStats.total_votes}명 참여
@@ -167,21 +169,6 @@ export default function VoteSection({ debateId, status, isAnonymous, allowCommen
         <div className="bg-white dark:bg-zinc-900/50 backdrop-blur-sm border border-gray-200 dark:border-zinc-800 rounded-xl p-4 sm:p-6 mb-6 shadow-sm dark:shadow-none">
           <h2 className="text-base sm:text-lg font-semibold mb-3 sm:mb-4 text-zinc-900 dark:text-zinc-100">투표하기</h2>
           
-          {!isAnonymous && (
-            <div className="mb-4">
-              <label className="block text-xs sm:text-sm font-medium text-zinc-700 dark:text-zinc-300 mb-1.5 sm:mb-2">
-                이름/별명
-              </label>
-              <input
-                type="text"
-                value={voterName}
-                onChange={(e) => setVoterName(e.target.value)}
-                className="w-full px-3 py-1.5 sm:px-4 sm:py-2 text-sm sm:text-base bg-gray-50 dark:bg-zinc-900 border border-gray-300 dark:border-zinc-800 rounded-lg text-zinc-900 dark:text-zinc-100 placeholder-zinc-400 dark:placeholder-zinc-500 focus:outline-none focus:ring-2 focus:ring-brand-500 focus:border-transparent"
-                placeholder="투표에 표시될 이름을 입력하세요"
-              />
-            </div>
-          )}
-          
           {allowComments && (
             <div className="mb-4">
               <label className="block text-xs sm:text-sm font-medium text-zinc-700 dark:text-zinc-300 mb-1.5 sm:mb-2">
@@ -197,21 +184,25 @@ export default function VoteSection({ debateId, status, isAnonymous, allowCommen
             </div>
           )}
           
-          <div className="flex gap-4">
-            <button
-              onClick={() => handleVote('agree')}
-              disabled={voting}
-              className="flex-1 px-4 py-2 sm:px-6 sm:py-3 text-sm sm:text-base bg-gradient-to-r from-surbate to-brand-600 text-zinc-900 font-semibold rounded-lg hover:from-brand-400 hover:to-brand-600 shadow-sm hover:shadow-lg hover:shadow-surbate/20 transform hover:-translate-y-0.5 transition-all duration-200 disabled:opacity-50 disabled:transform-none disabled:shadow-none"
-            >
-              찬성
-            </button>
-            <button
-              onClick={() => handleVote('disagree')}
-              disabled={voting}
-              className="flex-1 px-4 py-2 sm:px-6 sm:py-3 text-sm sm:text-base bg-red-500 text-white rounded-lg hover:bg-red-600 transition-colors disabled:opacity-50"
-            >
-              반대
-            </button>
+          <div className={`${voteOptions.length > 2 ? 'grid grid-cols-2' : 'flex'} gap-4`}>
+            {voteOptions.map((option, index) => {
+              const buttonClasses = index === 0 
+                ? "bg-gradient-to-r from-surbate to-brand-600 text-zinc-900 font-semibold hover:from-brand-400 hover:to-brand-600 shadow-sm hover:shadow-lg hover:shadow-surbate/20" 
+                : index === 1 
+                ? "bg-red-500 text-white hover:bg-red-600" 
+                : "bg-blue-500 text-white hover:bg-blue-600";
+              
+              return (
+                <button
+                  key={option.id}
+                  onClick={() => handleVote(option.id)}
+                  disabled={voting}
+                  className={`flex-1 px-4 py-2 sm:px-6 sm:py-3 text-sm sm:text-base ${buttonClasses} rounded-lg transform hover:-translate-y-0.5 transition-all duration-200 disabled:opacity-50 disabled:transform-none disabled:shadow-none`}
+                >
+                  {option.label}
+                </button>
+              );
+            })}
           </div>
         </div>
       )}
