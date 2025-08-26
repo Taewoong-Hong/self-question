@@ -13,16 +13,16 @@ interface PageProps {
 export default async function SurveyPage({ params }: PageProps) {
   await connectDB();
   
-  // MongoDB ObjectId 형식 확인
-  if (!mongoose.Types.ObjectId.isValid(params.id)) {
+  // ID 형식 확인 (16자리 hex string)
+  if (!/^[a-f0-9]{16}$/i.test(params.id)) {
     notFound();
   }
 
   const survey = await Survey.findOne({ 
-    _id: params.id, 
+    id: params.id, 
     is_deleted: false 
   })
-  .select('_id title description tags author_nickname created_at status start_at end_at questions')
+  .select('id title description tags author_nickname created_at status start_at end_at questions')
   .lean()
   .exec();
     
@@ -33,9 +33,7 @@ export default async function SurveyPage({ params }: PageProps) {
   // 서버에서 데이터를 가져와서 클라이언트 컴포넌트에 전달
   // 서버에서 데이터를 가져와서 클라이언트 컴포넌트에 전달
   const surveyData = {
-    ...survey,
-    id: survey._id.toString(),
-    _id: undefined
+    ...survey
   };
   
   return <SurveyClient survey={JSON.parse(JSON.stringify(surveyData))} />;
@@ -45,14 +43,14 @@ export default async function SurveyPage({ params }: PageProps) {
 export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
   await connectDB();
   
-  if (!mongoose.Types.ObjectId.isValid(params.id)) {
+  if (!/^[a-f0-9]{16}$/i.test(params.id)) {
     return {
       title: '설문',
       description: '설문에 참여해보세요',
     };
   }
   
-  const survey = await Survey.findOne({ _id: params.id });
+  const survey = await Survey.findOne({ id: params.id });
   
   return {
     title: survey?.title || '설문',
@@ -71,13 +69,13 @@ export async function generateStaticParams() {
   
   // 최근 100개 설문만 SSG로 미리 생성
   const surveys = await Survey.find({ is_deleted: false })
-    .select('_id')
+    .select('id')
     .sort({ created_at: -1 })
     .limit(100)
     .lean();
     
   return surveys.map((survey) => ({
-    id: survey._id.toString(),
+    id: survey.id,
   }));
 }
 

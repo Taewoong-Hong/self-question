@@ -29,8 +29,8 @@ export async function POST(request: NextRequest) {
       );
     }
     
-    // MongoDB ObjectId 형식 확인
-    if (!mongoose.Types.ObjectId.isValid(contentId)) {
+    // ID 형식 확인 (16자리 hex string)
+    if (!/^[a-f0-9]{16}$/i.test(contentId)) {
       return NextResponse.json(
         { error: '잘못된 콘텐츠 ID 형식입니다.' },
         { status: 400 }
@@ -40,9 +40,9 @@ export async function POST(request: NextRequest) {
     // 콘텐츠 존재 여부 확인
     let targetContent;
     if (contentType === 'debate') {
-      targetContent = await Debate.findById(contentId);
+      targetContent = await Debate.findOne({ id: contentId });
     } else if (contentType === 'question') {
-      targetContent = await Question.findById(contentId);
+      targetContent = await Question.findOne({ id: contentId });
     } else {
       return NextResponse.json(
         { error: '잘못된 콘텐츠 타입입니다.' },
@@ -122,8 +122,8 @@ export async function GET(request: NextRequest) {
       );
     }
     
-    // MongoDB ObjectId 형식 확인
-    if (!mongoose.Types.ObjectId.isValid(contentId)) {
+    // ID 형식 확인 (16자리 hex string)
+    if (!/^[a-f0-9]{16}$/i.test(contentId)) {
       return NextResponse.json(
         { error: '잘못된 콘텐츠 ID 형식입니다.' },
         { status: 400 }
