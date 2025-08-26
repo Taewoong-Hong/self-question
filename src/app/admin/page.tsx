@@ -27,6 +27,8 @@ export default function AdminLoginPage() {
     setLoading(true);
     
     try {
+      console.log('Attempting login with:', { username }); // 비밀번호는 로그하지 않음
+      
       const response = await fetch('/api/admin/super-auth', {
         method: 'POST',
         headers: {
@@ -37,6 +39,7 @@ export default function AdminLoginPage() {
       });
       
       const data = await response.json();
+      console.log('Login response:', { status: response.status, data });
       
       if (!response.ok) {
         setError(data.error || '로그인에 실패했습니다');

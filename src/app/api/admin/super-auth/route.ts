@@ -14,6 +14,17 @@ export async function POST(request: NextRequest) {
     const SUPER_ADMIN_USERNAME = process.env.SUPER_ADMIN_USERNAME || 'admin';
     const SUPER_ADMIN_PASSWORD = process.env.SUPER_ADMIN_PASSWORD || 'admin123!';
     
+    // 디버깅을 위한 로그 (프로덕션에서는 제거해야 함)
+    console.log('Login attempt:', { username, providedUsername: username });
+    console.log('Env check:', {
+      hasUsername: !!process.env.SUPER_ADMIN_USERNAME,
+      hasPassword: !!process.env.SUPER_ADMIN_PASSWORD,
+      defaultsUsed: {
+        username: !process.env.SUPER_ADMIN_USERNAME,
+        password: !process.env.SUPER_ADMIN_PASSWORD
+      }
+    });
+    
     if (username !== SUPER_ADMIN_USERNAME || password !== SUPER_ADMIN_PASSWORD) {
       return NextResponse.json(
         { error: '아이디 또는 비밀번호가 일치하지 않습니다' },
