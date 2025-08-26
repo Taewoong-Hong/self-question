@@ -14,7 +14,7 @@ export async function GET(
     
     // 관리자 토큰 확인
     const cookieStore = request.cookies;
-    const adminToken = cookieStore.get(`survey_admin_${params.id}`)?.value;
+    const adminToken = cookieStore.get(`survey_author_${params.id}`)?.value;
     
     if (!adminToken) {
       return NextResponse.json(

@@ -29,7 +29,7 @@ export default async function SurveyResultsPage({ params }: PageProps) {
   
   // 쿠키에서 관리자 토큰 확인
   const adminToken = cookie.split(';')
-    .find(c => c.trim().startsWith(`survey_admin_${params.id}=`))
+    .find(c => c.trim().startsWith(`survey_author_${params.id}=`))
     ?.split('=')[1];
 
   // 관리자 토큰이 없으면 설문 페이지로 리다이렉트
@@ -43,7 +43,7 @@ export default async function SurveyResultsPage({ params }: PageProps) {
   try {
     const resultsResponse = await fetch(`${baseUrl}/api/surveys/${params.id}/results`, {
       headers: {
-        'Cookie': `survey_admin_${params.id}=${adminToken}`
+        'Cookie': `survey_author_${params.id}=${adminToken}`
       },
       cache: 'no-store'
     });
