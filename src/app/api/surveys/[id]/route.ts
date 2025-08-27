@@ -111,9 +111,36 @@ export async function PUT(
     const allowedFields = ['title', 'description', 'tags', 'author_nickname', 'questions', 'settings', 'welcome_screen', 'thankyou_screen', 'start_at', 'end_at', 'public_results'];
     allowedFields.forEach(field => {
       if (body[field] !== undefined) {
-        (survey as any)[field] = body[field];
+        // 날짜 필드 특별 처리
+        if (field === 'start_at' || field === 'end_at') {
+          (survey as any)[field] = body[field] ? new Date(body[field]) : undefined;
+        }
+        // questions 배열 처리 (order 필드 추가)
+        else if (field === 'questions') {
+          (survey as any)[field] = body[field].map((q: any, index: number) => ({
+            ...q,
+            order: index
+          }));
+        }
+        else {
+          (survey as any)[field] = body[field];
+        }
       }
     });
+    
+    // MongoDB가 중첩된 객체/배열 변경을 인식하도록 markModified 호출
+    if (body.questions) {
+      survey.markModified('questions');
+    }
+    if (body.settings) {
+      survey.markModified('settings');
+    }
+    if (body.welcome_screen) {
+      survey.markModified('welcome_screen');
+    }
+    if (body.thankyou_screen) {
+      survey.markModified('thankyou_screen');
+    }
     
     await survey.save();
     

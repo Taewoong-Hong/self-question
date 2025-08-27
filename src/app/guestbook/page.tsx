@@ -105,7 +105,7 @@ export default function GuestbookPage() {
             </div>
             <button
               onClick={() => router.push('/guestbook/write')}
-              className="w-12 h-12 border-2 border-gray-300 dark:border-zinc-700 text-zinc-700 dark:text-zinc-100 rounded-full hover:border-gray-400 dark:hover:border-zinc-500 hover:bg-gray-100 dark:hover:bg-zinc-800/50 transform hover:-translate-y-0.5 transition-all duration-200 flex items-center justify-center"
+              className="p-2 text-zinc-600 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-zinc-100 transform hover:-translate-y-0.5 transition-all duration-200"
               title="메모 남기기"
             >
               <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">

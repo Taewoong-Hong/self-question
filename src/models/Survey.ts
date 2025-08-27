@@ -435,7 +435,8 @@ surveySchema.methods.canReceiveResponse = function(): boolean {
 };
 
 surveySchema.methods.canEdit = function(): boolean {
-  return this.is_editable && !this.first_response_at;
+  // response_count가 0이고 첫 응답이 없을 때만 수정 가능
+  return this.is_editable && this.stats.response_count === 0 && !this.first_response_at;
 };
 
 // Virtual fields
