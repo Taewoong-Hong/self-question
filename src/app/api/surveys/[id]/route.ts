@@ -129,11 +129,19 @@ export async function PUT(
         if (field === 'start_at' || field === 'end_at') {
           (survey as any)[field] = body[field] ? new Date(body[field]) : undefined;
         }
-        // questions 배열 처리 (order 필드 추가)
+        // questions 배열 처리 (order 필드 추가 및 중첩 구조 보존)
         else if (field === 'questions') {
           (survey as any)[field] = body[field].map((q: any, index: number) => ({
             ...q,
-            order: index
+            order: index,
+            // properties와 choices의 is_other 필드 보존을 위해 깊은 복사
+            properties: q.properties ? {
+              ...q.properties,
+              choices: q.properties.choices ? q.properties.choices.map((c: any) => ({
+                ...c,
+                is_other: c.is_other || false
+              })) : []
+            } : undefined
           }));
         }
         else {
@@ -162,7 +170,13 @@ export async function PUT(
       id: survey.id,
       title: survey.title,
       isAdmin: isAdmin,
-      updatedFields: Object.keys(body)
+      updatedFields: Object.keys(body),
+      // 직접입력 필드 확인
+      questionsWithOther: survey.questions?.map((q: any) => ({
+        title: q.title,
+        type: q.type,
+        otherOptions: q.properties?.choices?.filter((c: any) => c.is_other).map((c: any) => c.label)
+      }))
     });
     
     return NextResponse.json({

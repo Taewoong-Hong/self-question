@@ -53,6 +53,19 @@ export default function EditSurveyPage() {
 
       // 수정 가능한 경우 폼 데이터 설정
       setCanEdit(true);
+      
+      // 직접입력 옵션 확인 로그
+      console.log('Survey questions with other options:', 
+        survey.questions?.map((q: any) => ({
+          title: q.title,
+          type: q.type,
+          otherOptions: q.properties?.choices?.filter((c: any) => c.is_other).map((c: any) => ({
+            label: c.label,
+            is_other: c.is_other
+          }))
+        }))
+      );
+      
       setFormData({
         title: survey.title,
         description: survey.description || '',
