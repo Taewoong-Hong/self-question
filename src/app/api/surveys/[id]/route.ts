@@ -33,8 +33,14 @@ export async function GET(
                      request.headers.get('x-real-ip') || 
                      'unknown';
     
+    // Check if admin
+    const { cookies } = await import('next/headers');
+    const cookieStore = cookies();
+    const adminCookie = cookieStore.get('admin_token');
+    const isAdmin = !!adminCookie;
+    
     let hasResponded = false;
-    if (clientIp && clientIp !== 'unknown') {
+    if (clientIp && clientIp !== 'unknown' && !isAdmin) {
       const ipHash = crypto
         .createHash('sha256')
         .update(clientIp + (process.env.IP_SALT || 'default-salt'))

@@ -40,9 +40,11 @@ export async function POST(
       );
     }
     
-    // Check if admin IP (admin IPs can vote multiple times)
-    const adminIps = process.env.ADMIN_IPS?.split(',').map(ip => ip.trim()) || [];
-    const isAdminIp = adminIps.includes(clientIp);
+    // Check if admin (admins can vote multiple times)
+    const { cookies } = await import('next/headers');
+    const cookieStore = cookies();
+    const adminCookie = cookieStore.get('admin_token');
+    const isAdmin = !!adminCookie;
     
     // 상태 업데이트 먼저 수행
     debate.updateStatus();
@@ -57,15 +59,15 @@ export async function POST(
       is_deleted: debate.is_deleted,
       voter_ips_count: debate.voter_ips.length,
       voter_ips: debate.voter_ips,
-      isAdminIp,
+      isAdmin,
       now: new Date(),
       start_at: debate.start_at,
       end_at: debate.end_at,
       settings: debate.settings
     });
     
-    // Check if can vote (skip for admin IPs)
-    if (!isAdminIp && !debate.canVote(ipHash)) {
+    // Check if can vote (skip for admins)
+    if (!isAdmin && !debate.canVote(ipHash)) {
       console.log('Vote blocked - canVote returned false');
       return NextResponse.json(
         { error: '이미 투표하셨거나 투표할 수 없는 상태입니다' },

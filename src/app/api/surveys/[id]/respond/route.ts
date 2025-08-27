@@ -44,12 +44,14 @@ export async function POST(
       );
     }
     
-    // Check if admin IP (admin IPs can respond multiple times)
-    const adminIps = process.env.ADMIN_IPS?.split(',').map(ip => ip.trim()) || [];
-    const isAdminIp = adminIps.includes(clientIp);
+    // Check if admin (admins can respond multiple times)
+    const { cookies } = await import('next/headers');
+    const cookieStore = cookies();
+    const adminCookie = cookieStore.get('admin_token');
+    const isAdmin = !!adminCookie;
     
-    // Check for duplicate response (skip for admin IPs)
-    if (!isAdminIp) {
+    // Check for duplicate response (skip for admins)
+    if (!isAdmin) {
       const existingResponse = await Response.findOne({
         survey_id: survey.id,
         respondent_ip_hash: ipHash
