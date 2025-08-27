@@ -39,6 +39,7 @@ export interface Survey {
     language?: string;
   };
   is_closed?: boolean;
+  public_results?: boolean;
 }
 
 export type QuestionType = 'single_choice' | 'multiple_choice' | 'short_text' | 'long_text' | 'rating';

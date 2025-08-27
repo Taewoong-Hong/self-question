@@ -277,6 +277,28 @@ export default function SurveyAdminPage() {
           </div>
         </div>
 
+        {/* 설문 수정 - 응답자가 0명일 때만 표시 */}
+        {survey.stats?.response_count === 0 && (
+          <div className="bg-white dark:bg-zinc-900/50 backdrop-blur-sm border border-gray-200 dark:border-zinc-800 rounded-xl p-6 shadow-sm dark:shadow-none">
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-zinc-700 dark:text-zinc-300">
+                  설문 수정
+                </p>
+                <p className="text-sm text-zinc-600 dark:text-zinc-500 mt-1">
+                  아직 응답자가 없어 설문 내용을 수정할 수 있습니다.
+                </p>
+              </div>
+              <Link
+                href={`/surveys/${surveyId}/edit`}
+                className="px-4 py-2 bg-gradient-to-r from-surbate to-brand-600 text-zinc-900 font-semibold rounded-lg hover:from-brand-400 hover:to-brand-600 shadow-sm hover:shadow-lg hover:shadow-surbate/20 transform hover:-translate-y-0.5 transition-all duration-200"
+              >
+                설문 수정
+              </Link>
+            </div>
+          </div>
+        )}
+
         {/* 결과 및 데이터 */}
         <div className="bg-white dark:bg-zinc-900/50 backdrop-blur-sm border border-gray-200 dark:border-zinc-800 rounded-xl p-6 shadow-sm dark:shadow-none">
           <h2 className="text-lg font-semibold mb-4 text-zinc-900 dark:text-zinc-100">결과 및 데이터</h2>

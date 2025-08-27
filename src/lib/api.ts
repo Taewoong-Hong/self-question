@@ -274,8 +274,10 @@ export const surveyApi = {
   },
 
   // 설문 수정 (관리자)
-  update: async (surveyId: string, data: any, adminToken?: string) => {
-    const response = await api.put(`/surveys/${surveyId}`, data);
+  update: async (surveyId: string, data: SurveyCreateData, adminToken?: string) => {
+    const response = await api.put(`/surveys/${surveyId}`, data, {
+      headers: adminToken ? { 'Authorization': `Bearer ${adminToken}` } : {}
+    });
     return response.data;
   },
 
