@@ -100,6 +100,11 @@ export default function EditDebatePage() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     
+    // 이미 처리 중이면 무시
+    if (loading) {
+      return;
+    }
+    
     if (!formData) return;
 
     if (!formData.title) {

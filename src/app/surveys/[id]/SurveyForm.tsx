@@ -106,6 +106,11 @@ export default function SurveyForm({ surveyId, questions, onComplete }: SurveyFo
   };
 
   const handleSubmit = async () => {
+    // 이미 처리 중이면 무시
+    if (submitting) {
+      return;
+    }
+    
     // 표시된 필수 질문만 검증
     let isValid = true;
     for (const question of visibleQuestions) {

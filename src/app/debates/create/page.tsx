@@ -38,6 +38,11 @@ export default function CreateDebatePage() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     
+    // 이미 처리 중이면 무시
+    if (loading) {
+      return;
+    }
+    
     if (!formData.title || !formData.admin_password || !formData.author_nickname) {
       toast.error('제목, 작성자 닉네임, 비밀번호는 필수입니다.');
       return;

@@ -131,18 +131,43 @@ export async function PUT(
         }
         // questions 배열 처리 (order 필드 추가 및 중첩 구조 보존)
         else if (field === 'questions') {
-          (survey as any)[field] = body[field].map((q: any, index: number) => ({
-            ...q,
-            order: index,
-            // properties와 choices의 is_other 필드 보존을 위해 깊은 복사
-            properties: q.properties ? {
-              ...q.properties,
-              choices: q.properties.choices ? q.properties.choices.map((c: any) => ({
-                ...c,
-                is_other: c.is_other || false
-              })) : []
-            } : undefined
-          }));
+          console.log('Updating questions:', JSON.stringify(body[field], null, 2));
+          
+          // 기존 questions의 _id를 보존하면서 업데이트
+          const updatedQuestions = body[field].map((q: any, index: number) => {
+            const baseQuestion = {
+              id: q.id,
+              title: q.title,
+              type: q.type,
+              required: q.required,
+              order: index,
+              // properties와 choices의 is_other 필드 보존을 위해 깊은 복사
+              properties: q.properties ? {
+                ...q.properties,
+                choices: q.properties.choices ? q.properties.choices.map((c: any) => ({
+                  id: c.id,
+                  label: c.label,
+                  is_other: c.is_other || false,
+                  ...(c.attachment && { attachment: c.attachment })
+                })) : [],
+                ...(q.properties.max_length && { max_length: q.properties.max_length }),
+                ...(q.properties.min_length && { min_length: q.properties.min_length }),
+                ...(q.properties.max_selection && { max_selection: q.properties.max_selection }),
+                ...(q.properties.min_selection && { min_selection: q.properties.min_selection }),
+                ...(q.properties.rating_scale && { rating_scale: q.properties.rating_scale }),
+                ...(q.properties.labels && { labels: q.properties.labels })
+              } : undefined,
+              ...(q.validations && { validations: q.validations })
+            };
+            
+            // _id가 있으면 보존 (MongoDB 내부 ID)
+            if (q._id) {
+              return { _id: q._id, ...baseQuestion };
+            }
+            return baseQuestion;
+          });
+          
+          (survey as any)[field] = updatedQuestions;
         }
         else {
           (survey as any)[field] = body[field];
@@ -173,10 +198,13 @@ export async function PUT(
       updatedFields: Object.keys(body),
       // 직접입력 필드 확인
       questionsWithOther: survey.questions?.map((q: any) => ({
+        _id: q._id,
+        id: q.id,
         title: q.title,
         type: q.type,
         otherOptions: q.properties?.choices?.filter((c: any) => c.is_other).map((c: any) => c.label)
-      }))
+      })),
+      totalQuestions: survey.questions?.length
     });
     
     return NextResponse.json({

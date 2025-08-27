@@ -71,7 +71,10 @@ export default function EditSurveyPage() {
         description: survey.description || '',
         start_at: survey.start_at ? new Date(survey.start_at).toISOString() : new Date().toISOString(),
         end_at: survey.end_at ? new Date(survey.end_at).toISOString() : new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString(),
-        questions: survey.questions,
+        questions: survey.questions.map((q: any) => ({
+          ...q,
+          _id: q._id // MongoDB _id 보존
+        })),
         author_nickname: survey.author_nickname || '',
         admin_password: '', // 비밀번호는 보안상 표시하지 않음
         tags: survey.tags || [],
@@ -105,6 +108,11 @@ export default function EditSurveyPage() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    
+    // 이미 처리 중이면 무시
+    if (loading) {
+      return;
+    }
     
     if (!formData) return;
 

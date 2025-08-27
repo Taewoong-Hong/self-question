@@ -58,6 +58,11 @@ export default function CreateSurveyPage() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     
+    // 이미 처리 중이면 무시
+    if (loading) {
+      return;
+    }
+    
     if (!formData.title || !formData.admin_password) {
       toast.error('제목과 작성자 비밀번호는 필수입니다.');
       return;
