@@ -21,6 +21,7 @@ interface DebateEditData {
   vote_options: VoteOption[];
   tags?: string[];
   public_results?: boolean;
+  show_results_before_end?: boolean;
   settings?: {
     allow_multiple_choice: boolean;
     max_votes_per_ip: number;
@@ -76,14 +77,15 @@ export default function EditDebatePage() {
         start_at: debate.start_at ? new Date(debate.start_at).toISOString() : undefined,
         end_at: debate.end_at ? new Date(debate.end_at).toISOString() : undefined,
         author_nickname: debate.author_nickname || '',
-        is_anonymous: debate.is_anonymous,
-        allow_comments: debate.allow_comments,
+        is_anonymous: debate.settings?.allow_anonymous_vote || true,
+        allow_comments: debate.settings?.allow_opinion || false,
         vote_options: debate.vote_options,
         tags: debate.tags || [],
-        public_results: debate.public_results || false,
-        settings: debate.settings || {
-          allow_multiple_choice: false,
-          max_votes_per_ip: 1
+        public_results: false, // 공개 설정은 별도로 관리될 수 있음
+        show_results_before_end: debate.settings?.show_results_before_end || false,
+        settings: {
+          allow_multiple_choice: debate.settings?.allow_multiple_choice || false,
+          max_votes_per_ip: debate.settings?.max_votes_per_ip || 1
         }
       });
     } catch (error) {
@@ -118,9 +120,20 @@ export default function EditDebatePage() {
       setLoading(true);
       
       // localStorage에서 토큰 가져오기
-      const authorToken = localStorage.getItem(`debate_author_${debateId}`) || adminToken;
+      const authorToken = localStorage.getItem(`debate_author_${debateId}`) || adminToken || '';
       
-      await debateApi.update(debateId, formData, authorToken);
+      // settings에 값들을 포함시켜서 전송
+      const updateData = {
+        ...formData,
+        settings: {
+          ...formData.settings,
+          allow_anonymous_vote: formData.is_anonymous,
+          allow_opinion: formData.allow_comments,
+          show_results_before_end: formData.show_results_before_end || false
+        }
+      };
+      
+      await debateApi.update(debateId, updateData, authorToken);
       
       toast.success('투표가 수정되었습니다!');
       router.push(`/debates/${debateId}/admin`);
@@ -136,7 +149,12 @@ export default function EditDebatePage() {
     if (!formData) return;
     setFormData({
       ...formData,
-      vote_options: [...formData.vote_options, { id: `option-${Date.now()}`, label: '', vote_count: 0 }]
+      vote_options: [...formData.vote_options, { 
+        id: `option-${Date.now()}`, 
+        label: '', 
+        vote_count: 0,
+        order: formData.vote_options.length 
+      }]
     });
   };
 
@@ -151,7 +169,7 @@ export default function EditDebatePage() {
   const handleOptionChange = (index: number, value: string) => {
     if (!formData) return;
     const newOptions = [...formData.vote_options];
-    newOptions[index] = { ...newOptions[index], label: value };
+    newOptions[index] = { ...newOptions[index], label: value, order: index };
     setFormData({ ...formData, vote_options: newOptions });
   };
 
@@ -290,16 +308,29 @@ export default function EditDebatePage() {
         </div>
 
         {/* 결과 공개 설정 */}
-        <div>
-          <label className="flex items-center">
-            <input
-              type="checkbox"
-              checked={formData.public_results || false}
-              onChange={(e) => setFormData({ ...formData, public_results: e.target.checked })}
-              className="rounded text-surbate bg-gray-50 dark:bg-zinc-900 border-gray-300 dark:border-zinc-700 focus:ring-surbate"
-            />
-            <span className="ml-2 text-zinc-700 dark:text-zinc-300">결과 공개 (미체크시 작성자만 결과 확인 가능)</span>
-          </label>
+        <div className="space-y-2">
+          <div>
+            <label className="flex items-center">
+              <input
+                type="checkbox"
+                checked={formData.public_results || false}
+                onChange={(e) => setFormData({ ...formData, public_results: e.target.checked })}
+                className="rounded text-surbate bg-gray-50 dark:bg-zinc-900 border-gray-300 dark:border-zinc-700 focus:ring-surbate"
+              />
+              <span className="ml-2 text-zinc-700 dark:text-zinc-300">결과 공개 (미체크시 작성자만 결과 확인 가능)</span>
+            </label>
+          </div>
+          <div>
+            <label className="flex items-center">
+              <input
+                type="checkbox"
+                checked={formData.show_results_before_end || false}
+                onChange={(e) => setFormData({ ...formData, show_results_before_end: e.target.checked })}
+                className="rounded text-surbate bg-gray-50 dark:bg-zinc-900 border-gray-300 dark:border-zinc-700 focus:ring-surbate"
+              />
+              <span className="ml-2 text-zinc-700 dark:text-zinc-300">투표 종료 전 결과 공개 (투표한 사람만 중간 결과 확인 가능)</span>
+            </label>
+          </div>
         </div>
 
         {/* 시작/종료 시간 */}
