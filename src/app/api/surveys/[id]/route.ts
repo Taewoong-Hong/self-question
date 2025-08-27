@@ -97,19 +97,21 @@ export async function PUT(
       );
     }
     
-    // Validate admin token
-    if (!survey.validateAdminToken(authToken)) {
-      return NextResponse.json(
-        { error: '유효하지 않은 인증 토큰입니다' },
-        { status: 401 }
-      );
-    }
-    
     // Check if admin
     const { cookies } = await import('next/headers');
     const cookieStore = cookies();
     const adminCookie = cookieStore.get('admin_token');
     const isAdmin = !!adminCookie;
+    
+    // Validate token - 관리자가 아닌 경우에만 설문 작성자 토큰 검증
+    if (!isAdmin) {
+      if (!survey.validateAdminToken(authToken)) {
+        return NextResponse.json(
+          { error: '유효하지 않은 인증 토큰입니다' },
+          { status: 401 }
+        );
+      }
+    }
     
     // Check if editable (관리자는 항상 수정 가능)
     if (!isAdmin && !survey.canEdit()) {
@@ -155,6 +157,13 @@ export async function PUT(
     }
     
     await survey.save();
+    
+    console.log('Survey updated:', {
+      id: survey.id,
+      title: survey.title,
+      isAdmin: isAdmin,
+      updatedFields: Object.keys(body)
+    });
     
     return NextResponse.json({
       message: '설문이 수정되었습니다',

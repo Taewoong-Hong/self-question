@@ -103,17 +103,31 @@ export default function EditSurveyPage() {
     try {
       setLoading(true);
       
-      // localStorage에서 토큰 가져오기
-      const token = localStorage.getItem(`survey_author_${surveyId}`);
+      // localStorage에서 토큰 가져오기 (관리자 또는 작성자)
+      const adminToken = localStorage.getItem('admin_token');
+      const authorToken = localStorage.getItem(`survey_author_${surveyId}`);
+      const token = authorToken || adminToken;
+      
       if (!token) {
-        toast.error('작성자 인증이 필요합니다.');
+        toast.error('인증이 필요합니다.');
         router.push(`/surveys/${surveyId}/admin`);
         return;
       }
 
+      console.log('Updating survey with:', {
+        surveyId,
+        formData,
+        token: token ? 'exists' : 'missing',
+        isAdmin: !!localStorage.getItem('admin_token')
+      });
+      
       await surveyApi.update(surveyId, formData, token);
       toast.success('설문이 수정되었습니다.');
-      router.push(`/surveys/${surveyId}/admin`);
+      
+      // 잠시 대기 후 이동 (DB 반영 시간 고려)
+      setTimeout(() => {
+        router.push(`/surveys/${surveyId}`);
+      }, 500);
     } catch (error: any) {
       console.error('설문 수정 실패:', error);
       toast.error(error.message || '설문 수정에 실패했습니다.');

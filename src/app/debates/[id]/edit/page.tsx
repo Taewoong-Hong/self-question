@@ -133,10 +133,21 @@ export default function EditDebatePage() {
         }
       };
       
+      console.log('Updating debate with:', {
+        debateId,
+        updateData,
+        token: authorToken ? 'exists' : 'missing',
+        isAdmin: !!localStorage.getItem('admin_token')
+      });
+      
       await debateApi.update(debateId, updateData, authorToken);
       
       toast.success('투표가 수정되었습니다!');
-      router.push(`/debates/${debateId}/admin`);
+      
+      // 잠시 대기 후 이동 (DB 반영 시간 고려)
+      setTimeout(() => {
+        router.push(`/debates/${debateId}`);
+      }, 500);
     } catch (error: any) {
       console.error('투표 수정 실패:', error);
       toast.error(error.message || '투표 수정에 실패했습니다.');
