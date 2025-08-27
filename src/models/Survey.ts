@@ -6,6 +6,7 @@ import crypto from 'crypto';
 export interface IChoice {
   id: string;
   label: string;
+  is_other?: boolean;
   attachment?: {
     type: 'image';
     href: string;
@@ -164,6 +165,10 @@ const questionSchema = new Schema<IQuestion>({
     choices: [{
       id: String,
       label: String,
+      is_other: {
+        type: Boolean,
+        default: false
+      },
       attachment: {
         type: {
           type: String,

@@ -233,8 +233,8 @@ export default function CreateDebatePage() {
                     setFormData({
                       ...formData,
                       vote_options: [
-                        { label: '선택지 1' },
-                        { label: '선택지 2' }
+                        { label: '' },
+                        { label: '' }
                       ]
                     });
                   }}
@@ -260,7 +260,7 @@ export default function CreateDebatePage() {
                   className={`flex-1 px-4 py-2 border rounded-lg text-zinc-900 dark:text-zinc-100 ${
                     voteType === 'yesno' 
                       ? 'bg-gray-100 dark:bg-zinc-800 border-zinc-300 dark:border-zinc-800' 
-                      : 'bg-white dark:bg-zinc-900 border-zinc-300 dark:border-zinc-700 focus:outline-none focus:ring-2 focus:ring-surbate'
+                      : 'bg-white dark:bg-zinc-900 border-zinc-300 dark:border-zinc-700 focus:outline-none focus:ring-2 focus:ring-surbate placeholder-zinc-400 dark:placeholder-zinc-600'
                   }`}
                   placeholder={`선택지 ${index + 1}`}
                 />
@@ -286,7 +286,7 @@ export default function CreateDebatePage() {
             <button
               type="button"
               onClick={() => {
-                const newOptions = [...formData.vote_options, { label: `선택지 ${formData.vote_options.length + 1}` }];
+                const newOptions = [...formData.vote_options, { label: '' }];
                 setFormData({ ...formData, vote_options: newOptions });
               }}
               className="mt-3 w-full py-2 border-2 border-dashed border-zinc-300 dark:border-zinc-700 rounded-lg text-zinc-600 dark:text-zinc-400 hover:border-surbate hover:text-surbate transition-colors"
