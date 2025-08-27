@@ -80,7 +80,7 @@ export default function DebateClient({ debate }: DebateProps) {
           <div className="flex gap-2 flex-shrink-0">
             <Link
               href="/debates"
-              className="p-2 bg-gray-200 dark:bg-zinc-800 text-zinc-700 dark:text-zinc-100 rounded-lg hover:bg-gray-300 dark:hover:bg-zinc-700 transition-colors"
+              className="p-2 text-zinc-600 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-zinc-100 transition-colors"
               title="투표 목록으로"
             >
               <svg 
@@ -96,7 +96,7 @@ export default function DebateClient({ debate }: DebateProps) {
             </Link>
             <Link
               href={`/debates/${debate.id}/admin`}
-              className="p-2 bg-gray-200 dark:bg-zinc-800 text-zinc-700 dark:text-zinc-100 rounded-lg hover:bg-gray-300 dark:hover:bg-zinc-700 transition-colors"
+              className="p-2 text-zinc-600 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-zinc-100 transition-colors"
               title="투표 관리"
             >
               <svg 

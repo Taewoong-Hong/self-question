@@ -261,7 +261,7 @@ export default function DebateAdminPage() {
       {/* 우측 상단 뒤로가기 버튼 */}
       <Link
         href={`/debates/${debateId}`}
-        className="absolute right-0 top-0 p-2 bg-gray-200 dark:bg-zinc-800 text-zinc-700 dark:text-zinc-100 rounded-lg hover:bg-gray-300 dark:hover:bg-zinc-700 transition-colors"
+        className="absolute right-0 top-0 p-2 text-zinc-600 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-zinc-100 transition-colors"
         title="투표로 돌아가기"
       >
         <svg 
@@ -408,7 +408,7 @@ export default function DebateAdminPage() {
                     navigator.clipboard.writeText(`${window.location.origin}/debates/${debateId}`);
                     toast.success('링크가 복사되었습니다.');
                   }}
-                  className="p-2 bg-gray-200 dark:bg-zinc-800 text-zinc-700 dark:text-zinc-100 rounded-lg hover:bg-gray-300 dark:hover:bg-zinc-700 transition-colors"
+                  className="p-2 text-zinc-600 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-zinc-100 transition-colors"
                   title="링크 복사"
                 >
                   <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -433,7 +433,7 @@ export default function DebateAdminPage() {
                     navigator.clipboard.writeText(`${window.location.origin}/debates/${debateId}/admin`);
                     toast.success('링크가 복사되었습니다.');
                   }}
-                  className="p-2 bg-gray-200 dark:bg-zinc-800 text-zinc-700 dark:text-zinc-100 rounded-lg hover:bg-gray-300 dark:hover:bg-zinc-700 transition-colors"
+                  className="p-2 text-zinc-600 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-zinc-100 transition-colors"
                   title="링크 복사"
                 >
                   <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
