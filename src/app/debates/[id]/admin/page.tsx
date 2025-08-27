@@ -331,6 +331,38 @@ export default function DebateAdminPage() {
           </div>
         </div>
 
+        {/* 투표 수정 - 투표자가 없을 때만 표시 (관리자는 항상 표시) */}
+        {(() => {
+          const adminToken = localStorage.getItem('admin_token');
+          const isAdmin = !!adminToken;
+          const hasVotes = debate.stats?.total_votes > 0;
+          
+          if (isAdmin || !hasVotes) {
+            return (
+              <div className="bg-white dark:bg-zinc-900/50 backdrop-blur-sm border border-gray-200 dark:border-zinc-800 rounded-xl p-4 sm:p-6 shadow-sm dark:shadow-none">
+                <div className="flex items-center justify-between">
+                  <div>
+                    <p className="text-zinc-700 dark:text-zinc-300">
+                      투표 수정
+                    </p>
+                    <p className="text-xs sm:text-sm text-zinc-600 dark:text-zinc-500 mt-1">
+                      {isAdmin ? '관리자는 언제든지 투표를 수정할 수 있습니다.' : 
+                       '아직 투표자가 없어 투표 내용을 수정할 수 있습니다.'}
+                    </p>
+                  </div>
+                  <Link
+                    href={`/debates/${debateId}/edit`}
+                    className="px-3 py-1.5 sm:px-4 sm:py-2 bg-gradient-to-r from-surbate to-brand-600 text-zinc-900 font-semibold rounded-lg hover:from-brand-400 hover:to-brand-600 shadow-sm hover:shadow-lg hover:shadow-surbate/20 transform hover:-translate-y-0.5 transition-all duration-200"
+                  >
+                    투표 수정
+                  </Link>
+                </div>
+              </div>
+            );
+          }
+          return null;
+        })()}
+
         {/* 상태 관리 */}
         <div className="bg-white dark:bg-zinc-900/50 backdrop-blur-sm border border-gray-200 dark:border-zinc-800 rounded-xl p-4 sm:p-6 shadow-sm dark:shadow-none">
           <h2 className="text-base sm:text-lg font-semibold mb-3 sm:mb-4 text-zinc-900 dark:text-zinc-100">투표 상태 관리</h2>

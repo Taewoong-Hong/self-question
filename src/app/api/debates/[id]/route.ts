@@ -95,6 +95,115 @@ export async function GET(
   }
 }
 
+export async function PUT(
+  request: NextRequest,
+  { params }: { params: { id: string } }
+) {
+  try {
+    await connectDB();
+    
+    const body = await request.json();
+    
+    // 쿠키에서 인증 토큰 확인
+    const { cookies } = await import('next/headers');
+    const cookieStore = cookies();
+    
+    // 작성자 쿠키 확인
+    const authorCookie = cookieStore.get(`debate_author_${params.id}`);
+    const adminCookie = cookieStore.get('admin_token');
+    
+    if (!authorCookie && !adminCookie) {
+      return NextResponse.json(
+        { error: '인증이 필요합니다' },
+        { status: 401 }
+      );
+    }
+    
+    const debate = await Debate.findOne({ id: params.id });
+    
+    if (!debate) {
+      return NextResponse.json(
+        { error: '투표를 찾을 수 없습니다' },
+        { status: 404 }
+      );
+    }
+    
+    // 작성자 쿠키 검증 (관리자가 아닌 경우)
+    if (authorCookie && !adminCookie) {
+      const jwt = require('jsonwebtoken');
+      let decoded;
+      try {
+        decoded = jwt.verify(authorCookie.value, process.env.JWT_SECRET || 'your-secret-key');
+      } catch (err) {
+        return NextResponse.json(
+          { error: '유효하지 않은 토큰입니다' },
+          { status: 401 }
+        );
+      }
+      
+      if (decoded.debate_id !== params.id || decoded.type !== 'debate_author') {
+        return NextResponse.json(
+          { error: '권한이 없습니다' },
+          { status: 403 }
+        );
+      }
+    }
+    
+    // Check if admin
+    const isAdmin = !!adminCookie;
+    
+    // Check if editable (관리자는 항상 수정 가능)
+    if (!isAdmin && debate.stats.total_votes > 0) {
+      return NextResponse.json(
+        { error: '투표가 시작된 후에는 수정할 수 없습니다' },
+        { status: 403 }
+      );
+    }
+    
+    // Update allowed fields
+    const allowedFields = ['title', 'description', 'tags', 'author_nickname', 'start_at', 'end_at', 
+                          'is_anonymous', 'allow_comments', 'public_results', 'vote_options', 'settings'];
+    
+    allowedFields.forEach(field => {
+      if (body[field] !== undefined) {
+        // 날짜 필드 특별 처리
+        if (field === 'start_at' || field === 'end_at') {
+          (debate as any)[field] = body[field] ? new Date(body[field]) : undefined;
+        }
+        else {
+          (debate as any)[field] = body[field];
+        }
+      }
+    });
+    
+    // MongoDB가 중첩된 객체/배열 변경을 인식하도록 markModified 호출
+    if (body.vote_options) {
+      debate.markModified('vote_options');
+    }
+    if (body.settings) {
+      debate.markModified('settings');
+    }
+    
+    await debate.save();
+    
+    return NextResponse.json({
+      message: '투표가 수정되었습니다',
+      debate: {
+        id: debate.id,
+        title: debate.title,
+        updated_at: debate.updated_at
+      }
+    });
+    
+  } catch (error: any) {
+    console.error('Debate update error:', error);
+    return NextResponse.json(
+      { error: error.message || 'Internal server error' },
+      { status: 500 }
+    );
+  }
+}
+
 export async function DELETE(
   request: NextRequest,
   { params }: { params: { id: string } }

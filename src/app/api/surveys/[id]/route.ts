@@ -105,8 +105,14 @@ export async function PUT(
       );
     }
     
-    // Check if editable
-    if (!survey.canEdit()) {
+    // Check if admin
+    const { cookies } = await import('next/headers');
+    const cookieStore = cookies();
+    const adminCookie = cookieStore.get('admin_token');
+    const isAdmin = !!adminCookie;
+    
+    // Check if editable (관리자는 항상 수정 가능)
+    if (!isAdmin && !survey.canEdit()) {
       return NextResponse.json(
         { error: '응답을 받은 후에는 설문을 수정할 수 없습니다' },
         { status: 403 }

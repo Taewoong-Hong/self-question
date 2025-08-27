@@ -26,9 +26,15 @@ export default function EditSurveyPage() {
 
   const checkEditability = async () => {
     try {
-      // localStorage에서 토큰 확인
+      // 관리자 권한 확인
+      const adminToken = localStorage.getItem('admin_token');
+      const isAdmin = !!adminToken;
+      
+      // localStorage에서 작성자 토큰 확인
       const savedToken = localStorage.getItem(`survey_author_${surveyId}`);
-      if (!savedToken) {
+      
+      // 관리자도 작성자도 아니면 리다이렉트
+      if (!savedToken && !isAdmin) {
         toast.error('작성자 인증이 필요합니다.');
         router.push(`/surveys/${surveyId}/admin`);
         return;
@@ -38,8 +44,8 @@ export default function EditSurveyPage() {
       const response = await surveyApi.get(surveyId);
       const survey = response.survey;
 
-      // 응답자가 있는지 확인
-      if (survey.stats?.response_count > 0) {
+      // 관리자가 아닌 경우에만 응답자 수 체크
+      if (!isAdmin && survey.stats?.response_count > 0) {
         toast.error('응답자가 있는 설문은 수정할 수 없습니다.');
         router.push(`/surveys/${surveyId}/admin`);
         return;
