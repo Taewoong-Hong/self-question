@@ -79,5 +79,5 @@ export async function generateStaticParams() {
   }));
 }
 
-// 1시간마다 재생성
-export const revalidate = 3600;
+// 5분마다 재생성 (수정사항 빠르게 반영)
+export const revalidate = 300;

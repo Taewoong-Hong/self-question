@@ -2,8 +2,6 @@
 
 import { useState } from 'react';
 import Link from 'next/link';
-import { formatDistanceToNow } from 'date-fns';
-import { ko } from 'date-fns/locale';
 import {
   VictoryBar,
   VictoryChart,
@@ -135,17 +133,26 @@ export default function PublicResultsClient({ survey, results }: PublicResultsCl
             <h1 className="text-xl sm:text-2xl lg:text-3xl font-bold mb-2 text-zinc-900 dark:text-zinc-100">{survey.title} - 결과 통계</h1>
             <div className="flex items-center gap-3 text-xs sm:text-sm text-zinc-600 dark:text-zinc-500">
               <span>응답 {results.total_responses || 0}명</span>
-              {survey.created_at && (
-                <>
-                  <span>•</span>
-                  <span>
-                    {formatDistanceToNow(new Date(survey.created_at), { 
-                      addSuffix: true, 
-                      locale: ko 
-                    })}
-                  </span>
-                </>
-              )}
+              <span>•</span>
+              <span>시작: {(() => {
+                const date = new Date(survey.start_at || survey.created_at);
+                const year = date.getFullYear();
+                const month = String(date.getMonth() + 1).padStart(2, '0');
+                const day = String(date.getDate()).padStart(2, '0');
+                const hour = String(date.getHours()).padStart(2, '0');
+                const minute = String(date.getMinutes()).padStart(2, '0');
+                return `${year}-${month}-${day} ${hour}:${minute}`;
+              })()}</span>
+              <span>•</span>
+              <span>종료: {survey.end_at ? (() => {
+                const date = new Date(survey.end_at);
+                const year = date.getFullYear();
+                const month = String(date.getMonth() + 1).padStart(2, '0');
+                const day = String(date.getDate()).padStart(2, '0');
+                const hour = String(date.getHours()).padStart(2, '0');
+                const minute = String(date.getMinutes()).padStart(2, '0');
+                return `${year}-${month}-${day} ${hour}:${minute}`;
+              })() : '미정'}</span>
             </div>
           </div>
         </div>

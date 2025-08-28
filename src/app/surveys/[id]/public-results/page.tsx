@@ -73,3 +73,5 @@ export default async function PublicResultsPage({ params }: PageProps) {
 
 // 동적 렌더링 설정
 export const dynamic = 'force-dynamic';
+// 5분마다 재생성 (수정사항 빠르게 반영)
+export const revalidate = 300;
